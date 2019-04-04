@@ -1,0 +1,77 @@
+#include "FiveOS2.ch"
+
+#define BM_SETCHECK   293 // 0x0125
+
+//----------------------------------------------------------------------------//
+
+CLASS TCheckBox FROM TControl
+
+   METHOD New( nTop, nLeft, nWidth, nHeight, cPrompt, bSetGet, oWnd ) CONSTRUCTOR
+
+   METHOD ReDefine( nId, oDlg, bSetGet ) CONSTRUCTOR
+
+   METHOD Display() VIRTUAL     // We request default display behavior
+
+   METHOD Init( hDlg )
+
+   METHOD cToChar( nClassName, nControls, nDynData ) INLINE ;
+          Super:cToChar( WC_BUTTON, nControls, nDynData )
+
+ENDCLASS
+
+//----------------------------------------------------------------------------//
+
+METHOD New( nTop, nLeft, nWidth, nHeight, cPrompt, bSetGet, oWnd ) CLASS TCheckBox
+
+   local lTemp := .f.
+
+   DEFAULT nWidth := 80, nHeight := 25, cPrompt := "~CheckBox",;
+           bSetGet := bSETGET( lTemp ), oWnd := GetWndDefault()
+
+   ::nTop     = nTop
+   ::nLeft    = nLeft
+   ::nBottom  = nTop + nHeight - 1
+   ::nRight   = nLeft + nWidth - 1
+   ::cCaption = cPrompt
+   ::bSetGet  = bSetGet
+   ::oWnd     = If( ! Empty( oWnd:oWndClient ), oWnd:oWndClient, oWnd )
+   ::nStyle   = nOr( WS_VISIBLE, WS_TABSTOP, BS_AUTOCHECKBOX )
+
+   if ! Empty( oWnd:hWnd )
+      ::hWnd = WinCreateWindow( ::oWnd:hWnd, WC_BUTTON, cPrompt, ::nStyle,;
+                                nTop, nLeft, nWidth, nHeight, ::oWnd:hWnd )
+      ::Link()
+      oWnd:AddControl( Self )
+   else
+      oWnd:DefControl( Self )
+   endif
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD ReDefine( nId, oDlg, bSetGet ) CLASS TCheckBox
+
+   ::nId     = nId
+   ::oWnd    = oDlg
+   ::bSetGet = bSetGet
+
+   oDlg:DefControl( Self )
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD Init( hDlg ) CLASS TCheckBox
+
+   Super:Init( hDlg )
+
+   if ValType( Eval( ::bSetGet ) ) != "L"
+      Eval( ::bSetGet, .f. )
+   endif
+
+   WinSendMsg( ::hWnd, BM_SETCHECK, If( Eval( ::bSetGet ), 1, 0 ), 0 )
+
+return nil
+
+//----------------------------------------------------------------------------//

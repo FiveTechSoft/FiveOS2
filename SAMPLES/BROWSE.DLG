@@ -1,0 +1,16 @@
+
+DLGTEMPLATE 100 LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Dialog Title", 100, 15, 32, 335, 132, WS_VISIBLE, FCF_SYSMENU | 
+            FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", 110, 5, 18, 325, 102, "TWBROWSE", WS_GROUP | 
+                        WS_VISIBLE
+        PUSHBUTTON      "~New", 120, 4, 1, 40, 14
+        PUSHBUTTON      "~Edit", 130, 53, 1, 40, 14
+        PUSHBUTTON      "De~l", 140, 104, 1, 40, 14
+        PUSHBUTTON      "~Search", 150, 157, 1, 40, 14
+        PUSHBUTTON      "~Print", 160, 209, 1, 40, 14
+        PUSHBUTTON      "En~d", 170, 264, 1, 40, 14
+    END
+END

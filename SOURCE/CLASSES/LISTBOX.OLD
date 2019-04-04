@@ -1,0 +1,115 @@
+#include "FiveOS2.ch"
+
+#define LIT_END         -1
+
+#define LM_INSERTITEM  353
+
+//----------------------------------------------------------------------------//
+
+CLASS TListBox FROM TControl
+
+   DATA   aItems
+
+   METHOD New( nRow, nCol, nWidth, nHeight, bSetGet, aItems, oWnd ) CONSTRUCTOR
+
+   METHOD ReDefine( nId, bSetGet, oDlg, aItems ) CONSTRUCTOR
+
+   METHOD Init( hDlg )
+
+   METHOD Display() VIRTUAL
+
+   METHOD cToChar( nClassName, nControls, nDynData ) INLINE ;
+          Super:cToChar( If( Empty( nClassName ), WC_LISTBOX, nClassName ),;
+                         nControls, nDynData )
+
+   METHOD Select( nItem ) INLINE ;
+                     WinSendMsg( ::hWnd, LM_SELECTITEM, nItem - 1, 1 )
+
+   METHOD Set( cItem )
+
+ENDCLASS
+
+//----------------------------------------------------------------------------//
+
+METHOD New( nRow, nCol, nWidth, nHeight, bSetGet, aItems, oWnd ) CLASS TComboBox
+
+   local cItem := ""
+
+   DEFAULT nWidth := 80, nHeight := 50, bSetGet := bSETGET( cItem ),;
+           aItems := { "" }, oWnd := GetWndDefault()
+
+   if Eval( bSetGet ) == nil
+      Eval( bSetGet, "" )
+   endif
+
+   ::nTop     = nRow
+   ::nLeft    = nCol
+   ::nBottom  = nRow + nHeight - 1
+   ::nRight   = nCol + nWidth - 1
+   ::bSetGet  = bSetGet
+   ::aItems   = aItems
+   ::oWnd     = If( ! Empty( oWnd:oWndClient ), oWnd:oWndClient, oWnd )
+   ::nStyle   = nOr( WS_VISIBLE, WS_TABSTOP )
+
+   if ! Empty( oWnd:hWnd )
+      ::hWnd = WinCreateWindow( ::oWnd:hWnd, WC_LISTBOX, Eval( bSetGet ),;
+                          ::nStyle, nRow, nCol, nWidth, nHeight, ::oWnd:hWnd )
+      ::Link()
+      oWnd:AddControl( Self )
+   else
+      oWnd:DefControl( Self )
+   endif
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD ReDefine( nId, bSetGet, oDlg, aItems ) CLASS TListBox
+
+   if Eval( bSetGet ) == nil
+      Eval( bSetGet, "" )
+   endif
+
+   ::nId     = nId
+   ::oWnd    = oDlg
+   ::aItems  = aItems
+   ::bSetGet = bSetGet
+
+   oDlg:DefControl( Self )
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD Init( hDlg ) CLASS TListBox
+
+   local cTemp := Upper( AllTrim( Eval( ::bSetGet ) ) )
+   local nAt
+
+   Super:Init( hDlg )
+
+   AEval( ::aItems,;
+          { | cText | WinSendMsg( ::hWnd, LM_INSERTITEM, LIT_END, cText ) } )
+
+   if ( nAt := AScan( ::aItems, { | cItem | Upper( AllTrim( cItem ) ) == ;
+                                            cTemp } ) ) != 0
+      ::Select( nAt )
+   endif
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD Set( cNewItem ) CLASS TListBox
+
+   local cTemp := Upper( AllTrim( cNewItem ) )
+   local nAt   := AScan( ::aItems,;
+                       { | cItem | Upper( AllTrim( cItem ) ) == cTemp } )
+
+   if nAt != 0
+      ::Select( nAt - 1 )
+   endif
+
+return nil
+
+//----------------------------------------------------------------------------//

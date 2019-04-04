@@ -1,0 +1,32 @@
+LIBRARY     DOSCALL1                      
+
+DESCRIPTION 'DosCalls'
+
+EXPORTS
+            DOSREAD                        @137 
+            DOSREADASYNC                   @149 
+            DOSSUBFREE                     @148 
+            DOSLOGREGISTER                 @195 
+            DOSSETPROCCP                   @164 
+            DOSEXECPGM                     @144 
+            DOSWRITE                       @138 
+            DOSSUBALLOC                    @147 
+            DOSTIMERASYNC                  @29  
+            DOSSEMREQUEST                  @140 
+            DOSLOGREAD                     @196 
+            DOSTIMERSTOP                   @31  
+            DOSFSRAMSEMREQUEST             @161 
+            DOSCALLBACK                    @157 
+            DOSSCANENV                     @152 
+            DOSSEMCLEAR                    @141 
+            DOSWRITEASYNC                  @150 
+            DOSSETCP                       @153 
+            DOSSEARCHPATH                  @151 
+            DOSSEMWAIT                     @142 
+            DOSTIMERSTART                  @30  
+            DOSFSRAMSEMCLEAR               @162 
+            DOSERRCLASS                    @139 
+            DOSQAPPTYPE                    @163 
+            DOSCOPY                        @201 
+            DOSSUBSET                      @146 
+            DOSSEMSET                      @143 

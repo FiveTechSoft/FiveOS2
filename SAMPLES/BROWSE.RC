@@ -1,0 +1,18 @@
+#include "..\include\OS2Api.ch"
+#include "browse.ch"
+
+DLGTEMPLATE Browse LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Browse", ID_BROWSE, 15, 32, 335, 132, WS_VISIBLE, FCF_SYSMENU |
+            FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", ID_BROWSE, 5, 18, 320, 102, "TWBROWSE", WS_GROUP |
+                        WS_VISIBLE | WS_TABSTOP
+        PUSHBUTTON      "~New",    ID_NEW, 4, 1, 40, 14
+        PUSHBUTTON      "~Edit",   ID_EDIT, 53, 1, 40, 14
+        PUSHBUTTON      "De~l",    ID_DEL, 104, 1, 40, 14
+        PUSHBUTTON      "~Search", ID_SEARCH, 157, 1, 40, 14
+        PUSHBUTTON      "~Print",  ID_PRINT, 209, 1, 40, 14
+        PUSHBUTTON      "En~d",    ID_END, 264, 1, 40, 14
+    END
+END

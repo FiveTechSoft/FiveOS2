@@ -1,0 +1,75 @@
+#include "FiveOS2.ch"
+
+static oIni
+
+//----------------------------------------------------------------------------//
+
+CLASS TIni
+
+   DATA   cIniFile, cDefName
+   DATA   hIni
+
+   METHOD New( cIniFile ) CONSTRUCTOR
+
+   METHOD Get( cSection, cEntry, uDefault, uVar )
+
+   METHOD Set( cSection, cEntry, uValue )
+
+   METHOD End() INLINE  PrfCloseProfile( ::hIni ), ::hIni := 0,;
+                        PrfReset( ::cDefName ), ::cDefName := ""
+
+ENDCLASS
+
+//----------------------------------------------------------------------------//
+
+METHOD New( cIniFile ) CLASS TIni
+
+   DEFAULT cIniFile := ""
+
+   if ! Empty( cIniFile ) .and. At( ".", cIniFile ) == 0
+      cIniFile  += ".ini"
+      ::cDefName = PrfQueryProfile()[ 1 ]
+      PrfReset( cIniFile )
+   endif
+
+   ::cIniFile = cIniFile
+   ::hIni     = PrfOpenProfile( cIniFile )
+   oIni       = Self
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD Get( cSection, cEntry, uDefault, uVar ) CLASS TIni
+
+   local cType := ValType( If( uDefault != nil, uDefault, uVar ) )
+
+   if cType == "N"
+      uVar = PrfQueryInt( ::hIni, cSection, cEntry, uDefault )
+   else
+      uVar = PrfQueryString( ::hIni, cSection, cEntry, cValToChar( uDefault ) )
+   endif
+
+   ::Set( cSection, cEntry, uVar )
+
+   do case
+      case cType == "D"
+           uVar = CToD( uVar )
+
+      case cType == "L"
+           uVar = ( Upper( uVar ) == ".T." )
+   endcase
+
+return uVar
+
+//----------------------------------------------------------------------------//
+
+METHOD Set( cSection, cEntry, uValue ) CLASS TIni
+
+return PrfWriteData( ::hIni, cSection, cEntry, uValue )
+
+//----------------------------------------------------------------------------//
+
+function IniEnd() ; oIni:End() ; return nil
+
+//----------------------------------------------------------------------------//

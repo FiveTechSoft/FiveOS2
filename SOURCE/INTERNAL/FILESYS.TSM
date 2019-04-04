@@ -1,0 +1,829 @@
+	TITLE	D:\CC\SUPPORT\FILESYS.ASM
+
+	.386p					; Enable USE32/USE16 usage
+	.387					; Enable floating point also
+
+_DATA	SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA	ENDS
+
+FILESYS_TEXT	SEGMENT	BYTE PUBLIC USE16 'CODE'
+FILESYS_TEXT	ENDS
+
+DGROUP	GROUP	_DATA
+
+	; A2h (162) - Undocumented Comment Record Type
+
+
+    EXTRN    _DOS3CALL:far
+
+	PUBLIC		__terror		; Located at 1:0000h Type = 4
+	PUBLIC		__horror		; Located at 1:0002h Type = 4
+	PUBLIC		__tversion		; Located at 1:0004h Type = 4
+	PUBLIC		__txerror		; Located at 1:0006h Type = 4
+	PUBLIC		__txclass		; Located at 1:0008h Type = 4
+	PUBLIC		__txaction		; Located at 1:000Ah Type = 4
+	PUBLIC		__txlocus		; Located at 1:000Ch Type = 4
+	PUBLIC		__tinit			; Located at 2:002Dh Type = 1
+	PUBLIC		__tend			; Located at 2:007Bh Type = 1
+	PUBLIC		__fsCreate		; Located at 2:00D0h Type = 1
+	PUBLIC		__tctemp		; Located at 2:00FAh Type = 1
+	PUBLIC		__fsOpen		; Located at 2:018Ch Type = 1
+	PUBLIC		__fsClose		; Located at 2:01BAh Type = 1
+	PUBLIC		__fsRead		; Located at 2:01D9h Type = 1
+	PUBLIC		__fsWrite		; Located at 2:0203h Type = 1
+	PUBLIC		__fsSeek		; Located at 2:022Dh Type = 1
+	PUBLIC		__fsLock		; Located at 2:0263h Type = 1
+	PUBLIC		__tmname		; Located at 2:029Fh Type = 1
+	PUBLIC		__fsDelete		; Located at 2:02D2h Type = 1
+	PUBLIC		__fsRename		; Located at 2:02F3h Type = 1
+	PUBLIC		__thcount		; Located at 2:0317h Type = 1
+	PUBLIC		__fsCommit		; Located at 2:0358h Type = 1
+	PUBLIC		__fsError		; Located at 2:0372h Type = 1
+	PUBLIC		__tisdevice		; Located at 2:038Dh Type = 1
+	PUBLIC		__tdevraw		; Located at 2:03ACh Type = 1
+	PUBLIC		__f_first		; Located at 2:03E5h Type = 1
+	PUBLIC		__f_next		; Located at 2:040Ah Type = 1
+	PUBLIC		__dspace		; Located at 2:0425h Type = 1
+	PUBLIC		__tmkdir		; Located at 2:0449h Type = 1
+	PUBLIC		__trmdir		; Located at 2:0473h Type = 1
+	PUBLIC		__tchdir		; Located at 2:049Dh Type = 1
+	PUBLIC		__tcurdrv		; Located at 2:04C7h Type = 1
+	PUBLIC		__tchdrv		; Located at 2:04E0h Type = 1
+	PUBLIC		__tisdrv		; Located at 2:0508h Type = 1
+	PUBLIC		__tcurdir		; Located at 2:0529h Type = 1
+
+
+struct_0	struc
+s0m_0	db	65 dup (?)
+struct_0	ends
+
+
+_DATA	SEGMENT
+
+
+__terror	dw	00000h
+__horror	dw	00000h
+__tversion	dw	00000h
+__txerror	dw	00000h
+__txclass	dw	00000h
+__txaction	dw	00000h
+__txlocus	dw	00000h
+$S6	db	000h
+$S16	db	'CLIPTMPA.TMP',000h
+
+$S14	struct_0	<>
+
+$S51	struct_0	<>
+
+_DATA	ENDS
+
+FILESYS_TEXT	SEGMENT
+	assume	cs: FILESYS_TEXT
+
+
+$S48:	int	11h
+	push	ax
+	and	ax,0001h
+	pop	ax
+	jz	$L1
+	mov	ah,00h
+	mov	cl,06h
+	shr	al,cl
+	cmp	dl,al
+	jbe	$L2
+	cmp	dl,01h
+	jnz	$L1
+	mov	ax,0FFFFh
+	jmp	short $L3
+	nop
+$L1:	inc	dl
+	mov	ah,36h
+    call word ptr _Dos3Call ;    int 21h
+	cmp	ax,0FFFFh
+	jz	$L3
+$L2:	mov	ax,0000h
+$L3:	ret
+__tinit:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	assume	ds: DGROUP
+	mov	word ptr __terror,0000h
+	mov	ah,30h
+
+    call far ptr _Dos3Call
+    ; int 21h
+
+    cmp al,00h
+	jnz	$L4
+	mov	ax,0001h
+$L4:	mov	bl,ah
+	mov	bh,00h
+	mov	ah,64h
+	mul	ah
+	add	ax,bx
+	mov	__tversion,ax
+	cmp	ax,012Ch
+	jnc	$L5
+	mov	byte ptr $S6,07h
+	jmp	short $L7
+	nop
+$L5:	push	ds
+	mov	ah,25h
+	mov	al,24h
+	mov	dx,seg FILESYS_TEXT
+	mov	ds,dx
+	mov	dx,offset FILESYS_TEXT:$S8
+    call far ptr _Dos3Call  ;  int 21h
+	pop	ds
+	mov	byte ptr $S6,0FFh
+$L7:	mov	ax,0000h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tend:	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	mov	word ptr __terror,0000h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+$S12:	mov	ax,__terror
+	mov	__txerror,ax
+	sub	ax,ax
+	mov	__txclass,ax
+	mov	__txaction,ax
+	mov	__txlocus,ax
+	cmp	word ptr __tversion,012Ch
+	jc	$L9
+	push	ds
+	mov	ah,59h
+	mov	bx,0000h
+     call far ptr _Dos3Call ; int 21h
+	pop	ds
+	cmp	ax,0053h
+	jnz	$L10
+	mov	ax,__horror
+	xor	ah,ah
+	add	ax,0013h
+$L10:	mov	__txerror,ax
+	sub	ax,ax
+	mov	al,bh
+	mov	__txclass,ax
+	mov	al,bl
+	mov	__txaction,ax
+	mov	al,ch
+	mov	__txlocus,ax
+$L9:	ret
+__fsCreate:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,3Ch
+	lds	dx,dword ptr [bp+006h]
+	mov	cx,[bp+00Ah]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L11
+	mov	__terror,ax
+	call	$S12
+	mov	ax,0FFFFh
+$L11:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tctemp:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	mov	word ptr __terror,0000h
+	mov	word ptr __horror,0000h
+	cmp	word ptr __tversion,012Ch
+	jnc	$L13
+	push	ds
+	mov	dx,ds
+	mov	es,dx
+	mov	di,offset DGROUP:$S14.s0m_0
+	lds	si,dword ptr [bp+006h]
+$L15:	lodsb
+	stosb
+	or	al,al
+	jnz	$L15
+	pop	ds
+	mov	si,offset DGROUP:$S16
+	inc	byte ptr [si+007h]
+	dec	di
+$L17:	lodsb
+	stosb
+	or	al,al
+	jnz	$L17
+	mov	ah,3Ch
+	mov	cx,[bp+00Ah]
+	mov	dx,offset DGROUP:$S14.s0m_0
+    call far ptr _Dos3Call ;  int 21h
+	mov	bx,ds
+	jnc	$L18
+	mov	__terror,ax
+	mov	ax,0FFFFh
+	jmp	short $L19
+	nop
+$L13:	push	ds
+	mov	dx,ds
+	mov	es,dx
+	mov	di,offset DGROUP:$S14.s0m_0
+	lds	si,dword ptr [bp+006h]
+$L20:	lodsb
+	stosb
+	or	al,al
+	jnz	$L20
+	mov	ds,dx
+	mov	ah,5Ah
+	mov	dx,offset DGROUP:$S14.s0m_0
+	mov	cx,[bp+00Ah]
+    call far ptr _Dos3Call;  int 21h
+	mov	bx,ds
+	pop	ds
+	jnc	$L18
+	mov	__terror,ax
+	mov	ax,0FFFFh
+	jmp	short $L19
+	nop
+$L18:	push	ax
+	push	ds
+	mov	ds,bx
+	mov	si,dx
+	les	di,dword ptr [bp+00Ch]
+	cld
+$L21:	lodsb
+	stosb
+	or	al,al
+	jnz	$L21
+	pop	ds
+	pop	ax
+$L19:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsOpen:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	ah,3Dh
+	mov	al,[bp+00Ah]
+	and	al,$S6
+	push	ds
+	lds	dx,dword ptr [bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L22
+	mov	__terror,ax
+	call	$S12
+	mov	ax,0FFFFh
+$L22:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsClose:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	ah,3Eh
+	mov	bx,[bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	jnc	$L23
+	mov	__terror,ax
+$L23:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsRead:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,3Fh
+	mov	bx,[bp+006h]
+	lds	dx,dword ptr [bp+008h]
+	mov	cx,[bp+00Ch]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L24
+	mov	__terror,ax
+	mov	ax,0000h
+$L24:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsWrite:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,40h
+	mov	bx,[bp+006h]
+	lds	dx,dword ptr [bp+008h]
+	mov	cx,[bp+00Ch]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L25
+	mov	__terror,ax
+	mov	ax,0000h
+$L25:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsSeek:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	ah,42h
+	mov	bx,[bp+006h]
+	mov	dx,[bp+008h]
+	mov	cx,[bp+00Ah]
+	mov	al,[bp+00Ch]
+    call far ptr _Dos3Call ; int 21h
+	jnc	$L26
+	mov	__terror,ax
+	mov	ax,0000h
+	mov	dx,0000h
+$L26:	mov	bx,ax
+	mov	ax,dx
+	push	ax
+	mov	ax,bx
+	pop	dx
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsLock:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	ah,5Ch
+	mov	bx,[bp+006h]
+	mov	dx,[bp+008h]
+	mov	cx,[bp+00Ah]
+	mov	di,[bp+00Ch]
+	mov	si,[bp+00Eh]
+	mov	al,[bp+010h]
+    call far ptr _Dos3Call ; int 21h
+	jnc	$L27
+	cmp	ax,0021h
+	mov	bx,ax
+	mov	ax,0000h
+	jz	$L28
+$L27:	mov	__terror,bx
+	mov	ax,0001h
+$L28:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tmname:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	cx,0000h
+	cmp	word ptr __tversion,0136h
+	jc	$L29
+	push	ds
+	mov	ah,5Eh
+	mov	al,00h
+	lds	dx,dword ptr [bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L29
+	mov	__terror,ax
+	mov	cx,0000h
+$L29:	mov	ax,cx
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsDelete:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,41h
+	lds	dx,dword ptr [bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L30
+	mov	__terror,ax
+$L30:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsRename:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,56h
+	lds	dx,dword ptr [bp+006h]
+	les	di,dword ptr [bp+00Ah]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L31
+	mov	__terror,ax
+$L31:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__thcount:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	ah,30h
+    call far ptr _Dos3Call ; int 21h
+	cmp	al,00h
+	jnz	$L32
+	mov	ax,0001h
+$L32:	mov	bl,ah
+	mov	bh,00h
+	mov	ah,64h
+	mul	ah
+	add	ax,bx
+	mov	dx,0001h
+	cmp	ax,014Ah
+	jc	$L33
+	mov	ah,67h
+	mov	bx,[bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	jnc	$L33
+	mov	__terror,ax
+	mov	dx,0000h
+$L33:	mov	ax,dx
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsCommit:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	cmp	word ptr __tversion,014Ah
+	jc	$L34
+	mov	ah,68h
+	mov	bx,[bp+006h]
+    call far ptr _Dos3Call ; int 21h
+$L34:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__fsError:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	mov	ax,__terror
+	cmp	ax,0053h
+	jnz	$L35
+	mov	ax,__horror
+	xor	ah,ah
+	add	ax,0013h
+$L35:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tisdevice:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	mov	ax,4400h
+	mov	bx,[bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	jnc	$L36
+	sub	ax,ax
+$L36:	and	ax,0080h
+	jz	$L37
+	mov	ax,0001h
+$L37:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tdevraw:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	bx,[bp+006h]
+	xor	dx,dx
+	mov	ax,[bp+008h]
+	cmp	ax,0000h
+	jz	$L38
+	or	dl,20h
+$L38:	clc
+	push	ds
+	mov	ax,4401h
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	mov	ax,0001h
+	jnc	$L39
+	mov	__terror,ax
+	call	$S12
+	mov	ax,0000h
+$L39:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__f_first:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	push	ds
+	lds	dx,dword ptr [bp+00Ah]
+	mov	ah,1Ah
+    call far ptr _Dos3Call ; int 21h
+	mov	cx,[bp+00Eh]
+	lds	dx,dword ptr [bp+006h]
+	mov	ah,4Eh
+    call far ptr _Dos3Call; int 21h
+
+	mov	ax,0001h
+	jnc	$L40
+	xor	ax,ax
+$L40:	pop	ds
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__f_next:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	push	ds
+	lds	dx,dword ptr [bp+006h]
+	mov	ah,4Fh
+    call far ptr _Dos3Call ; int 21h
+	mov	ax,0001h
+	jnc	$L41
+	xor	ax,ax
+$L41:	pop	ds
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__dspace:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	mov	dx,[bp+006h]
+	les	di,dword ptr [bp+008h]
+	mov	ah,36h
+    call far ptr _Dos3Call ; int 21h
+	mov	es:[di],bx
+	mov	es:[di+002h],ax
+	mov	es:[di+004h],dx
+	mov	es:[di+006h],cx
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tmkdir:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,39h
+	lds	dx,dword ptr [bp+006h]
+    call far ptr _Dos3Call; int 21h
+	pop	ds
+	jnc	$L42
+	mov	__terror,ax
+	mov	ax,0000h
+	jmp	short $L43
+	nop
+$L42:	mov	ax,0001h
+$L43:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__trmdir:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,3Ah
+	lds	dx,dword ptr [bp+006h]
+    call far ptr _Dos3Call; int 21h
+	pop	ds
+	jnc	$L44
+	mov	__terror,ax
+	mov	ax,0000h
+	jmp	short $L45
+	nop
+$L44:	mov	ax,0001h
+$L45:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tchdir:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	ah,3Bh
+	lds	dx,dword ptr [bp+006h]
+    call far ptr _Dos3Call ; int 21h
+	pop	ds
+	jnc	$L46
+	mov	__terror,ax
+	mov	ax,0000h
+	jmp	short $L47
+	nop
+$L46:	mov	ax,0001h
+$L47:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tcurdrv:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	ah,19h
+    call far ptr _Dos3Call ; int 21h
+	mov	ah,00h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tchdrv:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	dl,[bp+006h]
+	call	$S48
+	cmp	ax,0FFFFh
+	jz	$L49
+	mov	dl,[bp+006h]
+	mov	ah,0Eh
+    call far ptr _Dos3Call ; int 21h
+	mov	ax,0000h
+$L49:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tisdrv:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	mov	dl,[bp+006h]
+	call	$S48
+	cmp	ax,0FFFFh
+	jz	$L50
+	mov	ax,0000h
+$L50:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__tcurdir:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	xor	ax,ax
+	mov	__terror,ax
+	mov	__horror,ax
+	push	ds
+	mov	si,offset DGROUP:$S51.s0m_0
+	mov	dx,[bp+006h]
+	mov	ah,47h
+   ; call far ptr _Dos3Call ; int 21h
+	pop	ds
+	mov	bx,seg DGROUP
+	push	bx
+	mov	ax,si
+	pop	dx
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+$S8:	push	ds
+	push	bx
+	mov	bx,seg DGROUP
+	mov	ds,bx
+	mov	bx,di
+	mov	bh,ah
+	mov	__horror,bx
+	pop	bx
+	pop	ds
+	mov	al,03h
+	iret
+
+
+FILESYS_TEXT	ENDS
+
+
+    END
+

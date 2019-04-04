@@ -1,0 +1,3 @@
+#include "..\include\OS2Api.ch"
+
+icon   1  .\..\icons\FiveOS2.ico

@@ -1,0 +1,27 @@
+LIBRARY     PMCTLS
+
+DESCRIPTION 'PM Controls DLL'
+
+EXPORTS
+    WINDEFFONTDLGPROC              @3   
+    REGISTERSPINBUTTON             @11  
+    SPINBUTTONWNDPROC              @16  
+    PMCTLSORD1                     @1   
+    CNRCREATENLSDATESTRING         @19  
+    CNRCREATENLSNUMBERSTRING       @21  
+    REGISTERSLIDER                 @9   
+    CNRCREATENLSTIMESTRING         @20  
+    SLIDERWNDPROC                  @15  
+    BOOKWNDPROC                    @12  
+    CNRGATEPROC                    @13  
+    ALLOCHEAPMEM                   @17  
+    VALUESETWNDPROC                @14  
+    _WINFONTDLG                     @2   
+    WINFREEFILEDLGLIST             @6   
+    XALLOCHEAPMEM                  @22  
+    WINDEFFILEDLGPROC              @5   
+    INITCONTAINER                  @10  
+    REGISTERBOOK                   @7   
+    FREEHEAPMEM                    @18  
+    REGISTERVALUESET               @8   
+    _WINFILEDLG                     @4   

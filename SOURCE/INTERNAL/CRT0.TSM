@@ -1,0 +1,239 @@
+; compilar con MASM /Mx crt0.tsm
+
+STACKSLOP=256
+
+    DOSSEG
+
+	.386p					; Enable USE32/USE16 usage
+	.387					; Enable floating point also
+
+_TEXT	SEGMENT	WORD PUBLIC USE16 'CODE'
+_TEXT	ENDS
+
+C_ETEXT	SEGMENT	WORD PUBLIC USE16 'ENDCODE'
+C_ETEXT	ENDS
+
+_DATA	SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA	ENDS
+
+STACK	SEGMENT	PARA STACK USE16 'STACK'
+STACK	ENDS
+
+DGROUP	GROUP	_DATA, STACK
+
+	; A2h (162) - Undocumented Comment Record Type
+
+
+    EXTRN       _edata:byte
+    EXTRN       _end:byte
+
+    EXTRN       _exit:NEAR
+    EXTRN       _fivemain:NEAR
+	EXTRN		DOSGETMACHINEMODE:NEAR
+	EXTRN		__setenvp:NEAR
+	EXTRN		__setargv:NEAR
+	EXTRN		__osmajor:WORD
+	EXTRN		__acrtmsg:ABS
+	EXTRN		__osmode:ABS
+	EXTRN		__FF_MSGBANNER:NEAR
+	EXTRN		_environ:WORD
+	EXTRN		__osfile:ABS
+	EXTRN		___argv:WORD
+	EXTRN		___argc:WORD
+	EXTRN		__cinit:NEAR
+	EXTRN		DOSGETVERSION:NEAR
+	EXTRN		__NMSG_WRITE:NEAR
+
+    EXTRN       DOSREALLOCSEG:NEAR
+    EXTRN       DOSLOCKSEG:NEAR
+
+
+	PUBLIC		__acrtused		; Located at 0:9876h Type = 0
+	PUBLIC		__aDBdoswp		; Located at 0:D6D6h Type = 0
+	PUBLIC		__aDBused		; Located at 0:D6D6h Type = 0
+	PUBLIC		__astart		; Located at 1:0000h Type = 1
+	PUBLIC		__cintDIV		; Located at 1:0076h Type = 1
+	PUBLIC		__amsg_exit		; Located at 1:0080h Type = 1
+	PUBLIC		__dataseg		; Located at 1:00E0h Type = 4
+	PUBLIC		__acmdln		; Located at 3:0000h Type = 4
+	PUBLIC		__aenvseg		; Located at 3:0002h Type = 4
+	PUBLIC		__atopsp		; Located at 3:0004h Type = 4
+	PUBLIC		__aexit_rtn		; Located at 3:0006h Type = 4
+	PUBLIC		__asizds		; Located at 3:0008h Type = 4
+
+    PUBLIC      __abrktb        ; Located at 3:0008h Type = 4
+
+    PUBLIC      __nheap_desc        ; Located at 3:000Ah Type = 0
+	PUBLIC		__acfinfo		; Located at 3:001Eh Type = 0
+	PUBLIC		__aseglo		; Located at 3:002Ch Type = 0
+	PUBLIC		__aseghi		; Located at 3:002Eh Type = 0
+	PUBLIC		___aDBswpflg		; Located at 3:0030h Type = 0
+	PUBLIC		___aDBrterr		; Located at 3:0032h Type = 0
+
+struct_0	struc
+s0m_0	dw	?
+s0m_1	dw	?
+s0m_2	dw	?
+s0m_3	dw	?
+s0m_4	dw	?
+s0m_5	dw	?
+s0m_6	dd	?
+s0m_7	dd	?
+struct_0	ends
+
+
+__acrtused	=	09876h
+__aDBdoswp	=	0D6D6h
+__aDBused	=	0D6D6h
+
+_TEXT	SEGMENT
+	assume	cs: _TEXT
+
+	EXTRN		__exit:NEAR
+
+__astart:
+	cld
+	assume	ds: DGROUP
+	mov	__aenvseg,ax
+	mov	__acmdln,bx
+
+    mov __abrktb, cx;
+
+    mov ax, -2
+    mov __asizds,ax
+
+    xor ax,ax
+    push ax
+    push ds
+    call far ptr DOSREALLOCSEG      ; reallocateamos a 64 Ks
+
+    mov bx,offset DGROUP:__nheap_desc.s0m_0
+	mov	word ptr [bx],ds
+                   
+    and sp,-002h
+	mov	[bx+004h],sp
+	mov	ax,0FFFEh
+	push	ax
+	mov	[bx+00Ah],sp
+	not	ax
+	push	ax
+	mov	[bx+006h],sp
+	mov	[bx+008h],sp
+	mov	__atopsp,sp
+	push	ax
+	mov	ax,sp
+	push	ss
+	push	ax
+	call	far ptr DOSGETVERSION
+	pop	ax
+	xchg	ah,al
+	mov	__osmajor,ax
+	mov	ax,offset DGROUP:__osmode
+	push	ds
+	push	ax
+	call	far ptr DOSGETMACHINEMODE
+	call	$S1
+
+    call    far ptr __setargv
+    call    far ptr __setenvp
+    call    far ptr __cinit
+
+    push    _environ + 00002h
+	push	_environ
+	push	___argv + 00002h
+	push	___argv
+	push	___argc
+    call    far ptr _fivemain
+	push	ax
+	push	cs
+	call	_exit
+__cintDIV:
+	mov	ax,0003h
+	assume	ss: DGROUP
+	mov	word ptr ss:__aexit_rtn,offset _TEXT:_exit
+__amsg_exit:
+	push	ax
+	push	cs
+	call	__FF_MSGBANNER
+	push	cs
+	call	__NMSG_WRITE
+	mov	ax,00FFh
+	push	ax
+	push	cs
+    call    far ptr __aexit_rtn
+$S1:	mov	bx,000Dh
+	xor	di,di
+	mov	es,word ptr __aenvseg
+	mov	cx,7FFFh
+	cmp	byte ptr es:[di],00h
+	jnz	$L2
+	inc	di
+$L2:	cmp	byte ptr es:[di],00h
+	jz	$L3
+	mov	si,offset DGROUP:__acfinfo
+	mov	dx,cx
+	mov	cx,bx
+	repz	cmpsb
+	mov	cx,dx
+	jz	$L4
+	xor	ax,ax
+	repnz	scasb
+	jz	$L2
+	jmp	short $L3
+$L4:	push	es
+	push	ds
+	pop	es
+	mov	si,di
+	pop	ds
+	mov	di,offset DGROUP:__osfile
+	mov	cl,04h
+$L5:	lodsb
+	sub	al,41h
+	jc	$L3
+	shl	al,cl
+	xchg	ax,dx
+	lodsb
+	sub	al,41h
+	jc	$L3
+	or	al,dl
+	stosb
+	jmp	short $L5
+$L3:	push	ss
+	pop	ds
+	ret
+__dataseg	dw	DGROUP
+
+_TEXT	ENDS
+
+_DATA	SEGMENT
+
+
+__acmdln	dw	00000h
+__aenvseg	dw	00000h
+__atopsp	dw	00000h
+__aexit_rtn	dw	__exit
+__asizds	dw	00000h
+
+__abrktb    dw  00000h     ; NUESTRO
+
+__nheap_desc	struct_0	<00000h,00005h,00000h,00000h,00000h,00000h,000000000h,000000000h>
+
+__acfinfo	db	'_C_FILE_INFO=',000h
+__aseglo	db	001h
+	db	000h
+__aseghi	db	0FFh
+	db	0FFh
+___aDBswpflg	db	000h
+	db	000h
+___aDBrterr	db	000h
+	db	000h
+
+_DATA	ENDS
+
+STACK	SEGMENT
+
+	db	2560 dup(?)
+
+STACK	ENDS
+
+	END	__astart			; Module starting address

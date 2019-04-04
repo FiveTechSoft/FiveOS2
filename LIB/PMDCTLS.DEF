@@ -1,0 +1,17 @@
+LIBRARY     PMDCTLS                       
+
+DESCRIPTION 'PM Diary Controls DLL       '
+
+EXPORTS
+            STMDECREMENTUSECOUNT           @11  
+            STMINCREMENTUSECOUNT           @10  
+            STMFREESTORAGE                 @9   
+            VALUESETWNDPROC                @2   
+            REGISTERVALUESET               @1   
+            STMSHARESTORAGE                @12  
+            WINDEFFILEDLGPROC              @4   
+            WINFREEFILEDLGLIST             @5   
+            STMALLOCATESTORAGE             @8   
+            _WINFILEDLG                     @3
+            STMTERMSTORAGESPACE            @7   
+            STMINITSTORAGESPACE            @6   

@@ -1,0 +1,13 @@
+[shared-]
+	pmark=
+	version=2
+[debug-]
+	target="c:\fiveos2.10\source\internal\test.exe"
+[cvp]
+	wndstate=0 1 1 2 1 1 0 1 1 1 254
+	tilestate=1 24 0 80 0 0 0 67 0 4 10 14 0 17 20 0 34 254
+	command=use auto
+	command=n10
+	command=s1
+	command=oc+
+	command=of+

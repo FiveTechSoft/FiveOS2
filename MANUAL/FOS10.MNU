@@ -1,0 +1,31 @@
+!name: FiveOS2 0E - February 95
+
+!credits:
+       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+       ³             FiveOS2 0F - February 95            ³Û
+       ³         CA-Clipper for IBM-OS2 Library          ³Û
+       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙÛ
+        ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+!menu: Reference
+       Index                         index.eho
+       xBase commands                xbase.eho
+       Classes & Objects             oops.eho
+       Functions                     function.eho
+       IBM-OS2 API Conection         api.eho
+       FiveWin samples guide         samples.eho
+       FiveWin Header files          Headers.eho
+
+!menu: Programming
+       Index                         ProgInd.eho
+       Event-Driven programming      Event.eho
+       Resources management          ResMan.eho
+       Report Engine                 RepEng.eho
+       Color management              color.eho
+       DropFiles management          dropfile.eho
+       Object Oriented Architecture  OOPSApi.eho
+
+!menu: About
+       Developers                    5W.eho
+       Distribution                  share.eho
+       Register Process              register.eho
+       WhatsNew                      WhatsNew.eho

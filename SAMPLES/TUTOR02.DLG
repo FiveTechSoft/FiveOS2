@@ -1,0 +1,43 @@
+#include "..\INCLUDE\OS2API.CH"
+
+
+BITMAP 101 .\..\bitmaps\Info.bmp
+BITMAP 102 .\..\bitmaps\SelFile.bmp
+BITMAP 103 .\..\bitmaps\Exit.bmp
+BITMAP 104 .\..\bitmaps\os2.bmp
+
+DLGTEMPLATE 100 LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "FiveOS2 power demo", 100, 9, 46, 340, 128, WS_VISIBLE, 
+            FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", 103, 4, 4, 150, 8, WC_SCROLLBAR, SBS_HORZ |
+                        WS_VISIBLE
+        PUSHBUTTON      "~End", 104, 296, 2, 40, 14
+        GROUPBOX        "Clients", 105, 4, 15, 230, 110
+        LTEXT           "Rec.:", 101, 160, 2, 55, 10
+        LTEXT           "First:", 102, 8, 106, 33, 8
+        ENTRYFIELD      "", 106, 36, 106, 190, 8, ES_MARGIN | WS_VISIBLE
+        LTEXT           "Last:", 107, 8, 92, 25, 8
+        ENTRYFIELD      "", 108, 36, 92, 190, 8, ES_MARGIN | WS_VISIBLE
+        NOTEBOOK        109, 237, 19, 100, 102
+    END
+END
+
+DLGTEMPLATE 1001 LOADONCALL MOVEABLE DISCARDABLE 
+BEGIN
+    DIALOG "Product information", 1001, 9, 17, 276, 137,WS_VISIBLE,FCF_TITLEBAR | FCF_SYSMENU
+    BEGIN
+        CONTROL         104, 104 , 111, 76, 21, 21, WC_STATIC,SS_BITMAP | WS_GROUP | WS_VISIBLE
+
+        CTEXT           "(C) Copyright IBM Corporation 1993. All Rights rese"
+                        "rved.", 256, 7, 54, 255, 8
+        CTEXT           "OS/2 is a registered trademark of", 258, 7, 44, 255,
+                        8
+        CTEXT           "International Business Machines Corp.", 257, 7, 34,
+                        255, 8
+        DEFPUSHBUTTON   "~OK", 1 , 111, 8, 45, 15
+    END
+END
+
+

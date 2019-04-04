@@ -1,0 +1,5334 @@
+; OBJASM version 2.0 released on Jan 3, 1991
+; (C) Copyright 1988,1989,1990,1991 by Robert F. Day.  All rights reserved
+
+	TITLE	D:\CC\BASE\OM.C
+
+	.8086
+	.8087
+	; Large Memory Model
+	; Optimizations Enabled
+
+	; CodeView Enabled
+
+OM_TEXT	SEGMENT	WORD PUBLIC 'CODE'
+OM_TEXT	ENDS
+
+_DATA	SEGMENT	WORD PUBLIC 'DATA'
+_DATA	ENDS
+
+CONST	SEGMENT	WORD PUBLIC 'CONST'
+CONST	ENDS
+
+_BSS	SEGMENT	WORD PUBLIC 'BSS'
+_BSS	ENDS
+
+DGROUP	GROUP	CONST, _BSS, _DATA
+
+	; A2h (162) - Undocumented Comment Record Type
+
+
+	EXTRN		__eextent:WORD
+	EXTRN		__DropGrip:NEAR
+	EXTRN		__estat:WORD
+	EXTRN		__vmStat:NEAR
+	EXTRN		__GetGrip:NEAR
+	EXTRN		__tos:WORD
+	EXTRN		__eval:WORD
+	EXTRN		__vmUnlock:NEAR
+	EXTRN		__awk:NEAR
+	EXTRN		__squ:NEAR
+	EXTRN		__sptoq:NEAR
+	EXTRN		__vmLock:NEAR
+	EXTRN		__eError:NEAR
+	EXTRN		__AllocF:NEAR
+	EXTRN		__vmXfr:NEAR
+	EXTRN		__vmTwo:NEAR
+	EXTRN		__vmDirtyPtr:NEAR
+	EXTRN		__vmPtr:NEAR
+	EXTRN		__vmSize:NEAR
+	EXTRN		__vmRealloc:NEAR
+	EXTRN		__bcopy:NEAR
+	EXTRN		__bset:NEAR
+	EXTRN		__vmFree:NEAR
+	EXTRN		__ierror:NEAR
+	EXTRN		__aFuldiv:NEAR
+	EXTRN		__vmAlloc:NEAR
+	EXTRN		__aFldiv:NEAR
+	EXTRN		__evRegReceiverFunc:NEAR
+	EXTRN		__vmXchg:NEAR
+	EXTRN		__ptop:WORD
+	EXTRN		__vmAllocO:NEAR
+	EXTRN		__mtop:WORD
+	EXTRN		__mcount:WORD
+	EXTRN		__dvtol:NEAR
+	EXTRN		__OSegs:BYTE
+	EXTRN		__mstack:WORD
+	EXTRN		__upref:NEAR
+	EXTRN		__pcount:WORD
+	EXTRN		__acrtused:ABS
+
+;Static	PUBLIC		OP_ADDR			; Located at 1:0000h Type = 1
+;Static	PUBLIC		OP_ADDRX		; Located at 1:003Ah Type = 1
+;Static	PUBLIC		SpaceFreeAll		; Located at 1:0074h Type = 1
+;Static	PUBLIC		SpaceAllocSeg		; Located at 1:0108h Type = 1
+;Static	PUBLIC		SpaceAlloc		; Located at 1:01B2h Type = 1
+	PUBLIC		_ARRAYNEW		; Located at 1:03AEh Type = 1
+	PUBLIC		_BLOCKNEW		; Located at 1:04D8h Type = 1
+	PUBLIC		_BYTESNEW		; Located at 1:058Eh Type = 1
+;Static	PUBLIC		GenExit			; Located at 1:0684h Type = 1
+	PUBLIC		__oCopy			; Located at 1:078Ch Type = 1
+;Static	PUBLIC		ArrayScan		; Located at 1:0A2Eh Type = 1
+;Static	PUBLIC		SegScan			; Located at 1:0BBCh Type = 1
+;Static	PUBLIC		DediScan		; Located at 1:0E00h Type = 1
+;Static	PUBLIC		SurvivorScan		; Located at 1:0EA8h Type = 1
+;Static	PUBLIC		RootScan		; Located at 1:0F68h Type = 1
+;Static	PUBLIC		ExitScan		; Located at 1:10ECh Type = 1
+;Static	PUBLIC		ExitInspect		; Located at 1:14CAh Type = 1
+;Static	PUBLIC		StartScavenge		; Located at 1:166Eh Type = 1
+;Static	PUBLIC		EndScavenge		; Located at 1:17D6h Type = 1
+;Static	PUBLIC		GenScavenge		; Located at 1:19B4h Type = 1
+	PUBLIC		__xcheck		; Located at 1:1AE4h Type = 1
+	PUBLIC		__oScavengeAll		; Located at 1:1AF2h Type = 1
+	PUBLIC		__oEstimate		; Located at 1:1B46h Type = 1
+	PUBLIC		__iarrayat		; Located at 1:1B52h Type = 1
+	PUBLIC		__cAt			; Located at 1:1BD4h Type = 1
+	PUBLIC		__cAtPut		; Located at 1:1CF0h Type = 1
+	PUBLIC		__iarrayput		; Located at 1:1ECEh Type = 1
+	PUBLIC		__iarrayc2		; Located at 1:1EFAh Type = 1
+	PUBLIC		_VARRAY			; Located at 1:1FECh Type = 1
+	PUBLIC		_VARRAYX		; Located at 1:202Eh Type = 1
+	PUBLIC		_VARRAYLEN		; Located at 1:2082h Type = 1
+	PUBLIC		__VDict			; Located at 1:20C4h Type = 1
+	PUBLIC		__VSetDict		; Located at 1:2114h Type = 1
+	PUBLIC		_VSTR			; Located at 1:2180h Type = 1
+	PUBLIC		_VSTRX			; Located at 1:21C2h Type = 1
+	PUBLIC		_VSTR2			; Located at 1:2216h Type = 1
+	PUBLIC		_VSTRLOCK		; Located at 1:22E8h Type = 1
+	PUBLIC		_VSTRUNLOCK		; Located at 1:2352h Type = 1
+	PUBLIC		_VSTRCOLD		; Located at 1:23A6h Type = 1
+	PUBLIC		_BYTESNEW2		; Located at 1:23FEh Type = 1
+	PUBLIC		_OSTRDUP		; Located at 1:241Eh Type = 1
+	PUBLIC		__cAtAt			; Located at 1:2530h Type = 1
+	PUBLIC		__cAtPutStr		; Located at 1:25A4h Type = 1
+;Static	PUBLIC		MakeSub			; Located at 1:261Ch Type = 1
+;Static	PUBLIC		CheckDims		; Located at 1:26ACh Type = 1
+	PUBLIC		__imakea		; Located at 1:2732h Type = 1
+	PUBLIC		__imakela		; Located at 1:2798h Type = 1
+	PUBLIC		ARRAY			; Located at 1:2854h Type = 1
+	PUBLIC		_CSCANCHECK		; Located at 1:28F2h Type = 1
+	PUBLIC		__cCopy			; Located at 1:298Ch Type = 1
+	PUBLIC		__cBecome		; Located at 1:2A0Ah Type = 1
+	PUBLIC		__cResize		; Located at 1:2C2Ah Type = 1
+	PUBLIC		ASIZE			; Located at 1:2E84h Type = 1
+	PUBLIC		__AADD			; Located at 1:2EE8h Type = 1
+	PUBLIC		__xunlock		; Located at 1:2F52h Type = 1
+	PUBLIC		__xxlock		; Located at 1:2FA4h Type = 1
+;Static	PUBLIC		OmReceiver		; Located at 1:2FFCh Type = 1
+;Static	PUBLIC		GenInit			; Located at 1:3092h Type = 1
+	PUBLIC		__om_init		; Located at 1:31C2h Type = 1
+	PUBLIC		__oGen0			; Located at 2:0000h Type = 4
+	PUBLIC		__oGen1			; Located at 2:009Ch Type = 4
+	PUBLIC		__oGen			; Located at 2:0138h Type = 4
+	PUBLIC		__oBounds		; Located at 2:013Ch Type = 4
+	PUBLIC		__opf			; Located at 2:0144h Type = 4
+	PUBLIC		__opx			; Located at 2:0146h Type = 4
+	PUBLIC		__xlock			; Located at 2:0188h Type = 4
+	PUBLIC		__xgrip1		; Located at 2:018Ah Type = 4
+	PUBLIC		__xgrip2		; Located at 2:018Ch Type = 4
+	PUBLIC		__xgrip3		; Located at 2:018Eh Type = 4
+	PUBLIC		__xsegmin		; Located at 2:0190h Type = 4
+	PUBLIC		__xsafe			; Located at 2:0192h Type = 4
+
+struct_0	struc
+s0m_0	dw	30 dup (?)
+struct_0	ends
+
+struct_1	struc
+s1m_0	dw	77 dup (?)
+struct_1	ends
+
+
+OM_TEXT	SEGMENT
+	assume	cs: OM_TEXT
+
+
+OP_ADDR:
+	push	bp
+	mov	bp,sp
+	mov	ax,[bp+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	assume	ds: DGROUP
+	mov	__opx,ax
+	mov	bx,ax
+	test	byte ptr [bx],04h
+	jz	$L1
+	or	byte ptr [bx],01h
+	mov	ax,[bx]
+    or al, 7 ; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	jmp	short $L2
+$L1:	push	ds
+	push	bx
+	call	far ptr __vmPtr
+	add	sp,+004h
+$L2:	add	ax,[bp+004h]
+	pop	bp
+	ret	0004h
+	nop
+OP_ADDRX:
+	push	bp
+	mov	bp,sp
+	mov	ax,[bp+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	mov	__opx,ax
+	mov	bx,ax
+	test	byte ptr [bx],04h
+	jz	$L3
+	or	byte ptr [bx],03h
+	mov	ax,[bx]
+    or al, 7 ; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	jmp	short $L4
+$L3:	push	ds
+	push	bx
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+$L4:	add	ax,[bp+004h]
+	pop	bp
+	ret	0004h
+	nop
+SpaceFreeAll:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	push	di
+	push	si
+	mov	bx,[bp+004h]
+	mov	ax,[bx]
+	mov	[bp-002h],ax
+	cmp	[bx+006h],ax
+	jbe	$L5
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	[bp-00Ah],ax
+	mov	si,ax
+	add	si,offset __OSegs + 00002h
+	mov	di,ax
+	add	di,offset __OSegs
+	mov	ax,[bx+006h]
+	sub	ax,cx
+	mov	[bp-008h],ax
+	add	[bp-002h],ax
+$L7:	cmp	word ptr [si],+000h
+	jz	$L6
+	push	ds
+	push	di
+	call	far ptr __vmFree
+	add	sp,+004h
+$L6:	add	si,+006h
+	add	di,+006h
+	dec	word ptr [bp-008h]
+	jnz	$L7
+$L5:	mov	bx,[bp+004h]
+	mov	si,bx
+	mov	ax,[si]
+	mov	[bx+002h],ax
+	mov	ax,[si+006h]
+	mov	[bx+004h],ax
+	sub	ax,ax
+	mov	[bx+00Eh],ax
+	mov	[bx+00Ch],ax
+	mov	[bx+010h],ax
+	mov	[bx+014h],ax
+	mov	[bx+012h],ax
+	mov	[bx+016h],ax
+	mov	[bx+01Ah],ax
+	mov	[bx+018h],ax
+	mov	[bx+01Ch],ax
+	mov	[bx+020h],ax
+	mov	[bx+01Eh],ax
+	mov	[bx+022h],ax
+	mov	[bx+026h],ax
+	mov	[bx+024h],ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+SpaceAllocSeg:
+	push	bp
+	mov	bp,sp
+	sub	sp,+006h
+	mov	word ptr [bp-002h],0000h
+	mov	bx,[bp+004h]
+	mov	ax,[bx+004h]
+	sub	ax,[bx+002h]
+	cmp	ax,0001h
+	jnbe	$L8
+	jmp	$L9
+$L8:	cmp	word ptr [bp+008h],+000h
+	jz	$L10
+	mov	ax,[bx+004h]
+	dec	ax
+	jmp	short $L11
+$L10:	mov	ax,[bx+002h]
+	inc	ax
+$L11:	mov	[bp-002h],ax
+	push	[bp+006h]
+	push	ax
+	call	far ptr __vmAllocO
+	add	sp,+004h
+	mov	ax,[bp-002h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	mov	__opx,ax
+	mov	bx,ax
+	test	byte ptr [bx],04h
+	jz	$L12
+	or	byte ptr [bx],03h
+	mov	ax,[bx]
+    or al, 7 ; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	mov	es,dx
+	mov	bx,ax
+	jmp	short $L13
+$L12:	push	ds
+	push	__opx
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	bx,ax
+	mov	es,dx
+$L13:	mov	[bp-006h],bx
+	mov	word ptr [bp-004h],es
+	mov	dx,[bp-002h]
+	sub	ax,ax
+	or	al,04h
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+	cmp	word ptr [bp+008h],+000h
+	jz	$L14
+	mov	bx,[bp+004h]
+	mov	ax,dx
+	mov	[bx+004h],ax
+	jmp	short $L9
+	nop
+$L14:	mov	bx,[bp+004h]
+	mov	ax,[bp-002h]
+	mov	[bx+002h],ax
+$L9:	mov	ax,[bp-002h]
+	mov	sp,bp
+	pop	bp
+	ret
+SpaceAlloc:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	di
+	push	si
+	sub	ax,ax
+	mov	[bp-008h],ax
+	mov	[bp-00Ah],ax
+	cmp	[bp+008h],ax
+	jz	$L15
+	mov	bx,[bp+004h]
+	mov	ax,[bx+028h]
+	or	ax,[bx+02Ah]
+	jz	$L15
+	mov	si,bx
+	mov	ax,[si+028h]
+	mov	dx,[si+02Ah]
+	cmp	[bx+026h],dx
+	jl	$L15
+	jg	$L16
+	cmp	[bx+024h],ax
+	jc	$L15
+$L16:	cmp	word ptr __xlock,+000h
+	jnz	$L15
+	jmp	$L17
+$L15:	cmp	word ptr [bp+00Ah],+000h
+	jz	$L18
+	cmp	word ptr [bp+008h],+000h
+	jz	$L19
+	mov	ax,[bp+004h]
+	add	ax,0018h
+	jmp	short $L20
+$L19:	mov	ax,[bp+004h]
+	add	ax,001Eh
+	jmp	short $L20
+$L18:	cmp	word ptr [bp+008h],+000h
+	jz	$L21
+	mov	ax,[bp+004h]
+	add	ax,000Ch
+	jmp	short $L20
+$L21:	mov	ax,[bp+004h]
+	add	ax,0012h
+$L20:	mov	[bp-002h],ax
+	mov	bx,ax
+	mov	ax,[bp+006h]
+	cmp	[bx+004h],ax
+	jc	$L22
+	mov	ax,[bx]
+	mov	dx,[bx+002h]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	add	ax,[bp+006h]
+	mov	[bx],ax
+	mov	ax,[bp+006h]
+	sub	[bx+004h],ax
+	jmp	$L17
+$L22:	mov	ax,[bp+006h]
+	add	ax,0003h
+	mov	cl,0Ah
+	shr	ax,cl
+	inc	ax
+	mov	[bp-006h],ax
+	mov	word ptr [bp-004h],0001h
+	mov	bx,[bp+004h]
+	cmp	[bx+00Ah],ax
+	jbe	$L23
+	mov	word ptr [bp-004h],0000h
+	mov	ax,[bx+008h]
+	sub	ax,[bp-006h]
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,[bp-006h]
+	mov	[bp-006h],ax
+$L23:	push	[bp+008h]
+	push	[bp-006h]
+	push	bx
+	call	SpaceAllocSeg
+	add	sp,+006h
+	mov	dx,ax
+	sub	ax,ax
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	or	dx,ax
+	jnz	$L24
+	jmp	$L17
+$L24:	cmp	[bp+00Ah],ax
+	jz	$L25
+	mov	bx,[bp-008h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs + 00003h],08h
+$L25:	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	add	ax,0004h
+	mov	[bp-00Ah],ax
+	cmp	word ptr [bp-004h],+000h
+	jz	$L26
+	mov	bx,dx
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs + 00003h],04h
+	jmp	short $L17
+$L26:	mov	bx,[bp-002h]
+	mov	ax,[bx+002h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	cmp	word ptr [si+__OSegs + 00002h],+000h
+	jz	$L27
+	add	ax,offset __OSegs
+	mov	__opx,ax
+	mov	bx,ax
+	test	byte ptr [bx],04h
+	jz	$L28
+	or	byte ptr [bx],03h
+	mov	ax,[bx]
+    or al, 7 ; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	jmp	short $L29
+	nop
+$L28:	push	ds
+	push	bx
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+$L29:	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+	les	bx,dword ptr [bp-00Eh]
+	mov	di,[bp-002h]
+	mov	ax,[di]
+	mov	dx,[di+002h]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+$L27:	mov	bx,[bp-002h]
+	mov	ax,[bp+006h]
+	add	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	mov	[bx],ax
+	mov	[bx+002h],dx
+	mov	ax,[bp-006h]
+	mov	cl,0Ah
+	shl	ax,cl
+	sub	ax,[bp+006h]
+	sub	ax,0004h
+	mov	[bx+004h],ax
+$L17:	mov	ax,[bp-00Ah]
+	or	ax,[bp-008h]
+	jz	$L30
+	mov	bx,[bp+004h]
+	mov	ax,[bp+006h]
+	sub	dx,dx
+	add	[bx+024h],ax
+	adc	[bx+026h],dx
+	mov	ax,[bp-008h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	mov	__opx,ax
+	mov	bx,ax
+	test	byte ptr [bx],04h
+	jz	$L31
+	or	byte ptr [bx],03h
+	mov	ax,[bx]
+    or al, 7 ; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	jmp	short $L32
+$L31:	push	ds
+	push	bx
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+$L32:	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+	les	bx,dword ptr [bp-00Eh]
+	mov	ax,[bp+006h]
+	add	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+$L30:	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+_ARRAYNEW:
+	push	bp
+	mov	bp,sp
+
+	sub	sp,+016h
+	push	di
+	push	si
+	mov	ax,[bp+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,0010h
+	mov	[bp-008h],ax
+    mov ax,word ptr $S33
+	cmp	[bp-008h],ax
+	jnbe	$L34
+    mov ax,word ptr $S35
+    mov dx,word ptr $S36
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	ax,[bp-008h]
+    add ax,word ptr $S35
+    mov word ptr $S35,ax
+	mov	ax,[bp-008h]
+    sub word ptr $S33,ax
+	sub	dx,dx
+    add word ptr $S37,ax
+    adc word ptr $S38,dx
+	jmp	short $L39
+	nop
+$L34:	mov	si,[bp-008h]
+$L42:	mov	ax,0001h
+	push	ax
+	push	ax
+	push	si
+	mov	ax,offset DGROUP:$S40
+	push	ax
+	call	SpaceAlloc
+	add	sp,+008h
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	or	ax,dx
+	jnz	$L41
+	push	si
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L41:	mov	ax,[bp-00Ch]
+	or	ax,[bp-00Ah]
+	jz	$L42
+$L39:	cmp	word ptr $S43.s1m_0,+000h
+	jz	$L44
+	push	[bp-008h]
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L44:	push	[bp-00Ah]
+	push	[bp-00Ch]
+	call	OP_ADDRX
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	les	bx,dword ptr [bp-006h]
+	mov	word ptr es:[bx],0FFF8h
+	mov	ax,[bp+006h]
+	mov	es:[bx+004h],ax
+	mov	es:[bx+006h],ax
+	sub	ax,ax
+	mov	es:[bx+00Ah],ax
+	mov	es:[bx+008h],ax
+	mov	bx,__eval
+	mov	word ptr [bx],8000h
+	mov	ax,[bp-00Ch]
+	mov	dx,[bp-00Ah]
+	mov	[bx+006h],ax
+	mov	[bx+008h],dx
+	mov	ax,[bp-006h]
+	mov	dx,es
+	add	ax,0010h
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	mov	word ptr [bp-002h],0000h
+	cmp	word ptr [bp+006h],+000h
+	jz	$L45
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	mov	cx,[bp+006h]
+	add	[bp-002h],cx
+	les	di,dword ptr [bp-014h]
+$L46:	mov	word ptr es:[di],0000h
+	add	di,+00Eh
+	loop	$L46
+$L45:	mov	ax,$S47
+	mov	dx,$S48
+	cmp	[bp-00Ch],ax
+	jnz	$L49
+	cmp	[bp-00Ah],dx
+	jnz	$L49
+	mov	word ptr [bp-002h],0005h
+$L49:	mov	ax,[bp-010h]
+	mov	dx,[bp-00Eh]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+	nop
+_BLOCKNEW:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	push	si
+	mov	word ptr [bp-006h],0024h
+	cmp	word ptr $S33,+024h
+	jc	$L50
+    mov ax,word ptr $S35
+    mov dx,word ptr $S36
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	add	ax,0024h
+    mov word ptr $S35,ax
+	sub	word ptr $S33,+024h
+	add	word ptr $S37,+024h
+	adc	word ptr $S38,+000h
+	jmp	short $L51
+	nop
+$L50:	mov	si,[bp-006h]
+$L53:	mov	ax,0001h
+	push	ax
+	push	ax
+	push	si
+	mov	ax,offset DGROUP:$S40
+	push	ax
+	call	SpaceAlloc
+	add	sp,+008h
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	or	ax,dx
+	jnz	$L52
+	push	si
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L52:	mov	ax,[bp-00Ah]
+	or	ax,[bp-008h]
+	jz	$L53
+$L51:	cmp	word ptr $S43.s1m_0,+000h
+	jz	$L54
+	push	[bp-006h]
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L54:	push	[bp-008h]
+	push	[bp-00Ah]
+	call	OP_ADDRX
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	les	bx,dword ptr [bp-004h]
+	mov	word ptr es:[bx],0FFF4h
+	mov	word ptr es:[bx+016h],0000h
+	mov	bx,__eval
+	mov	word ptr [bx],1000h
+	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	mov	[bx+006h],ax
+	mov	[bx+008h],dx
+	mov	ax,[bp-004h]
+	mov	dx,es
+	pop	si
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+_BYTESNEW:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ch
+	push	di
+	push	si
+	mov	ax,[bp+006h]
+	add	ax,0003h
+	sub	ax,0008h
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,0008h
+	mov	[bp-006h],ax
+    mov ax,word ptr $S33
+	cmp	[bp-006h],ax
+	jnbe	$L55
+    mov ax,word ptr $S35
+    mov dx,word ptr $S36
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	ax,[bp-006h]
+    add ax,word ptr $S35
+    mov word ptr $S35,ax
+	mov	ax,[bp-006h]
+    sub word ptr $S33,ax
+	sub	dx,dx
+    add word ptr $S37,ax
+    adc word ptr $S38,dx
+	jmp	short $L56
+	nop
+$L55:	mov	di,[bp-006h]
+	add	di,+003h
+	mov	cl,0Ah
+	shr	di,cl
+	inc	di
+	mov	si,[bp-006h]
+$L61:   cmp di,word ptr $S57
+	jnc	$L58
+	mov	ax,0001h
+	jmp	short $L59
+	nop
+$L58:	sub	ax,ax
+$L59:	push	ax
+	mov	ax,0001h
+	push	ax
+	push	si
+	mov	ax,offset DGROUP:$S40
+	push	ax
+	call	SpaceAlloc
+	add	sp,+008h
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	or	ax,dx
+	jnz	$L60
+	push	si
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L60:	mov	ax,[bp-00Ah]
+	or	ax,[bp-008h]
+	jz	$L61
+$L56:	cmp	word ptr $S43.s1m_0,+000h
+	jz	$L62
+	push	[bp-006h]
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L62:	push	[bp-008h]
+	push	[bp-00Ah]
+	call	OP_ADDRX
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	les	bx,dword ptr [bp-004h]
+	mov	ax,[bp+006h]
+	inc	ax
+	mov	es:[bx],ax
+	mov	si,[bp+006h]
+	mov	byte ptr es:[bx+si+002h],00h
+	mov	bx,__eval
+	mov	word ptr [bx],0400h
+	mov	ax,si
+	mov	[bx+002h],ax
+	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	mov	[bx+006h],ax
+	mov	[bx+008h],dx
+	mov	ax,[bp-004h]
+	mov	dx,es
+	add	ax,0002h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+GenExit:
+	push	bp
+	mov	bp,sp
+	sub	sp,+012h
+	push	si
+	mov	ax,0001h
+	mov	cl,[bp+008h]
+	shl	ax,cl
+	mov	[bp-00Eh],ax
+	mov	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	jmp	short $L63
+$L64:	les	bx,dword ptr [bp-008h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L63:	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-008h],bx
+	mov	word ptr [bp-006h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L64
+	mov	ax,[bp-00Eh]
+	test	ax,es:[bx]
+	jz	$L65
+	jmp	$L66
+$L65:	or	es:[bx],ax
+	mov	bx,[bp-010h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	bx,[bp+008h]
+	shl	bx,1
+	mov	ax,[bx+__oGen]
+	add	ax,0088h
+	mov	[bp-002h],ax
+	mov	bx,ax
+	mov	si,ax
+	mov	ax,[si]
+	cmp	[bx+006h],ax
+	jnz	$L67
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmSize
+	add	sp,+004h
+	inc	ax
+	mov	[bp-004h],ax
+	cmp	ax,003Ch
+	jnbe	$L68
+	push	ax
+	mov	bx,si
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmRealloc
+	add	sp,+006h
+	or	ax,ax
+	jz	$L69
+	mov	ax,014Eh
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L69:	mov	bx,[bp-002h]
+	mov	ax,[bp-004h]
+	mov	cl,0Ah
+	shl	ax,cl
+	shr	ax,1
+	shr	ax,1
+	mov	[bx+006h],ax
+	jmp	short $L67
+	nop
+$L68:	mov	ax,014Fh
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L67:	mov	bx,[bp-002h]
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmDirtyPtr
+
+	add	sp,+004h
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	si,[bp-002h]
+	mov	bx,[si]
+	inc	word ptr [si]
+	shl	bx,1
+	shl	bx,1
+	les	si,dword ptr [bp-00Ch]
+	mov	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	es:[bx+si],ax
+	mov	es:[bx+si+002h],dx
+$L66:	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+__oCopy:
+	push	bp
+	mov	bp,sp
+	sub	sp,+016h
+	push	si
+	cmp	word ptr [bp+008h],0080h
+	jc	$L70
+	mov	bx,0001h
+	jmp	short $L71
+	nop
+$L70:	sub	bx,bx
+$L71:	shl	bx,1
+	mov	ax,[bx+__oGen]
+	mov	[bp-008h],ax
+	mov	bx,ax
+	cmp	word ptr [bx+009Ah],+000h
+	jz	$L72
+	mov	ax,[bp+008h]
+	cmp	[bx+0098h],ax
+	jnbe	$L73
+	jnz	$L72
+	mov	ax,[bp+006h]
+	cmp	[bx+0096h],ax
+	jbe	$L72
+$L73:	mov	ax,0001h
+	jmp	short $L74
+	nop
+$L72:	sub	ax,ax
+$L74:	mov	[bp-004h],ax
+	or	ax,ax
+	jz	$L75
+	mov	bx,[bp-008h]
+	mov	ax,[bx+0094h]
+	jmp	short $L76
+$L75:	mov	ax,[bp-008h]
+$L76:	add	ax,003Eh
+	mov	[bp-002h],ax
+	mov	bx,[bp+008h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jnz	$L77
+	jmp	$L78
+$L77:	push	[bp-004h]
+	mov	ax,0001h
+	push	ax
+	push	[bp-002h]
+	call	SpaceAllocSeg
+	add	sp,+006h
+	mov	dx,ax
+	sub	ax,ax
+	mov	[bp-016h],ax
+	mov	[bp-014h],dx
+	or	ax,dx
+	jnz	$L79
+	mov	ax,014Bh
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L79:	mov	dx,[bp-014h]
+	mov	ax,[bp+006h]
+	mov	[bp-016h],ax
+	mov	ax,[bp+008h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	mov	bx,[bp-002h]
+	mov	ax,word ptr [si+__OSegs + 00002h]
+	and	ax,007Fh
+	mov	cl,0Ah
+	shl	ax,cl
+	dec	ax
+	mov	[bp-00Eh],ax
+	sub	dx,dx
+	add	[bx+024h],ax
+	adc	[bx+026h],dx
+	mov	ax,[bp-014h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	mov	ax,si
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmXchg
+	add	sp,+008h
+	push	[bp+008h]
+	push	[bp+006h]
+	call	OP_ADDRX
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	jmp	$L80
+$L78:	push	[bp+008h]
+	push	[bp+006h]
+	call	OP_ADDRX
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	les	bx,dword ptr [bp-012h]
+	mov	ax,es:[bx]
+    and al,0F8h
+	cmp	ax,0FFF8h
+	jnz	$L81
+	mov	ax,es:[bx+006h]
+	mov	[bp-006h],ax
+	cmp	es:[bx+004h],ax
+	jnc	$L82
+	sub	ax,es:[bx+004h]
+	shr	ax,1
+	shr	ax,1
+	add	ax,es:[bx+004h]
+	mov	[bp-006h],ax
+$L82:	mov	ax,[bp-006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,0010h
+	jmp	short $L83
+$L81:	mov	ax,es:[bx]
+	and	al,0F4h
+	cmp	ax,0FFF4h
+	jnz	$L84
+	mov	word ptr [bp-00Eh],0024h
+	jmp	short $L85
+	nop
+$L84:	mov	word ptr [bp+00Ah],0000h
+	mov	ax,es:[bx]
+	add	ax,0002h
+	sub	ax,0008h
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,0008h
+$L83:	mov	[bp-00Eh],ax
+$L85:	cmp	word ptr [bp+00Ah],+000h
+	jnz	$L86
+	cmp	word ptr [bp-004h],+000h
+	jz	$L87
+$L86:	mov	ax,0001h
+	jmp	short $L88
+	nop
+$L87:	sub	ax,ax
+$L88:	push	ax
+	push	[bp-004h]
+	push	[bp-00Eh]
+	push	[bp-002h]
+	call	SpaceAlloc
+	add	sp,+008h
+	mov	[bp-016h],ax
+	mov	[bp-014h],dx
+	or	ax,dx
+	jnz	$L89
+	mov	ax,014Ch
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L89:	mov	bx,[bp-014h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	byte ptr [bx+__OSegs],04h
+	jz	$L90
+	mov	bx,[bp+008h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	byte ptr [bx+__OSegs],04h
+	jnz	$L91
+$L90:	mov	ax,[bp-014h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	mov	ax,[bp+008h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmTwo
+	add	sp,+008h
+$L91:	push	[bp+008h]
+	push	[bp+006h]
+	call	OP_ADDRX
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	push	[bp-014h]
+	push	[bp-016h]
+	call	OP_ADDRX
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	push	[bp-00Eh]
+	push	[bp-010h]
+	push	[bp-012h]
+	push	dx
+	push	ax
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx]
+    and al,0F8h
+	cmp	ax,0FFF8h
+	jnz	$L80
+	mov	ax,[bp-006h]
+	mov	es:[bx+006h],ax
+$L80:	les	bx,dword ptr [bp-012h]
+	mov	word ptr es:[bx],0FFF0h
+	mov	ax,[bp-016h]
+	mov	dx,[bp-014h]
+	mov	es:[bx+004h],ax
+	mov	es:[bx+006h],dx
+	cmp	word ptr [bp-004h],+000h
+	jz	$L92
+	mov	bx,[bp-008h]
+	mov	ax,[bp-00Eh]
+	cmp	[bx+009Ah],ax
+	jbe	$L93
+	sub	[bx+009Ah],ax
+	jmp	short $L94
+	nop
+$L93:	mov	word ptr [bx+009Ah],0000h
+$L94:	cmp	word ptr [bp+00Ah],+000h
+	jz	$L92
+	cmp	word ptr [bp+008h],0080h
+	jc	$L95
+	mov	ax,0001h
+	jmp	short $L96
+$L95:	sub	ax,ax
+$L96:	push	ax
+	push	[bp-014h]
+	push	[bp-016h]
+	call	GenExit
+	add	sp,+006h
+$L92:	mov	ax,[bp-016h]
+	mov	dx,[bp-014h]
+	pop	si
+	mov	sp,bp
+	pop	bp
+	retf
+ArrayScan:
+	push	bp
+	mov	bp,sp
+	sub	sp,+018h
+	push	di
+	push	si
+	mov	word ptr [bp-008h],0000h
+	mov	word ptr [bp-002h],0000h
+	cmp	word ptr [bp+008h],+000h
+	jnz	$L97
+	jmp	$L98
+$L97:	mov	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	add	ax,0006h
+	mov	[bp-018h],ax
+	mov	[bp-016h],dx
+	mov	di,[bp-008h]
+	mov	si,[bp+00Ah]
+$L115:	cmp	word ptr [si+008h],+000h
+	jz	$L99
+	mov	ax,[si+008h]
+	cmp	[si+006h],ax
+	jc	$L99
+	jmp	$L100
+$L99:	les	bx,dword ptr [bp-010h]
+	test	word ptr es:[bx],9400h
+	jnz	$L101
+	jmp	$L102
+$L101:	mov	ax,es:[bx+006h]
+	mov	dx,es:[bx+008h]
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	cmp	dx,0080h
+	jc	$L103
+	mov	bx,0001h
+	jmp	short $L104
+	nop
+$L103:	sub	bx,bx
+$L104:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-00Ah]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jc	$L105
+	jmp	$L106
+$L105:	cmp	word ptr [bp-00Ah],0080h
+	jc	$L107
+	mov	bx,0001h
+	jmp	short $L108
+	nop
+$L107:	sub	bx,bx
+$L108:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-00Ah]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L109
+	mov	bx,[bp-00Ah]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jnz	$L109
+	push	ax
+	push	[bp-00Ch]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-006h],bx
+	mov	word ptr [bp-004h],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L109
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-00Ch],ax
+
+	mov	[bp-00Ah],dx
+	jmp	short $L105
+$L109:	cmp	word ptr [bp-00Ah],0080h
+	jc	$L110
+	mov	bx,0001h
+	jmp	short $L111
+$L110:	sub	bx,bx
+$L111:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-00Ah]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L112
+	les	bx,dword ptr [bp-014h]
+	mov	ax,es:[bx]
+	and	ax,9000h
+	cmp	ax,0001h
+	sbb	cx,cx
+	inc	cx
+	push	cx
+	push	[bp-00Ah]
+	push	[bp-00Ch]
+	push	cs
+	call	__oCopy
+	add	sp,+006h
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	or	di,4000h
+$L112:	les	bx,dword ptr [bp-018h]
+	mov	ax,[bp-00Ch]
+	mov	dx,[bp-00Ah]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+	or	di,8000h
+	inc	word ptr [si+006h]
+$L106:	cmp	word ptr [bp-00Ah],0080h
+	jc	$L113
+	mov	ax,0001h
+	jmp	short $L114
+$L113:	sub	ax,ax
+$L114:	inc	ax
+	or	di,ax
+$L102:	add	word ptr [bp-010h],+00Eh
+	add	word ptr [bp-014h],+00Eh
+	add	word ptr [bp-018h],+00Eh
+	inc	word ptr [bp-002h]
+	inc	word ptr [si+006h]
+	mov	ax,[bp+008h]
+	cmp	[bp-002h],ax
+	jnc	$L100
+	jmp	$L115
+$L100:	mov	[bp-008h],di
+$L98:	mov	bx,[bp+00Ah]
+	mov	ax,[bp-002h]
+	add	[bx+004h],ax
+	mov	ax,[bp-008h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+SegScan:
+	push	bp
+	mov	bp,sp
+	sub	sp,+012h
+	push	di
+	push	si
+	mov	bx,[bp+004h]
+	mov	bx,[bx+002h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0800h
+	jnz	$L116
+	mov	ax,0001h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+$L116:	mov	ax,$S117
+	dec	ax
+	mov	[bp-00Ah],ax
+	mov	word ptr [bp-008h],0000h
+	mov	bx,[bp+004h]
+	mov	si,[bx+002h]
+	mov	ax,si
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmLock
+	add	sp,+004h
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	les	bx,dword ptr [bp-010h]
+	cmp	es:[bx+002h],si
+	jz	$L118
+	mov	ax,es:[bx]
+	mov	cx,si
+	mov	bx,cx
+	sub	cx,cx
+	mov	dx,bx
+	mov	bx,[bp-010h]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+$L118:	mov	bx,[bp+004h]
+	mov	ax,[bx]
+	add	ax,[bp-010h]
+	mov	dx,es
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	mov	word ptr [bp-00Ch],0000h
+	mov	si,[bp-010h]
+	mov	ax,es:[si]
+	mov	dx,es:[si+002h]
+	cmp	[bx],ax
+	jnz	$L119
+	cmp	[bx+002h],dx
+	jnz	$L119
+	jmp	$L120
+$L119:	mov	ax,[bp-00Ah]
+	not	ax
+	mov	[bp-012h],ax
+	mov	di,[bp-008h]
+	mov	si,[bp-00Ch]
+$L132:	cmp	word ptr [bx+008h],+000h
+	jz	$L121
+	mov	ax,[bx+008h]
+	cmp	[bx+006h],ax
+	jc	$L121
+	jmp	$L122
+$L121:	les	bx,dword ptr [bp-006h]
+	mov	ax,es:[bx]
+    and al,0F8h
+	cmp	ax,0FFF8h
+	jnz	$L123
+	mov	ax,es:[bx+004h]
+	mov	bx,[bp+004h]
+	cmp	[bx+004h],ax
+	jnc	$L124
+	push	bx
+	mov	bx,[bp-006h]
+	mov	ax,es:[bx+004h]
+	mov	bx,[bp+004h]
+	sub	ax,[bx+004h]
+	push	ax
+	mov	ax,[bx+004h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,[bp-006h]
+	mov	dx,es
+	add	ax,0010h
+	push	dx
+	push	ax
+	call	ArrayScan
+	add	sp,+008h
+	or	di,ax
+	jmp	short $L125
+$L124:	les	bx,dword ptr [bp-006h]
+	mov	ax,es:[bx+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	add	si,+010h
+	jmp	short $L125
+$L123:	mov	ax,es:[bx]
+	and	al,0F4h
+	cmp	ax,0FFF4h
+	jnz	$L126
+	push	[bp+004h]
+	mov	ax,0001h
+	push	ax
+	mov	ax,bx
+	mov	dx,es
+	add	ax,0016h
+	push	dx
+	push	ax
+	call	ArrayScan
+	add	sp,+008h
+	or	di,ax
+	mov	si,0024h
+	jmp	short $L125
+	nop
+$L126:	les	bx,dword ptr [bp-006h]
+	cmp	word ptr es:[bx],-010h
+	jnz	$L127
+	mov	si,es:[bx+002h]
+	jmp	short $L125
+	nop
+$L127:	mov	si,es:[bx]
+	add	si,+002h
+$L125:	or	si,si
+	jz	$L128
+	test	di,[bp-00Ah]
+	jz	$L129
+	les	bx,dword ptr [bp-006h]
+	test	byte ptr es:[bx],01h
+	jnz	$L130
+	sub	ax,ax
+	push	ax
+	mov	bx,[bp+004h]
+	push	[bx+002h]
+	push	[bx]
+	call	GenExit
+	add	sp,+006h
+$L130:	and	di,[bp-012h]
+$L129:	mov	bx,[bp+004h]
+	mov	word ptr [bx+004h],0000h
+	add	[bx],si
+	mov	ax,si
+	add	ax,[bp-006h]
+	mov	dx,[bp-004h]
+	mov	[bp-006h],ax
+	sub	si,si
+$L128:	les	bx,dword ptr [bp-010h]
+	mov	ax,es:[bx]
+	mov	dx,es:[bx+002h]
+	mov	bx,[bp+004h]
+	cmp	[bx],ax
+	jz	$L131
+	jmp	$L132
+$L131:	cmp	[bx+002h],dx
+	jz	$L122
+	jmp	$L132
+$L122:	mov	[bp-008h],di
+	mov	[bp-00Ch],si
+$L120:	les	si,dword ptr [bp-010h]
+	mov	ax,es:[si]
+	mov	dx,es:[si+002h]
+	cmp	[bx],ax
+	jnz	$L133
+	cmp	[bx+002h],dx
+	jnz	$L133
+	mov	ax,0001h
+	jmp	short $L134
+	nop
+$L133:	sub	ax,ax
+$L134:	mov	[bp-002h],ax
+	or	ax,ax
+	jnz	$L135
+	mov	ax,[bp-00Ah]
+	test	ax,[bp-008h]
+	jz	$L135
+	les	bx,dword ptr [bp-006h]
+	test	byte ptr es:[bx],01h
+	jnz	$L135
+	sub	ax,ax
+	push	ax
+	mov	bx,[bp+004h]
+	push	[bx+002h]
+	push	[bx]
+	call	GenExit
+	add	sp,+006h
+$L135:	test	word ptr [bp-008h],8000h
+	jz	$L136
+	mov	bx,[bp+004h]
+	mov	bx,[bx+002h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+$L136:	mov	bx,[bp+004h]
+	mov	ax,[bx+002h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmUnlock
+	add	sp,+004h
+	mov	ax,[bp-002h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+DediScan:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	si
+	mov	ax,$S137
+	add	ax,0074h
+	mov	[bp-002h],ax
+	mov	bx,ax
+	mov	ax,[bp+004h]
+	mov	[bx+008h],ax
+	mov	word ptr [bx+006h],0000h
+	mov	si,$S137
+	mov	ax,[si+040h]
+	cmp	[bx+002h],ax
+	jnbe	$L138
+	mov	ax,bx
+	mov	dx,ds
+	add	ax,0002h
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+$L142:	mov	bx,[bp-002h]
+	cmp	word ptr [bx+008h],+000h
+	jz	$L139
+	mov	si,bx
+	mov	ax,[si+008h]
+	cmp	[bx+006h],ax
+	jnc	$L138
+$L139:	les	bx,dword ptr [bp-00Eh]
+	mov	bx,es:[bx]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jz	$L140
+	push	[bp-002h]
+	call	SegScan
+	add	sp,+002h
+	or	ax,ax
+	jz	$L141
+$L140:	mov	bx,[bp-002h]
+	les	si,dword ptr [bp-00Ah]
+	mov	ax,es:[si]
+	inc	ax
+	mov	dx,ax
+	sub	ax,ax
+	or	al,04h
+	mov	[bx],ax
+	mov	[bx+002h],dx
+$L141:	les	bx,dword ptr [bp-006h]
+	mov	si,$S137
+	mov	ax,[si+040h]
+	cmp	es:[bx],ax
+	jbe	$L142
+$L138:	mov	bx,[bp-002h]
+	mov	ax,[bx+006h]
+	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+SurvivorScan:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	push	si
+	mov	ax,$S137
+	add	ax,006Ah
+	mov	[bp-002h],ax
+	mov	bx,ax
+	mov	ax,[bp+004h]
+	mov	[bx+008h],ax
+	mov	word ptr [bx+006h],0000h
+
+	mov	si,$S137
+	mov	ax,[si+05Ch]
+	mov	dx,[si+05Eh]
+	cmp	[bx],ax
+	jnz	$L143
+	cmp	[bx+002h],dx
+	jnz	$L143
+	jmp	$L144
+$L143:	mov	ax,bx
+	mov	dx,ds
+	add	ax,0002h
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+$L149:	cmp	word ptr [bx+008h],+000h
+	jz	$L145
+	mov	si,bx
+	mov	ax,[si+008h]
+	cmp	[bx+006h],ax
+	jnc	$L144
+$L145:	les	bx,dword ptr [bp-00Ah]
+	mov	bx,es:[bx]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jnz	$L146
+	push	[bp-002h]
+	call	SegScan
+	add	sp,+002h
+	or	ax,ax
+	jz	$L147
+$L146:	mov	bx,[bp-002h]
+	mov	si,$S137
+	mov	ax,[si+05Ch]
+	mov	dx,[si+05Eh]
+	cmp	[bx],ax
+	jnz	$L148
+	cmp	[bx+002h],dx
+	jz	$L147
+$L148:	les	si,dword ptr [bp-006h]
+	mov	ax,es:[si]
+	inc	ax
+	mov	dx,ax
+	sub	ax,ax
+	or	al,04h
+	mov	[bx],ax
+	mov	[bx+002h],dx
+$L147:	mov	bx,[bp-002h]
+	mov	si,$S137
+	mov	ax,[si+05Ch]
+	mov	dx,[si+05Eh]
+	cmp	[bx],ax
+	jnz	$L149
+	cmp	[bx+002h],dx
+	jnz	$L149
+$L144:	mov	ax,[bx+006h]
+	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+RootScan:
+	push	bp
+	mov	bp,sp
+	sub	sp,+018h
+	push	di
+	push	si
+	mov	ax,$S137
+	add	ax,007Eh
+	mov	[bp-002h],ax
+	mov	bx,ax
+	mov	ax,[bp+004h]
+	mov	[bx+008h],ax
+	mov	word ptr [bx+006h],0000h
+	mov	ax,[bx]
+	or	ax,[bx+002h]
+	jnz	$L150
+	mov	ax,0001h
+	jmp	short $L151
+$L150:	sub	ax,ax
+$L151:	mov	[bp-004h],ax
+	mov	word ptr [bp-006h],0000h
+	cmp	word ptr [bx+002h],+004h
+	jc	$L152
+	jmp	$L153
+$L152:	mov	ax,bx
+	mov	dx,ds
+	add	ax,0002h
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	mov	[bp-018h],ax
+	mov	[bp-016h],dx
+	mov	di,[bp-006h]
+	mov	si,[bp-008h]
+$L165:	mov	bx,[bp-002h]
+	cmp	word ptr [bx+008h],+000h
+	jz	$L154
+	mov	ax,[bp+004h]
+	cmp	[bx+006h],ax
+	jc	$L154
+	jmp	$L155
+$L154:	les	bx,dword ptr [bp-018h]
+	mov	ax,es:[bx]
+	or	ax,ax
+	jz	$L156
+	cmp	ax,0001h
+	jz	$L157
+	cmp	ax,0002h
+	jz	$L158
+	cmp	ax,0003h
+	jnz	$L159
+	jmp	$L160
+$L159:	jmp	short $L161
+	nop
+	nop
+$L156:	mov	ax,__ptop
+	add	ax,__mcount
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,__mstack
+	mov	dx,__mstack + 00002h
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	ax,__ptop
+	neg	ax
+$L164:	mov	si,ax
+$L161:	mov	bx,[bp-002h]
+	cmp	[bx+004h],si
+	jnc	$L162
+	push	bx
+	mov	ax,si
+	sub	ax,[bx+004h]
+	push	ax
+	mov	ax,[bx+004h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,[bp-00Ch]
+	mov	dx,[bp-00Ah]
+	push	dx
+	push	ax
+	call	ArrayScan
+	add	sp,+008h
+	or	di,ax
+	jmp	short $L163
+$L157:	mov	ax,__estat
+	mov	[bp-00Ch],ax
+	mov	word ptr [bp-00Ah],ds
+	mov	ax,__eextent
+	sub	ax,__estat
+	cwd
+	mov	cx,000Eh
+	idiv	cx
+	jmp	short $L164
+$L158:	mov	ax,__eval
+	mov	[bp-00Ch],ax
+	mov	word ptr [bp-00Ah],ds
+	mov	ax,__tos
+	sub	ax,__eval
+	cwd
+	mov	cx,000Eh
+	idiv	cx
+	inc	ax
+	jmp	short $L164
+	nop
+$L160:	mov	ax,__mstack
+	mov	dx,__mstack + 00002h
+	add	ax,000Eh
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	si,__mtop
+	jmp	short $L161
+$L162:	les	bx,dword ptr [bp-014h]
+	mov	ax,es:[bx]
+	inc	ax
+	mov	dx,ax
+	sub	ax,ax
+	or	al,04h
+	mov	bx,[bp-002h]
+	mov	[bx],ax
+	mov	[bx+002h],dx
+	mov	word ptr [bx+004h],0000h
+$L163:	les	bx,dword ptr [bp-010h]
+	cmp	word ptr es:[bx],+004h
+	jnc	$L155
+	jmp	$L165
+$L155:	mov	[bp-006h],di
+	mov	[bp-008h],si
+$L153:	mov	bx,[bp-002h]
+	cmp	word ptr [bx+002h],+004h
+	jnz	$L166
+	cmp	word ptr [bp-004h],+000h
+	jz	$L166
+	test	word ptr [bp-006h],4000h
+	jnz	$L166
+	mov	word ptr [bx],0000h
+	mov	word ptr [bx+002h],0005h
+$L166:	mov	ax,[bx+006h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+ExitScan:
+	push	bp
+	mov	bp,sp
+	sub	sp,+030h
+	push	si
+	mov	ax,$S137
+	add	ax,0088h
+	mov	[bp-01Ch],ax
+	mov	bx,ax
+	mov	si,ax
+	mov	ax,[si]
+	cmp	[bx+004h],ax
+	jnz	$L167
+	sub	ax,ax
+	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+$L167:	mov	word ptr [bp-00Ch],0000h
+	mov	word ptr [bp-00Eh],0000h
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmPtr
+	add	sp,+004h
+	mov	[bp-028h],ax
+	mov	[bp-026h],dx
+$L172:	mov	bx,[bp-01Ch]
+	mov	si,bx
+	mov	ax,[si]
+	cmp	[bx+004h],ax
+	jc	$L168
+	jmp	$L169
+$L168:	cmp	word ptr [bp+004h],+000h
+	jz	$L170
+	mov	ax,[bp+004h]
+	cmp	[bp-00Eh],ax
+	jc	$L170
+	jmp	$L169
+$L170:	mov	bx,[bx+004h]
+	shl	bx,1
+	shl	bx,1
+	les	si,dword ptr [bp-028h]
+	mov	ax,es:[bx+si]
+	mov	dx,es:[bx+si+002h]
+	mov	[bp-02Eh],ax
+	mov	[bp-02Ch],dx
+	or	ax,dx
+	jnz	$L171
+$L211:	mov	bx,[bp-01Ch]
+	inc	word ptr [bx+004h]
+	jmp	short $L172
+	nop
+$L171:	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	mov	[bp-024h],ax
+	mov	[bp-022h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	les	bx,dword ptr [bp-020h]
+	cmp	word ptr es:[bx],-010h
+	jnz	$L173
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+$L177:	cmp	word ptr [bp-02Ch],0080h
+	jc	$L174
+	mov	bx,0001h
+	jmp	short $L175
+$L174:	sub	bx,bx
+$L175:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-02Ch]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L176
+	les	bx,dword ptr [bp-020h]
+	cmp	word ptr es:[bx],-010h
+	jnz	$L176
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-02Eh],ax
+	mov	[bp-02Ch],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	jmp	short $L177
+$L173:	sub	ax,ax
+	mov	[bp-002h],ax
+	mov	[bp-004h],ax
+$L176:	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	les	bx,dword ptr [bp-020h]
+	cmp	word ptr es:[bx],-010h
+	jnz	$L178
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-01Ah],ax
+	mov	[bp-018h],dx
+	jmp	short $L179
+	nop
+$L181:	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-02Eh],ax
+	mov	[bp-02Ch],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+$L179:	les	bx,dword ptr [bp-020h]
+	cmp	word ptr es:[bx],-010h
+	jnz	$L180
+	jmp	short $L181
+$L178:	sub	ax,ax
+	mov	[bp-018h],ax
+	mov	[bp-01Ah],ax
+$L180:	mov	ax,es:[bx]
+    and al,0F8h
+	cmp	ax,0FFF8h
+	jnz	$L182
+	mov	ax,es:[bx+004h]
+	mov	[bp-030h],ax
+	mov	word ptr [bp-016h],0010h
+$L185:	cmp	word ptr [bp-02Ch],0080h
+	jc	$L183
+	mov	ax,0001h
+	jmp	short $L184
+$L182:	les	bx,dword ptr [bp-020h]
+	mov	ax,es:[bx]
+	and	al,0F4h
+	cmp	ax,0FFF4h
+	jnz	$L185
+	mov	word ptr [bp-030h],0001h
+	mov	word ptr [bp-016h],0016h
+
+	jmp	short $L185
+	nop
+$L183:	sub	ax,ax
+$L184:	cmp	ax,$S186
+	jnz	$L187
+	cmp	word ptr [bp-02Ch],0080h
+	jc	$L188
+	mov	bx,0001h
+	jmp	short $L189
+$L188:	sub	bx,bx
+$L189:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-02Ch]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L187
+	mov	ax,0001h
+	push	ax
+	push	[bp-02Ch]
+	push	[bp-02Eh]
+	push	cs
+	call	__oCopy
+	add	sp,+006h
+	mov	[bp-02Eh],ax
+	mov	[bp-02Ch],dx
+	mov	ax,[bp-01Ah]
+	or	ax,[bp-018h]
+	jnz	$L187
+	mov	ax,[bp-02Eh]
+	mov	[bp-01Ah],ax
+	mov	[bp-018h],dx
+$L187:	cmp	word ptr [bp-02Ch],0080h
+	jc	$L190
+	mov	ax,0001h
+	jmp	short $L191
+$L190:	sub	ax,ax
+$L191:	cmp	ax,$S186
+	jnz	$L192
+	mov	word ptr [bp-00Ah],0001h
+	jmp	$L193
+$L192:	mov	ax,[bp-02Ch]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmLock
+	add	sp,+004h
+	add	ax,[bp-02Eh]
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	mov	word ptr [bp-010h],0000h
+	lea	ax,[bp-014h]
+	push	ax
+	push	[bp-030h]
+	mov	ax,[bp-016h]
+	add	ax,[bp-020h]
+	push	dx
+	push	ax
+	call	ArrayScan
+	add	sp,+008h
+	mov	[bp-02Ah],ax
+	and	ax,$S117
+	mov	[bp-00Ah],ax
+	or	ax,ax
+	jz	$L194
+	test	word ptr [bp-02Ah],8000h
+	jz	$L195
+$L194:	mov	bx,[bp-02Ch]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+$L195:	cmp	word ptr [bp-00Ah],+000h
+	jnz	$L196
+	les	bx,dword ptr [bp-020h]
+	mov	si,$S137
+	mov	ax,[si]
+	not	ax
+	and	es:[bx],ax
+$L196:	mov	ax,[bp-02Ch]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmUnlock
+	add	sp,+004h
+$L193:	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	cmp	[bp-008h],ax
+	jnz	$L197
+	cmp	[bp-006h],dx
+	jz	$L198
+$L197:	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	cmp	[bp-01Ah],ax
+	jnz	$L199
+	cmp	[bp-018h],dx
+	jz	$L198
+$L199:	push	[bp-006h]
+	push	[bp-008h]
+	call	OP_ADDRX
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	les	bx,dword ptr [bp-020h]
+	mov	word ptr es:[bx],0FFF0h
+	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	mov	es:[bx+004h],ax
+	mov	es:[bx+006h],dx
+$L198:	cmp	word ptr [bp-006h],0080h
+	jc	$L200
+	mov	bx,0001h
+	jmp	short $L201
+	nop
+$L200:	sub	bx,bx
+$L201:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-006h]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L202
+	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+$L202:	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	cmp	[bp-024h],ax
+	jnz	$L203
+	cmp	[bp-022h],dx
+	jz	$L204
+$L203:	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	cmp	[bp-004h],ax
+	jnz	$L205
+	cmp	[bp-002h],dx
+	jz	$L204
+$L205:	push	[bp-022h]
+	push	[bp-024h]
+	call	OP_ADDRX
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	les	bx,dword ptr [bp-020h]
+	mov	word ptr es:[bx],0FFF0h
+	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	mov	es:[bx+004h],ax
+	mov	es:[bx+006h],dx
+$L204:	cmp	word ptr [bp-00Ah],+000h
+	jz	$L206
+	cmp	word ptr [bp-006h],0080h
+	jc	$L207
+	mov	ax,0001h
+	jmp	short $L208
+	nop
+$L207:	sub	ax,ax
+$L208:	cmp	ax,$S186
+	jnz	$L209
+	mov	ax,[bp-024h]
+	mov	dx,[bp-022h]
+	jmp	short $L210
+$L209:	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+$L210:	mov	[bp-02Eh],ax
+	mov	[bp-02Ch],dx
+	mov	bx,[bp-01Ch]
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	[bp-028h],ax
+	mov	[bp-026h],dx
+	mov	si,[bp-01Ch]
+	mov	bx,[si+002h]
+	inc	word ptr [si+002h]
+	shl	bx,1
+	shl	bx,1
+	les	si,dword ptr [bp-028h]
+	mov	ax,[bp-02Eh]
+	mov	dx,[bp-02Ch]
+	mov	es:[bx+si],ax
+	mov	es:[bx+si+002h],dx
+	jmp	$L211
+	nop
+$L206:	mov	bx,[bp-01Ch]
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	[bp-028h],ax
+	mov	[bp-026h],dx
+	jmp	$L211
+$L169:	mov	bx,[bp-01Ch]
+	mov	si,bx
+	mov	ax,[si]
+	cmp	[bx+004h],ax
+	jnz	$L212
+	mov	ax,[si+002h]
+	mov	[bx],ax
+	mov	[bx+004h],ax
+$L212:	mov	ax,[bp-00Eh]
+	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+ExitInspect:
+	push	bp
+	mov	bp,sp
+	sub	sp,+022h
+	push	di
+	push	si
+	mov	ax,[bp+004h]
+	add	ax,0088h
+	mov	[bp-004h],ax
+	mov	bx,ax
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmLock
+	add	sp,+004h
+	mov	bx,[bp-004h]
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	word ptr [bp-002h],0000h
+	mov	bx,[bp-004h]
+	cmp	word ptr [bx],+000h
+	jnz	$L213
+	jmp	$L214
+$L213:	mov	ax,[bx]
+	mov	[bp-012h],ax
+	mov	bx,[bp+004h]
+	mov	ax,[bx]
+	not	ax
+	mov	di,ax
+	mov	ax,[bp-00Ch]
+	mov	[bp-018h],ax
+	mov	[bp-016h],dx
+	mov	[bp-01Ch],ax
+	mov	[bp-01Ah],dx
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	mov	si,[bp-012h]
+	add	[bp-002h],si
+$L229:	les	bx,dword ptr [bp-018h]
+	mov	ax,es:[bx]
+	mov	dx,es:[bx+002h]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	cmp	dx,0080h
+	jc	$L215
+	mov	ax,0001h
+	jmp	short $L216
+$L215:	sub	ax,ax
+$L216:	cmp	ax,$S186
+	jz	$L217
+	jmp	$L218
+$L217:	cmp	word ptr [bp-00Eh],0080h
+	jc	$L219
+	mov	bx,0001h
+	jmp	short $L220
+	nop
+$L219:	sub	bx,bx
+$L220:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-00Eh]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L221
+	push	[bp-00Eh]
+	push	[bp-010h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-008h],bx
+	mov	word ptr [bp-006h],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L221
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	jmp	short $L217
+	nop
+$L221:	cmp	word ptr [bp-00Eh],0080h
+	jc	$L222
+	mov	ax,0001h
+	jmp	short $L223
+$L222:	sub	ax,ax
+$L223:	cmp	ax,$S186
+	jnz	$L224
+	cmp	word ptr [bp-00Eh],0080h
+	jc	$L225
+	mov	bx,0001h
+	jmp	short $L226
+$L225:	sub	bx,bx
+$L226:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-00Eh]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jc	$L224
+	les	bx,dword ptr [bp-01Ch]
+	mov	ax,[bp-010h]
+	mov	dx,[bp-00Eh]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+	jmp	short $L218
+$L224:	les	bx,dword ptr [bp-020h]
+	sub	ax,ax
+	mov	es:[bx+002h],ax
+	mov	es:[bx],ax
+	jmp	short $L227
+$L228:	les	bx,dword ptr [bp-008h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+$L227:	push	[bp-00Eh]
+	push	[bp-010h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-008h],bx
+	mov	word ptr [bp-006h],es
+
+	cmp	word ptr es:[bx],-010h
+	jz	$L228
+	mov	bx,[bp-00Eh]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	bx,[bp-008h]
+	and	es:[bx],di
+$L218:	add	word ptr [bp-018h],+004h
+	add	word ptr [bp-01Ch],+004h
+	add	word ptr [bp-020h],+004h
+	dec	si
+	jz	$L214
+	jmp	$L229
+$L214:	mov	bx,[bp-004h]
+	push	[bx+00Ah]
+	push	[bx+008h]
+	call	far ptr __vmUnlock
+	add	sp,+004h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+StartScavenge:
+	push	bp
+	mov	bp,sp
+	sub	sp,+030h
+	push	di
+	push	si
+	cmp	word ptr $S230,+000h
+	jz	$L231
+	cmp	word ptr [bp+006h],+000h
+	jz	$L232
+	mov	ax,0640h
+	jmp	short $L233
+$L232:	mov	ax,0320h
+$L233:	push	ax
+	call	far ptr __squ
+	add	sp,+002h
+$L231:	mov	bx,[bp+004h]
+	mov	ax,[bx+0094h]
+	mov	[bp-030h],ax
+	or	ax,ax
+	jz	$L234
+	mov	bx,ax
+	mov	ax,[bx+044h]
+	sub	ax,[bx+03Eh]
+	shr	ax,1
+	mov	cx,[bx+042h]
+	sub	cx,[bx+040h]
+	cmp	ax,cx
+	jbe	$L235
+	mov	ax,0001h
+	jmp	short $L236
+	nop
+$L235:	sub	ax,ax
+$L236:	mov	[bp-02Eh],ax
+	cmp	word ptr [bx+004h],+000h
+	jz	$L234
+	or	ax,ax
+	jz	$L237
+	cmp	word ptr [bx+046h],+020h
+	jnc	$L237
+	shl	word ptr [bx+01Ah],1
+	shl	word ptr [bx+01Ch],1
+	shl	word ptr [bx+046h],1
+	shl	word ptr [bx+048h],1
+$L237:	mov	ax,0001h
+	push	ax
+	mov	ax,[bp+006h]
+	inc	ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L234:	mov	bx,[bp+004h]
+	mov	word ptr [bx+004h],0000h
+	cmp	word ptr [bp+006h],+001h
+	sbb	ax,ax
+	neg	ax
+	mov	[bx+006h],ax
+	mov	word ptr [bx+002h],0001h
+	push	si
+	lea	di,[bp-02Ch]
+	lea	si,[bx+012h]
+	push	ss
+	pop	es
+	mov	cx,0016h
+	repnz	movsw
+	pop	si
+	mov	di,bx
+	push	si
+	lea	si,[di+03Eh]
+	lea	di,[bx+012h]
+	push	ds
+	pop	es
+	mov	cx,0016h
+	repnz	movsw
+	pop	si
+	push	si
+	lea	di,[bx+03Eh]
+	lea	si,[bp-02Ch]
+	mov	cx,0016h
+	repnz	movsw
+	pop	si
+	mov	si,[bp+006h]
+	shl	si,1
+	mov	ax,[bx+012h]
+	mov	[si+__oBounds],ax
+	mov	ax,[bx+018h]
+	sub	ax,[bx+012h]
+	mov	[si+$S238],ax
+	mov	di,bx
+	mov	dx,[di+03Eh]
+	sub	ax,ax
+	or	al,04h
+	mov	[bx+05Ch],ax
+	mov	[bx+05Eh],dx
+	mov	ax,[di+05Ch]
+	mov	dx,[di+05Eh]
+	mov	[bx+06Ah],ax
+	mov	[bx+06Ch],dx
+	mov	word ptr [bx+06Eh],0000h
+	mov	[bx+074h],ax
+	mov	[bx+076h],dx
+	mov	word ptr [bx+078h],0000h
+	sub	ax,ax
+	mov	[bx+0080h],ax
+	mov	[bx+07Eh],ax
+	mov	[bx+0082h],ax
+	mov	[bx+008Ch],ax
+	mov	[bx+008Ah],ax
+	cmp	[bp-030h],ax
+	jz	$L239
+	mov	dx,[di+014h]
+	mov	[bx+0096h],ax
+	mov	[bx+0098h],dx
+	mov	ax,[bx+014h]
+	sub	ax,[bx+012h]
+	mov	cx,[bx+01Ah]
+	dec	cx
+	mul	cx
+	sub	ax,003Fh
+	sbb	cx,cx
+	and	ax,cx
+	add	ax,003Fh
+	mov	cl,0Ah
+	shl	ax,cl
+	mov	[bx+009Ah],ax
+	cmp	word ptr [bp-02Eh],+000h
+	jz	$L240
+	shr	word ptr [bx+009Ah],1
+$L240:	mov	bx,[bp-030h]
+	mov	si,bx
+	mov	ax,[si+062h]
+	mov	dx,[si+064h]
+	mov	[bx+008h],ax
+	mov	[bx+00Ah],dx
+$L239:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+EndScavenge:
+	push	bp
+	mov	bp,sp
+	sub	sp,+014h
+	push	di
+	push	si
+	cmp	word ptr $S230,+000h
+	jz	$L241
+	cmp	word ptr [bp+006h],+000h
+	jz	$L242
+	mov	ax,04B0h
+	jmp	short $L243
+$L242:	mov	ax,0190h
+$L243:	push	ax
+	call	far ptr __squ
+	add	sp,+002h
+$L241:	mov	bx,[bp+004h]
+	mov	si,bx
+	mov	ax,[si+008Ah]
+	mov	[bx+0088h],ax
+	mov	word ptr [bp-006h],0000h
+	cmp	word ptr [bp+006h],+000h
+	jz	$L244
+	mov	si,offset DGROUP:__oGen
+	mov	di,[bp+006h]
+	add	[bp-006h],di
+$L245:	push	[si]
+	call	ExitInspect
+	add	sp,+002h
+	add	si,+002h
+	dec	di
+	jnz	$L245
+$L244:	mov	bx,[bp+004h]
+	mov	word ptr [bx+004h],0000h
+	mov	word ptr [bx+002h],0000h
+	mov	word ptr [bx+010h],0000h
+	mov	si,bx
+	mov	ax,[si+062h]
+	mov	dx,[si+064h]
+	mov	[bx+00Ch],ax
+	mov	[bx+00Eh],dx
+	mov	ax,bx
+	add	ax,0012h
+	push	ax
+	call	SpaceFreeAll
+	add	sp,+002h
+	cmp	word ptr [bp+006h],+000h
+	jnz	$L246
+	mov	ax,0001h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	sub	dx,dx
+	mov	cx,0003h
+	div	cx
+	cmp	ax,0020h
+	jbe	$L247
+	mov	ax,0001h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	sub	dx,dx
+	mov	cx,0003h
+	div	cx
+	jmp	short $L248
+$L247:	mov	ax,0020h
+$L248:	mov	[bp-00Ch],ax
+	mov	ax,0400h
+	cwd
+	push	dx
+	push	ax
+	mov	bx,[bp+004h]
+	push	[bx+064h]
+	push	[bx+062h]
+	call	far ptr __aFldiv
+	add	ax,0004h
+	sub	ax,[bp-00Ch]
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,[bp-00Ch]
+	mov	[bp-00Ch],ax
+	mov	bx,[bp+004h]
+	sub	dx,dx
+	mov	cl,0Ah
+$L249:	shl	ax,1
+	rcl	dx,1
+	dec	cl
+	jnz	$L249
+	mov	[bx+066h],ax
+	mov	[bx+068h],dx
+$L246:	cmp	word ptr [bp+006h],+001h
+	jc	$L250
+	jmp	$L251
+$L250:	mov	bx,[bp+004h]
+	mov	ax,[bx+0094h]
+	mov	[bp-010h],ax
+	mov	bx,ax
+	cmp	word ptr [bx+002h],+000h
+	jz	$L252
+	mov	word ptr [bx+006h],0001h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+$L252:	mov	ax,[bx+062h]
+	mov	dx,[bx+064h]
+	sub	ax,[bx+008h]
+	sbb	dx,[bx+00Ah]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	ax,[bx+008h]
+	mov	dx,[bx+00Ah]
+	mov	cl,04h
+$L253:	shr	dx,1
+	rcr	ax,1
+	dec	cl
+	jnz	$L253
+	cmp	dx,[bp-008h]
+	jc	$L254
+	jnbe	$L255
+	cmp	ax,[bp-00Ah]
+	jbe	$L254
+$L255:	mov	ax,0001h
+	jmp	short $L256
+	nop
+$L254:	sub	ax,ax
+$L256:	mov	[bp-00Eh],ax
+	or	ax,ax
+	jnz	$L257
+	mov	bx,[bp-010h]
+	mov	word ptr [bx+010h],0000h
+	jmp	short $L258
+	nop
+$L257:	mov	bx,[bp-010h]
+	cmp	word ptr [bx+010h],+000h
+	jnz	$L258
+	mov	word ptr [bx+010h],0001h
+	mov	ax,[bx+062h]
+	mov	dx,[bx+064h]
+	sub	ax,[bx+00Ch]
+	sbb	dx,[bx+00Eh]
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	cmp	word ptr [bx+064h],+000h
+	jl	$L258
+	jg	$L259
+	cmp	word ptr [bx+062h],1F40h
+	jbe	$L258
+$L259:	mov	ax,0003h
+	cwd
+	push	dx
+	push	ax
+	push	[bx+00Eh]
+	push	[bx+00Ch]
+	call	far ptr __aFuldiv
+	cmp	dx,[bp-002h]
+	jnbe	$L258
+	jc	$L260
+	cmp	ax,[bp-004h]
+	jnc	$L258
+$L260:	mov	bx,[bp-010h]
+	mov	word ptr [bx+004h],0001h
+$L258:	mov	bx,[bp-010h]
+	mov	ax,[bx+044h]
+	sub	ax,[bx+03Eh]
+	sub	dx,dx
+	mov	cx,0003h
+	div	cx
+	mov	cx,[bx+042h]
+	sub	cx,[bx+040h]
+	cmp	ax,cx
+	jbe	$L251
+	mov	word ptr [bx+004h],0001h
+$L251:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+GenScavenge:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	di
+	push	si
+	mov	bx,[bp+004h]
+	shl	bx,1
+	mov	ax,[bx+__oGen]
+	mov	[bp-006h],ax
+	mov	bx,ax
+	cmp	word ptr [bx+002h],+000h
+	jnz	$L261
+	push	[bp+004h]
+	push	ax
+	call	StartScavenge
+	add	sp,+004h
+
+$L261:	mov	ax,[bp+004h]
+	mov	$S186,ax
+	mov	ax,[bp-006h]
+	mov	$S137,ax
+	mov	bx,ax
+	mov	ax,[bx]
+	mov	$S117,ax
+	cmp	word ptr [bp+006h],+000h
+	jz	$L262
+	mov	ax,[bp+006h]
+	mov	cl,04h
+	shr	ax,cl
+	sub	ax,0002h
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,0002h
+	mov	[bp-008h],ax
+	jmp	short $L263
+	nop
+$L262:	mov	word ptr [bp-008h],0000h
+$L263:	mov	word ptr [bp-004h],0000h
+	mov	ax,bx
+	add	ax,0080h
+	mov	[bp-00Eh],ax
+	mov	word ptr [bp-00Ch],ds
+	mov	di,[bp-008h]
+	mov	si,[bp-002h]
+$L269:	or	di,di
+	jz	$L264
+	cmp	[bp-004h],di
+	jnc	$L265
+$L264:	push	di
+	call	ExitScan
+	add	sp,+002h
+	mov	si,ax
+	or	si,si
+	jnz	$L266
+	push	di
+	call	SurvivorScan
+	add	sp,+002h
+	mov	si,ax
+$L266:	or	si,si
+	jnz	$L267
+	push	di
+	call	RootScan
+	add	sp,+002h
+	mov	si,ax
+$L267:	or	si,si
+	jnz	$L268
+	push	di
+	call	DediScan
+	add	sp,+002h
+	mov	si,ax
+$L268:	add	[bp-004h],si
+	or	si,si
+	jnz	$L269
+	les	bx,dword ptr [bp-00Eh]
+	cmp	word ptr es:[bx],+003h
+	jbe	$L269
+	mov	bx,[bp-006h]
+	sub	ax,ax
+	mov	[bx+0080h],ax
+	mov	[bx+07Eh],ax
+	push	ax
+	call	RootScan
+	add	sp,+002h
+	les	bx,dword ptr [bp-00Eh]
+	cmp	word ptr es:[bx],+005h
+	jnz	$L269
+$L265:	mov	[bp-002h],si
+	or	si,si
+	jnz	$L270
+	mov	bx,[bp-006h]
+	cmp	word ptr [bx+006h],+000h
+	jz	$L270
+	push	[bp+004h]
+	push	bx
+	call	EndScavenge
+	add	sp,+004h
+$L270:	mov	bx,[bp-006h]
+	mov	ax,[bx+0094h]
+	mov	[bp-00Ah],ax
+	mov	bx,ax
+	cmp	word ptr [bx+002h],+000h
+	jz	$L271
+	mov	ax,[bx+046h]
+	shr	ax,1
+	shr	ax,1
+	mul	word ptr [bp+006h]
+	push	ax
+	mov	ax,[bp+004h]
+	inc	ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L271:	cmp	word ptr $S230,+000h
+	jz	$L272
+	call	far ptr __awk
+$L272:	mov	ax,[bp-002h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+__xcheck:
+	mov	ax,0014h
+	push	ax
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+	retf
+__oScavengeAll:
+	jmp	short $L273
+$L274:	mov	ax,7530h
+	push	ax
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L273:	cmp	word ptr $S43.s1m_0,+000h
+	jnz	$L274
+$L275:	mov	ax,7530h
+	push	ax
+	mov	ax,0001h
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L275
+$L276:	mov	ax,7530h
+	push	ax
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L276
+	cmp	word ptr $S277.s1m_0,+000h
+	jz	$L278
+	cmp	word ptr $S277.s1m_0 + 00004h,+000h
+	jz	$L278
+	mov	ax,0001h
+	push	ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L278:	retf
+	nop
+__oEstimate:
+    mov ax,word ptr $S279
+    sub ax,word ptr $S280
+	mul	word ptr $S281
+	retf
+__iarrayat:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	push	di
+	push	si
+	mov	bx,__tos
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L282
+$L283:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L282:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L283
+	dec	word ptr [bp+006h]
+	mov	ax,[bp+006h]
+	cmp	es:[bx+004h],ax
+	jnbe	$L284
+	mov	ax,0084h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+$L284:	mov	bx,__tos
+	mov	ax,[bp+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,[bp-004h]
+	mov	dx,es
+	add	ax,0010h
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	push	ds
+	mov	ds,dx
+	mov	cx,0007h
+	repnz	movsw
+	pop	ds
+	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__cAt:	push	bp
+	mov	bp,sp
+	sub	sp,+010h
+	push	di
+	push	si
+	cmp	word ptr [bp+006h],+000h
+	jnz	$L285
+	jmp	$L286
+$L285:	mov	bx,[bp+006h]
+	test	word ptr [bx],8000h
+	jnz	$L287
+	jmp	$L286
+$L287:	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L288
+	nop
+$L289:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L288:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L289
+	dec	word ptr [bp+008h]
+	mov	ax,[bp+008h]
+	cmp	es:[bx+004h],ax
+	jnbe	$L290
+	jmp	$L286
+$L290:	mov	ax,bx
+	add	ax,0010h
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	bx,[bp+008h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	les	si,dword ptr [bp-00Ch]
+	mov	ax,[bp+00Ah]
+	test	ax,es:[bx+si]
+	jnz	$L291
+	cmp	ax,0FFFFh
+	jnz	$L292
+$L291:	mov	bx,[bp+00Ch]
+	mov	ax,[bp+008h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,[bp-00Ch]
+	mov	dx,es
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	push	ds
+	mov	ds,dx
+	mov	cx,0007h
+	repnz	movsw
+	pop	ds
+$L293:	mov	ax,0001h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+$L292:	cmp	word ptr [bp+00Ah],+002h
+	jnz	$L286
+	mov	ax,[bp+008h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,[bp-00Ch]
+	mov	dx,[bp-00Ah]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	les	bx,dword ptr [bp-010h]
+	cmp	word ptr es:[bx],+008h
+	jnz	$L286
+	mov	bx,[bp+00Ch]
+	mov	word ptr [bx],0002h
+	mov	si,ax
+	mov	ax,es:[si+002h]
+	mov	[bx+002h],ax
+	mov	bx,si
+	push	es:[bx+00Ch]
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	push	es:[bx+006h]
+	call	far ptr __dvtol
+	add	sp,+008h
+	mov	bx,[bp+00Ch]
+	mov	[bx+006h],ax
+	mov	[bx+008h],dx
+	jmp	short $L293
+	nop
+$L286:	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__cAtPut:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	di
+	push	si
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+$L297:	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	cmp	dx,0080h
+	jc	$L294
+	mov	bx,0001h
+	jmp	short $L295
+$L294:	sub	bx,bx
+$L295:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-002h]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L296
+	push	[bp-002h]
+	push	[bp-004h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Eh],bx
+	mov	word ptr [bp-00Ch],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L296
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	jmp	short $L297
+	nop
+$L296:	mov	bx,[bp+00Ah]
+	test	word ptr [bx],9400h
+	jnz	$L298
+	jmp	$L299
+$L298:	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	si,[bp-006h]
+$L305:	cmp	word ptr [bp-008h],0080h
+	jc	$L300
+	mov	bx,0001h
+	jmp	short $L301
+	nop
+$L300:	sub	bx,bx
+$L301:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-008h]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L302
+
+	mov	ax,0001h
+	jmp	short $L303
+	nop
+$L302:	sub	ax,ax
+$L303:	mov	si,ax
+	or	si,si
+	jz	$L304
+	mov	bx,[bp-008h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jnz	$L304
+	push	ax
+	push	[bp-00Ah]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Eh],bx
+	mov	word ptr [bp-00Ch],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L304
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	jmp	short $L305
+$L304:	mov	[bp-006h],si
+	or	si,si
+	jz	$L306
+	mov	bx,[bp+00Ah]
+	mov	ax,[bx]
+	and	ax,9000h
+	cmp	ax,0001h
+	sbb	cx,cx
+	inc	cx
+	push	cx
+	push	[bp-008h]
+	push	[bp-00Ah]
+	push	cs
+	call	__oCopy
+	add	sp,+006h
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+$L306:	mov	bx,[bp+00Ah]
+	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	mov	[bx+006h],ax
+	mov	[bx+008h],dx
+	cmp	dx,0080h
+	jc	$L307
+	mov	ax,0001h
+	jmp	short $L308
+	nop
+$L307:	sub	ax,ax
+$L308:	mov	si,ax
+	cmp	word ptr [bp-002h],0080h
+	jc	$L309
+	mov	ax,0001h
+	jmp	short $L310
+$L309:	sub	ax,ax
+$L310:	cmp	ax,si
+	jng	$L299
+	cmp	word ptr [bp-008h],0080h
+	jc	$L311
+	mov	ax,0001h
+	jmp	short $L312
+$L311:	sub	ax,ax
+$L312:	push	ax
+	push	[bp-002h]
+	push	[bp-004h]
+	call	GenExit
+	add	sp,+006h
+	jmp	short $L299
+	nop
+$L313:	les	bx,dword ptr [bp-00Eh]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+$L299:	push	[bp-002h]
+	push	[bp-004h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Eh],bx
+	mov	word ptr [bp-00Ch],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L313
+	dec	word ptr [bp+008h]
+	mov	ax,[bp+008h]
+	cmp	es:[bx+004h],ax
+	jnbe	$L314
+	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+$L314:	mov	bx,[bp+00Ah]
+	cmp	word ptr [bx],0C00h
+	jnz	$L315
+	mov	word ptr [bx],0400h
+$L315:	mov	bx,[bp-002h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	si,[bp+008h]
+	mov	ax,si
+	shl	si,1
+	add	si,ax
+	shl	si,1
+	add	si,ax
+	shl	si,1
+	les	bx,dword ptr [bp-00Eh]
+	mov	ax,[bp+00Ah]
+	lea	di,[bx+si+010h]
+	mov	si,ax
+	mov	cx,0007h
+	repnz	movsw
+	mov	ax,0001h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+__iarrayput:
+	push	bp
+	mov	bp,sp
+	mov	ax,__tos
+	sub	ax,000Eh
+	push	ax
+	push	[bp+006h]
+	push	__tos
+	push	cs
+	call	__cAtPut
+	add	sp,+006h
+	or	ax,ax
+	jnz	$L316
+	mov	ax,0085h
+	pop	bp
+	retf
+	nop
+$L316:	sub	word ptr __tos,+01Ch
+	sub	ax,ax
+	pop	bp
+	retf
+	nop
+__iarrayc2:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,__tos
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+$L320:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	cmp	dx,0080h
+	jc	$L317
+	mov	bx,0001h
+	jmp	short $L318
+	nop
+$L317:	sub	bx,bx
+$L318:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-006h]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L319
+	mov	bx,[bp-006h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jnz	$L319
+	push	ax
+	push	[bp-008h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L319
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	jmp	short $L320
+$L319:	mov	bx,__tos
+	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	mov	[bx+006h],ax
+	mov	[bx+008h],dx
+	mov	ax,[bx-008h]
+	mov	dx,[bx-006h]
+$L324:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	cmp	dx,0080h
+	jc	$L321
+	mov	bx,0001h
+	jmp	short $L322
+	nop
+$L321:	sub	bx,bx
+$L322:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-006h]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L323
+	mov	bx,[bp-006h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jnz	$L323
+	push	ax
+	push	[bp-008h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L323
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	jmp	short $L324
+$L323:	mov	bx,__tos
+	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	mov	[bx-008h],ax
+	mov	[bx-006h],dx
+	mov	sp,bp
+	pop	bp
+	retf
+_VARRAY:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L325
+	nop
+$L326:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L325:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L326
+	add	ax,0002h
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+_VARRAYX:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L327
+	nop
+$L328:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L327:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L328
+	mov	bx,[bp-006h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	ax,[bp-004h]
+	add	ax,0002h
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+_VARRAYLEN:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L329
+	nop
+$L330:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L329:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L330
+	mov	ax,es:[bx+004h]
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+__VDict:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	test	word ptr [bx],8000h
+	jnz	$L331
+	sub	ax,ax
+	cwd
+	mov	sp,bp
+	pop	bp
+	retf
+$L331:	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L332
+$L333:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L332:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L333
+	mov	ax,es:[bx+008h]
+	mov	dx,es:[bx+00Ah]
+	mov	sp,bp
+	pop	bp
+	retf
+__VSetDict:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	test	word ptr [bx],8000h
+	jnz	$L334
+	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+$L334:	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L335
+$L336:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+
+$L335:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L336
+	mov	bx,[bp-006h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	bx,[bp-004h]
+	mov	ax,[bp+008h]
+	mov	dx,[bp+00Ah]
+	mov	es:[bx+008h],ax
+	mov	es:[bx+00Ah],dx
+	mov	ax,0001h
+	mov	sp,bp
+	pop	bp
+	retf
+_VSTR:	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L337
+	nop
+$L338:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L337:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L338
+	add	ax,0002h
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+_VSTRX:	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L339
+	nop
+$L340:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L339:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L340
+	mov	bx,[bp-006h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	ax,[bp-004h]
+	add	ax,0002h
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+_VSTR2:	push	bp
+	mov	bp,sp
+	sub	sp,+00Ch
+	mov	bx,[bp+00Ah]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L341
+	nop
+$L342:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L341:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L342
+	mov	bx,[bp+00Ch]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L343
+	nop
+$L344:	mov	bx,[bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L343:	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L344
+	mov	ax,[bp-006h]
+	cmp	[bp-00Ah],ax
+	jz	$L345
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	mov	ax,[bp-00Ah]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmTwo
+	add	sp,+008h
+	add	ax,[bp-00Ch]
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+$L345:	mov	bx,[bp+008h]
+	mov	ax,[bp-004h]
+	mov	dx,[bp-002h]
+	add	ax,0002h
+	mov	[bx],ax
+	mov	[bx+002h],dx
+	push	[bp-006h]
+	push	[bp-008h]
+	call	OP_ADDR
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	mov	bx,[bp+006h]
+	add	ax,0002h
+	mov	[bx],ax
+	mov	[bx+002h],dx
+	mov	sp,bp
+	pop	bp
+	retf	0008h
+	nop
+_VSTRLOCK:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	push	si
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L346
+$L347:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L346:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L347
+	mov	ax,[bp-006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	test	word ptr [si+__OSegs + 00002h],0C000h
+	jnz	$L348
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmLock
+	add	sp,+004h
+	mov	ax,0001h
+	jmp	short $L349
+	nop
+$L348:	sub	ax,ax
+$L349:	pop	si
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+_VSTRUNLOCK:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L350
+	nop
+$L351:	les	bx,dword ptr [bp-004h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L350:	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-004h],bx
+	mov	word ptr [bp-002h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L351
+	mov	ax,[bp-006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmUnlock
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+_VSTRCOLD:
+	push	bp
+	mov	bp,sp
+	sub	sp,+004h
+	push	si
+	cmp	word ptr [bp+006h],+000h
+	jz	$L352
+	mov	bx,[bp+006h]
+	test	word ptr [bx],0400h
+	jz	$L352
+	mov	si,[bx+002h]
+	inc	si
+	push	si
+	call	far ptr __AllocF
+	add	sp,+002h
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	or	dx,ax
+	jz	$L353
+	push	si
+	push	[bp+006h]
+	push	cs
+	call	_VSTR
+	push	dx
+	push	ax
+	push	[bp-002h]
+	push	[bp-004h]
+	call	far ptr __bcopy
+	add	sp,+00Ah
+$L353:	mov	ax,[bp-004h]
+	mov	dx,[bp-002h]
+	jmp	short $L354
+	nop
+$L352:	sub	ax,ax
+	cwd
+$L354:	pop	si
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+_BYTESNEW2:
+	push	bp
+	mov	bp,sp
+	push	[bp+00Ch]
+	push	cs
+	call	_BYTESNEW
+	push	__eval
+	push	[bp+00Ah]
+	push	[bp+008h]
+	push	[bp+006h]
+	push	cs
+	call	_VSTR2
+	pop	bp
+	retf	0008h
+	nop
+_OSTRDUP:
+	push	bp
+	mov	bp,sp
+	sub	sp,+016h
+	push	di
+	push	si
+	cmp	word ptr [bp+006h],+000h
+	jnz	$L355
+	mov	bx,[bp+008h]
+	mov	ax,[bx+002h]
+	mov	[bp+006h],ax
+$L355:	push	[bp+006h]
+	push	cs
+	call	_BYTESNEW
+	mov	bx,__eval
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	mov	bx,[bp+008h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L356
+	nop
+$L358:	push	[bp-014h]
+	push	[bp-016h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Eh],bx
+	mov	word ptr [bp-00Ch],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L357
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L356:	mov	[bp-016h],ax
+	mov	[bp-014h],dx
+	mov	bx,dx
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	test	word ptr [bx+__OSegs + 00002h],0400h
+	jz	$L358
+$L357:	mov	bx,[bp+008h]
+	mov	ax,[bx+002h]
+	sub	ax,[bp+006h]
+	sbb	cx,cx
+	and	ax,cx
+	add	ax,[bp+006h]
+	mov	[bp+006h],ax
+	mov	ax,[bp-010h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	test	word ptr [si+__OSegs + 00002h],0400h
+	jz	$L359
+	mov	ax,[bp-014h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	di,ax
+	test	word ptr [di+__OSegs + 00002h],0400h
+	jz	$L359
+	mov	ax,[bp+006h]
+	mov	cl,0Ah
+	shr	ax,cl
+	inc	ax
+	mov	[bp-00Ah],ax
+	push	ax
+	sub	ax,ax
+	push	ax
+	mov	ax,di
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	mov	ax,si
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmXfr
+
+	add	sp,+00Ch
+	jmp	short $L360
+	nop
+$L359:	push	__eval
+	push	[bp+008h]
+	lea	ax,[bp-004h]
+	push	ax
+	lea	ax,[bp-008h]
+	push	ax
+	push	cs
+	call	_VSTR2
+	mov	ax,[bp+006h]
+	inc	ax
+	push	ax
+	push	[bp-006h]
+	push	[bp-008h]
+	push	[bp-002h]
+	push	[bp-004h]
+	call	far ptr __bcopy
+	add	sp,+00Ah
+$L360:	mov	ax,[bp-012h]
+	mov	dx,[bp-010h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf	0004h
+__cAtAt:
+	push	bp
+	mov	bp,sp
+	sub	sp,+012h
+	push	di
+	push	si
+	cmp	word ptr [bp+006h],+000h
+	jz	$L361
+	mov	bx,[bp+006h]
+	test	word ptr [bx],8000h
+	jz	$L361
+	push	bx
+	push	cs
+	call	_VARRAY
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	cmp	word ptr [bp+008h],+000h
+	jz	$L361
+	les	bx,dword ptr [bp-012h]
+	mov	ax,[bp+008h]
+	cmp	es:[bx+002h],ax
+	jc	$L361
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,bx
+	lea	di,[bp-00Eh]
+	mov	si,ax
+	push	ss
+	pop	es
+	push	ds
+	mov	ds,dx
+	mov	cx,0007h
+	repnz	movsw
+	pop	ds
+	push	[bp+00Eh]
+	push	[bp+00Ch]
+	push	[bp+00Ah]
+	lea	ax,[bp-00Eh]
+	push	ax
+	push	cs
+	call	__cAt
+	add	sp,+008h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+$L361:	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__cAtPutStr:
+	push	bp
+	mov	bp,sp
+	sub	sp,+004h
+	push	di
+	push	si
+	push	__eval
+	call	far ptr __GetGrip
+	add	sp,+002h
+	mov	[bp-002h],ax
+	mov	ax,__eval
+	cmp	[bp+006h],ax
+	jnz	$L362
+	mov	ax,[bp-002h]
+	mov	[bp+006h],ax
+$L362:	push	[bp+00Eh]
+	push	[bp+00Ch]
+	push	[bp+00Ah]
+	push	[bp+00Eh]
+	push	cs
+	call	_BYTESNEW
+	push	dx
+	push	ax
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	push	__eval
+	push	[bp+008h]
+	push	[bp+006h]
+	push	cs
+	call	__cAtPut
+	add	sp,+006h
+	mov	[bp-004h],ax
+	mov	bx,__eval
+	mov	ax,[bp-002h]
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	push	ax
+	call	far ptr __DropGrip
+	add	sp,+002h
+	mov	ax,[bp-004h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+MakeSub:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	push	di
+	push	si
+	push	[bp+004h]
+	call	far ptr __sptoq
+	add	sp,+002h
+	mov	[bp-006h],ax
+	push	ax
+	push	cs
+	call	_ARRAYNEW
+	cmp	word ptr [bp+006h],+001h
+	jbe	$L363
+	push	__eval
+	call	far ptr __GetGrip
+	add	sp,+002h
+	mov	[bp-002h],ax
+	mov	word ptr [bp-004h],0001h
+	cmp	word ptr [bp-006h],+001h
+	jc	$L364
+	mov	ax,[bp+006h]
+	dec	ax
+	mov	[bp-008h],ax
+	mov	di,[bp-006h]
+	mov	si,[bp-004h]
+$L365:	push	[bp-008h]
+	mov	ax,[bp+004h]
+	add	ax,000Eh
+	push	ax
+	call	short MakeSub			; Large jump translated into short
+	nop					; Nop inserted to retain proper length
+	add	sp,+004h
+	push	__eval
+	push	si
+	push	[bp-002h]
+	push	cs
+	call	__cAtPut
+	add	sp,+006h
+	inc	si
+	cmp	si,di
+	jbe	$L365
+	mov	[bp-004h],si
+$L364:	mov	bx,__eval
+	mov	ax,[bp-002h]
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	push	ax
+	call	far ptr __DropGrip
+	add	sp,+002h
+$L363:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+CheckDims:
+	push	bp
+	mov	bp,sp
+	sub	sp,+028h
+	push	di
+	push	si
+	mov	word ptr [bp-002h],0000h
+	cmp	word ptr [bp+006h],+000h
+	jz	$L366
+	mov	si,[bp+004h]
+	mov	di,[bp-002h]
+$L370:	push	si
+	call	far ptr __sptoq
+	add	sp,+002h
+	cmp	ax,1000h
+	jbe	$L367
+	mov	ax,0024h
+	push	ax
+	sub	ax,ax
+	push	ax
+	lea	ax,[bp-026h]
+	push	ss
+	push	ax
+	call	far ptr __bset
+	add	sp,+008h
+	mov	word ptr [bp-026h],0002h
+	mov	word ptr [bp-024h],0002h
+	mov	word ptr [bp-01Ch],046Bh
+	mov	ax,offset DGROUP:$S368
+	mov	[bp-01Ah],ax
+	mov	word ptr [bp-018h],ds
+	mov	ax,offset DGROUP:$S369
+	mov	[bp-012h],ax
+	mov	word ptr [bp-010h],ds
+	lea	ax,[bp-026h]
+	push	ss
+	push	ax
+	call	far ptr __eError
+	add	sp,+004h
+	mov	[bp-002h],di
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+$L367:	add	si,+00Eh
+	inc	di
+	cmp	di,[bp+006h]
+	jc	$L370
+	mov	[bp-002h],di
+$L366:	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+__imakea:
+	push	bp
+	mov	bp,sp
+	sub	sp,+002h
+	push	di
+	push	si
+	mov	ax,[bp+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	push	cx
+	mov	ax,__tos
+	sub	ax,si
+	add	ax,000Eh
+	push	ax
+	call	CheckDims
+	add	sp,+004h
+	mov	[bp-002h],ax
+	or	ax,ax
+	jnz	$L371
+	push	[bp+006h]
+	mov	ax,__tos
+	sub	ax,si
+	add	ax,000Eh
+	push	ax
+	call	MakeSub
+	add	sp,+004h
+	lea	ax,[si-00Eh]
+	sub	__tos,ax
+	mov	bx,__tos
+	mov	ax,__eval
+	push	si
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	pop	si
+$L371:	mov	ax,[bp-002h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__imakela:
+	push	bp
+	mov	bp,sp
+	sub	sp,+006h
+	push	di
+	push	si
+	push	[bp+006h]
+	push	cs
+	call	_ARRAYNEW
+	mov	ax,__tos
+	mov	cx,[bp+006h]
+	mov	dx,cx
+	shl	cx,1
+	add	cx,dx
+	shl	cx,1
+	add	cx,dx
+	shl	cx,1
+	sub	ax,cx
+	mov	[bp-002h],ax
+	mov	word ptr [bp-004h],0001h
+	cmp	dx,+001h
+	jc	$L372
+	mov	di,ax
+	add	di,+00Eh
+	mov	si,[bp-004h]
+$L375:	add	word ptr __tos,+00Eh
+	mov	bx,__tos
+	push	si
+	push	di
+	mov	si,di
+	mov	di,bx
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	pop	di
+	pop	si
+	add	word ptr __tos,+00Eh
+	mov	bx,__tos
+	mov	ax,__eval
+	push	si
+	push	di
+	mov	di,bx
+	mov	si,ax
+	mov	cx,0007h
+	repnz	movsw
+	pop	di
+	pop	si
+	push	si
+	push	cs
+	call	__iarrayput
+	add	sp,+002h
+	or	ax,ax
+	jz	$L373
+	sub	word ptr __tos,+01Ch
+$L374:	mov	[bp-004h],si
+	jmp	short $L372
+	nop
+$L373:	add	di,+00Eh
+	inc	si
+	cmp	si,[bp+006h]
+	jnbe	$L374
+	jmp	short $L375
+	nop
+$L372:	mov	ax,[bp+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	sub	ax,000Eh
+	sub	__tos,ax
+	mov	bx,__tos
+	mov	ax,__eval
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+ARRAY:	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	push	di
+	push	si
+	cmp	word ptr __pcount,+001h
+	jnc	$L376
+	jmp	$L377
+$L376:	mov	ax,__tos
+	mov	cx,__pcount
+	mov	dx,cx
+	shl	cx,1
+	add	cx,dx
+	shl	cx,1
+	add	cx,dx
+	shl	cx,1
+	sub	ax,cx
+	add	ax,000Eh
+	mov	[bp-002h],ax
+	mov	word ptr [bp-006h],0000h
+	or	dx,dx
+	jz	$L378
+	mov	si,ax
+	mov	di,ax
+$L381:	cmp	word ptr [si],+008h
+	jnz	$L379
+	mov	word ptr [si],0002h
+	push	[si+00Ch]
+	push	[si+00Ah]
+	push	[si+008h]
+
+	push	[si+006h]
+	call	far ptr __dvtol
+	add	sp,+008h
+	mov	[si+006h],ax
+	mov	[si+008h],dx
+	jmp	short $L380
+	nop
+$L379:	cmp	word ptr [di],+002h
+	jnz	$L377
+$L380:	add	si,+00Eh
+	add	di,+00Eh
+	inc	word ptr [bp-006h]
+	mov	ax,__pcount
+	cmp	[bp-006h],ax
+	jc	$L381
+$L378:	push	__pcount
+	push	[bp-002h]
+	call	CheckDims
+	add	sp,+004h
+	mov	[bp-004h],ax
+	or	ax,ax
+	jnz	$L377
+	push	__pcount
+	push	[bp-002h]
+	call	MakeSub
+	add	sp,+004h
+$L377:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+_CSCANCHECK:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	cmp	dx,0080h
+	jc	$L382
+	mov	bx,0001h
+	jmp	short $L383
+$L382:	sub	bx,bx
+$L383:	shl	bx,1
+	mov	ax,[bx+__oGen]
+	mov	[bp-002h],ax
+	mov	bx,ax
+	cmp	word ptr [bx+002h],+000h
+	jz	$L384
+	jmp	short $L385
+	nop
+$L386:	les	bx,dword ptr [bp-006h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+$L385:	push	[bp-008h]
+	push	[bp-00Ah]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-006h],bx
+	mov	word ptr [bp-004h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L386
+	mov	bx,[bp-002h]
+	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	cmp	[bx+06Ah],ax
+	jnz	$L387
+	cmp	[bx+06Ch],dx
+	jnz	$L387
+	mov	word ptr [bx+06Eh],0000h
+	mov	sp,bp
+	pop	bp
+	retf	0002h
+$L387:	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	cmp	[bx+074h],ax
+	jnz	$L384
+	cmp	[bx+076h],dx
+	jnz	$L384
+	mov	word ptr [bx+078h],0000h
+$L384:	mov	sp,bp
+	pop	bp
+	retf	0002h
+	nop
+__cCopy:
+	push	bp
+	mov	bp,sp
+	push	di
+	push	si
+	mov	di,[bp+00Eh]
+	mov	si,[bp+00Ch]
+$L390:	mov	ax,si
+	dec	si
+	or	ax,ax
+	jz	$L388
+	add	word ptr __tos,+00Eh
+	mov	bx,__tos
+	mov	ax,[bp+006h]
+	push	si
+	push	di
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	pop	di
+	pop	si
+	inc	word ptr [bp+00Ah]
+	push	[bp+00Ah]
+	push	cs
+	call	__iarrayat
+	add	sp,+002h
+	or	ax,ax
+	jz	$L389
+	sub	word ptr __tos,+00Eh
+$L388:	mov	[bp+00Eh],di
+	mov	[bp+00Ch],si
+	pop	si
+	pop	di
+	pop	bp
+	retf
+	nop
+$L389:	add	word ptr __tos,+00Eh
+	mov	bx,__tos
+	mov	ax,[bp+008h]
+	push	si
+	push	di
+	mov	di,bx
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	pop	di
+	pop	si
+	inc	di
+	push	di
+	push	cs
+	call	__iarrayput
+	add	sp,+002h
+	or	ax,ax
+	jz	$L390
+	sub	word ptr __tos,+01Ch
+	jmp	short $L388
+	nop
+__cBecome:
+	push	bp
+	mov	bp,sp
+	sub	sp,+014h
+	push	si
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	mov	si,[bp-008h]
+$L396:	cmp	word ptr [bp-00Eh],0080h
+	jc	$L391
+	mov	bx,0001h
+	jmp	short $L392
+	nop
+$L391:	sub	bx,bx
+$L392:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-00Eh]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L393
+	mov	ax,0001h
+	jmp	short $L394
+	nop
+$L393:	sub	ax,ax
+$L394:	mov	si,ax
+	or	si,si
+	jz	$L395
+	push	[bp-00Eh]
+	push	[bp-010h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Ch],bx
+	mov	word ptr [bp-00Ah],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L395
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	jmp	short $L396
+	nop
+$L395:	mov	[bp-008h],si
+	or	si,si
+	jz	$L397
+	mov	ax,0001h
+	push	ax
+	push	[bp-00Eh]
+	push	[bp-010h]
+	push	cs
+	call	__oCopy
+	add	sp,+006h
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+$L397:	mov	bx,[bp+004h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+$L401:	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	cmp	dx,0080h
+	jc	$L398
+	mov	bx,0001h
+	jmp	short $L399
+$L398:	sub	bx,bx
+$L399:	shl	bx,1
+	add	bx,offset DGROUP:__oBounds
+	mov	__opf,bx
+	mov	ax,[bp-012h]
+	sub	ax,[bx]
+	cmp	ax,[bx+004h]
+	jnc	$L400
+	push	[bp-012h]
+	push	[bp-014h]
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Ch],bx
+	mov	word ptr [bp-00Ah],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L400
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	jmp	short $L401
+	nop
+$L400:	mov	ax,[bp-014h]
+	mov	dx,[bp-012h]
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	push	dx
+	push	ax
+	call	OP_ADDRX
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Ch],bx
+	mov	word ptr [bp-00Ah],es
+	cmp	word ptr es:[bx],-010h
+	jnz	$L402
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	mov	word ptr es:[bx],0FFF0h
+	mov	ax,[bp-010h]
+	mov	dx,[bp-00Eh]
+	mov	es:[bx+004h],ax
+	mov	es:[bx+006h],dx
+	push	[bp-012h]
+	push	[bp-014h]
+	call	OP_ADDR
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx]
+	and	ax,0003h
+	mov	[bp-002h],ax
+	jmp	short $L403
+	nop
+$L402:	mov	ax,es:[bx]
+	and	ax,0003h
+	mov	[bp-002h],ax
+	mov	word ptr es:[bx],0FFF0h
+	mov	ax,es:[bx+006h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,0010h
+	mov	es:[bx+002h],ax
+	mov	ax,[bp-010h]
+	mov	dx,[bp-00Eh]
+	mov	es:[bx+004h],ax
+	mov	es:[bx+006h],dx
+$L403:	mov	ax,[bp-010h]
+	mov	dx,[bp-00Eh]
+	jmp	short $L404
+	nop
+$L405:	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L404:	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	push	dx
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-00Ch],bx
+	mov	word ptr [bp-00Ah],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L405
+	mov	ax,es:[bx]
+	and	ax,0003h
+	cmp	ax,[bp-002h]
+	jz	$L406
+	mov	bx,[bp-012h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	mov	bx,[bp-00Ch]
+	mov	ax,[bp-002h]
+	or	es:[bx],ax
+$L406:	cmp	word ptr [bp-004h],0080h
+	jc	$L407
+	mov	ax,0001h
+	jmp	short $L408
+	nop
+$L407:	sub	ax,ax
+$L408:	mov	si,ax
+	cmp	word ptr [bp-00Eh],0080h
+	jc	$L409
+	mov	ax,0001h
+	jmp	short $L410
+$L409:	sub	ax,ax
+$L410:	cmp	ax,si
+	jnl	$L411
+	cmp	word ptr [bp-00Eh],0080h
+	jc	$L412
+	mov	ax,0001h
+	jmp	short $L413
+$L412:	sub	ax,ax
+$L413:	inc	ax
+	test	ax,[bp-002h]
+	jnz	$L411
+	cmp	word ptr [bp-00Eh],0080h
+	jc	$L414
+	mov	ax,0001h
+	jmp	short $L415
+$L414:	sub	ax,ax
+$L415:	push	ax
+	push	[bp-004h]
+	push	[bp-006h]
+	call	GenExit
+	add	sp,+006h
+$L411:	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+__cResize:
+	push	bp
+	mov	bp,sp
+	sub	sp,+022h
+	push	di
+	push	si
+	mov	bx,[bp+006h]
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L416
+	nop
+$L417:	les	bx,dword ptr [bp-012h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L416:	mov	[bp-018h],ax
+	mov	[bp-016h],dx
+	push	dx
+
+	push	ax
+	call	OP_ADDR
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-012h],bx
+	mov	word ptr [bp-010h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L417
+	mov	ax,es:[bx+004h]
+	mov	[bp-014h],ax
+	mov	ax,es:[bx+006h]
+	mov	[bp-00Ah],ax
+	cmp	word ptr [bp+008h],+000h
+	jnl	$L418
+	mov	ax,[bp+008h]
+	neg	ax
+	cmp	ax,[bp-014h]
+	jbe	$L418
+	mov	word ptr [bp-00Eh],0000h
+	jmp	short $L419
+	nop
+$L418:	mov	ax,[bp+008h]
+	add	ax,[bp-014h]
+	mov	[bp-00Eh],ax
+$L419:	cmp	word ptr [bp-00Eh],1000h
+	jbe	$L420
+	mov	ax,0001h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+$L420:	mov	ax,[bp-00Ah]
+	cmp	[bp-00Eh],ax
+	jnbe	$L421
+	mov	bx,[bp-016h]
+	mov	ax,bx
+	shl	bx,1
+	add	bx,ax
+	shl	bx,1
+	or	byte ptr [bx+__OSegs],02h
+	jmp	$L422
+	nop
+$L421:	mov	ax,[bp-014h]
+	add	ax,0003h
+	sub	ax,[bp-00Eh]
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,[bp-00Eh]
+	mov	[bp-002h],ax
+	mov	ax,[bp-00Ah]
+	shr	ax,1
+	shr	ax,1
+	add	ax,[bp-00Ah]
+	cmp	ax,[bp-002h]
+	jnc	$L423
+	mov	ax,[bp-002h]
+	jmp	short $L424
+	nop
+$L423:	mov	ax,[bp-00Ah]
+	shr	ax,1
+	shr	ax,1
+	add	ax,[bp-00Ah]
+	sub	ax,1000h
+	sbb	cx,cx
+	and	ax,cx
+	add	ah,10h
+$L424:	mov	[bp-002h],ax
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,0010h
+	mov	[bp-008h],ax
+	mov	ax,[bp-016h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	test	word ptr [si+__OSegs + 00002h],0400h
+	jnz	$L425
+	jmp	$L426
+$L425:	mov	ax,[bp-008h]
+	dec	ax
+	mov	cl,0Ah
+	shr	ax,cl
+	inc	ax
+	push	ax
+	mov	ax,si
+	add	ax,offset __OSegs
+	push	ds
+	push	ax
+	call	far ptr __vmRealloc
+	add	sp,+006h
+	or	ax,ax
+	jz	$L427
+	mov	ax,0002h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+$L427:	mov	ax,[bp-016h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	add	ax,offset __OSegs
+	mov	__opx,ax
+	mov	bx,ax
+	test	byte ptr [bx],04h
+	jz	$L428
+	or	byte ptr [bx],03h
+	mov	ax,[bx]
+    or al, 7; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	jmp	short $L429
+	nop
+$L428:	push	ds
+	push	bx
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+$L429:	mov	[bp-01Ch],ax
+	mov	[bp-01Ah],dx
+	les	bx,dword ptr [bp-01Ch]
+	mov	ax,[bp-008h]
+	add	ax,[bp-018h]
+	mov	dx,[bp-016h]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+	mov	ax,[bp-018h]
+	add	ax,bx
+	mov	dx,es
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	les	bx,dword ptr [bp-012h]
+	mov	ax,[bp-002h]
+	mov	es:[bx+006h],ax
+	jmp	short $L422
+$L426:	les	bx,dword ptr [bp-012h]
+	mov	ax,es:[bx+008h]
+	mov	dx,es:[bx+00Ah]
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	push	[bp-002h]
+	push	cs
+	call	_ARRAYNEW
+	sub	ax,ax
+	push	ax
+	push	[bp-014h]
+	push	ax
+	push	__eval
+	push	[bp+006h]
+	push	cs
+	call	__cCopy
+	add	sp,+00Ah
+	push	__eval
+	push	[bp+006h]
+	call	__cBecome
+	add	sp,+004h
+	mov	bx,__eval
+	mov	ax,[bx+006h]
+	mov	dx,[bx+008h]
+	jmp	short $L430
+$L431:	les	bx,dword ptr [bp-012h]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+$L430:	mov	[bp-018h],ax
+	mov	[bp-016h],dx
+	push	dx
+	push	ax
+	call	OP_ADDRX
+	mov	bx,ax
+	mov	es,dx
+	mov	[bp-012h],bx
+	mov	word ptr [bp-010h],es
+	cmp	word ptr es:[bx],-010h
+	jz	$L431
+	mov	ax,[bp-006h]
+	mov	dx,[bp-004h]
+	mov	es:[bx+008h],ax
+	mov	es:[bx+00Ah],dx
+$L422:	les	bx,dword ptr [bp-012h]
+	mov	ax,[bp-00Eh]
+	mov	es:[bx+004h],ax
+	mov	ax,[bp-014h]
+	mov	[bp-00Ch],ax
+	mov	ax,[bp-00Eh]
+	cmp	[bp-00Ch],ax
+	jnc	$L432
+	mov	ax,[bp-014h]
+	mov	dx,ax
+	shl	ax,1
+	add	ax,dx
+	shl	ax,1
+	add	ax,dx
+	shl	ax,1
+	add	ax,bx
+	mov	dx,es
+	add	ax,0010h
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	mov	ax,[bp-00Eh]
+	sub	ax,[bp-014h]
+	mov	cx,ax
+	add	[bp-00Ch],cx
+	les	di,dword ptr [bp-020h]
+$L433:	mov	word ptr es:[di],0000h
+	add	di,+00Eh
+	loop	$L433
+$L432:	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+	nop
+ASIZE:	push	bp
+	mov	bp,sp
+	sub	sp,+002h
+	push	di
+	push	si
+	cmp	word ptr __pcount,+002h
+	jnz	$L434
+	mov	bx,__tos
+	test	word ptr [bx-00Eh],8000h
+	jz	$L434
+	test	byte ptr [bx],0Ah
+	jz	$L434
+	push	bx
+	call	far ptr __sptoq
+	add	sp,+002h
+	mov	[bp-002h],ax
+	mov	ax,__tos
+	sub	ax,000Eh
+	push	ax
+	push	cs
+	call	_VARRAYLEN
+	sub	[bp-002h],ax
+	push	[bp-002h]
+	mov	ax,__tos
+	sub	ax,000Eh
+	push	ax
+	push	cs
+	call	__cResize
+	add	sp,+004h
+	mov	bx,__eval
+	mov	si,__tos
+	mov	di,bx
+	lea	si,[si-00Eh]
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+$L434:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__AADD:	push	di
+	push	si
+	mov	bx,__tos
+	test	word ptr [bx-00Eh],8000h
+	jnz	$L435
+	mov	ax,907Bh
+	pop	si
+	pop	di
+	retf
+	nop
+$L435:	mov	ax,0001h
+	push	ax
+	mov	ax,bx
+	sub	ax,000Eh
+	push	ax
+	push	cs
+	call	__cResize
+	add	sp,+004h
+	or	ax,ax
+	jz	$L436
+	mov	ax,90BBh
+	pop	si
+	pop	di
+	retf
+	nop
+$L436:	push	__tos
+	mov	ax,__tos
+	sub	ax,000Eh
+	push	ax
+	push	cs
+	call	_VARRAYLEN
+	push	ax
+	mov	ax,__tos
+	sub	ax,000Eh
+	push	ax
+	push	cs
+	call	__cAtPut
+	add	sp,+006h
+	mov	bx,__tos
+	mov	ax,bx
+	lea	di,[bx-00Eh]
+	mov	si,ax
+	push	ds
+	pop	es
+	mov	cx,0007h
+	repnz	movsw
+	sub	word ptr __tos,+00Eh
+	sub	ax,ax
+	pop	si
+	pop	di
+	retf
+__xunlock:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	push	di
+	push	si
+	mov	word ptr [bp-006h],0000h
+	cmp	word ptr __xlock,+000h
+	jz	$L437
+	mov	si,offset DGROUP:$S438
+	mov	di,[bp-006h]
+$L439:	mov	ax,[si]
+	mov	dx,[si+002h]
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	push	dx
+	push	ax
+	call	far ptr __vmUnlock
+	add	sp,+004h
+	les	bx,dword ptr [bp-004h]
+	and	byte ptr es:[bx+003h],0BFh
+	add	si,+004h
+	inc	di
+	cmp	di,__xlock
+	jc	$L439
+	mov	[bp-006h],di
+$L437:	mov	word ptr __xlock,0000h
+	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+__xxlock:
+	push	bp
+	mov	bp,sp
+	push	[bp+008h]
+	push	[bp+006h]
+	call	far ptr __vmLock
+	add	sp,+004h
+	les	bx,dword ptr [bp+006h]
+	or	byte ptr es:[bx+003h],40h
+	cmp	word ptr __xlock,+010h
+	jnz	$L440
+	push	cs
+	call	__xunlock
+	mov	ax,0154h
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L440:	mov	bx,__xlock
+	inc	word ptr __xlock
+	shl	bx,1
+	shl	bx,1
+	mov	ax,[bp+006h]
+	mov	dx,[bp+008h]
+	mov	[bx+$S438],ax
+	mov	[bx+$S441],dx
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx]
+    or al, 7 ; and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	pop	bp
+	retf
+OmReceiver:
+	push	bp
+	mov	bp,sp
+	les	bx,dword ptr [bp+006h]
+
+	mov	ax,es:[bx+002h]
+	cmp	ax,4103h
+	jz	$L442
+	cmp	ax,5108h
+	jnz	$L443
+	cmp	word ptr $S277.s1m_0,+000h
+	jnz	$L444
+	cmp	word ptr $S277.s1m_0 + 00002h,+000h
+	jz	$L445
+$L444:	mov	ax,0064h
+	push	ax
+	mov	ax,0001h
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L445:	cmp	word ptr $S43.s1m_0,+000h
+	jnz	$L446
+	cmp	word ptr $S43.s1m_0 + 00002h,+000h
+	jz	$L443
+$L446:	mov	ax,0064h
+	push	ax
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+$L443:	sub	ax,ax
+	pop	bp
+	retf
+	nop
+$L442:	cmp	word ptr $S43.s1m_0,+000h
+	jnz	$L447
+	cmp	word ptr $S43.s1m_0 + 00002h,+000h
+	jnz	$L447
+	mov	ax,0002h
+	cwd
+	push	dx
+	push	ax
+    push    word ptr $S448
+    push    word ptr $S449
+	call	far ptr __aFldiv
+    cmp dx,word ptr $S38
+	jg	$L443
+	jl	$L447
+    cmp ax,word ptr $S37
+	jnc	$L443
+$L447:	mov	ax,03E8h
+	push	ax
+	sub	ax,ax
+	push	ax
+	call	GenScavenge
+	add	sp,+004h
+	cmp	word ptr $S43.s1m_0,+000h
+	jnz	$L447
+	jmp	short $L443
+	nop
+GenInit:
+	push	bp
+	mov	bp,sp
+	sub	sp,+002h
+	mov	ax,0001h
+	push	ax
+	call	far ptr __vmAlloc
+	add	sp,+002h
+    mov word ptr $S450,ax
+    mov word ptr $S451,dx
+	mov	word ptr $S452,0100h
+	mov	word ptr __oGen0,0001h
+	mov	word ptr $S453,0000h
+	mov	word ptr $S454,0000h
+	mov	word ptr $S455,0040h
+	mov	word ptr $S456,0040h
+	mov	word ptr $S457,0004h
+	mov	word ptr $S458,0004h
+	mov	word ptr $S40,0040h
+	mov	word ptr $S459,0040h
+	mov	word ptr $S460,0080h
+	mov	word ptr $S461,0080h
+	mov	word ptr $S462,0004h
+	mov	word ptr $S57,0004h
+	mov	ax,0001h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	sub	dx,dx
+	mov	cx,0003h
+	div	cx
+	cmp	ax,0020h
+	jbe	$L463
+	mov	ax,0001h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	sub	dx,dx
+	mov	cx,0003h
+	div	cx
+	jmp	short $L464
+$L463:	mov	ax,0020h
+$L464:	mov	[bp-002h],ax
+	sub	dx,dx
+	mov	cl,0Ah
+$L465:	shl	ax,1
+	rcl	dx,1
+	dec	cl
+	jnz	$L465
+    mov word ptr $S466,ax
+    mov word ptr $S467,dx
+    mov word ptr $S449,ax
+    mov word ptr $S448,dx
+	mov	word ptr $S468,offset DGROUP:__oGen1
+	mov	word ptr __oGen1,0002h
+	mov	word ptr $S469,0080h
+	mov	word ptr $S470,0080h
+	mov	word ptr $S471,0140h
+	mov	word ptr $S472,0140h
+	mov	word ptr $S473,0004h
+	mov	word ptr $S474,0004h
+	mov	word ptr $S475,0140h
+	mov	word ptr $S280,0140h
+	mov	word ptr $S279,0200h
+	mov	word ptr $S476,0200h
+	mov	word ptr $S281,0004h
+	mov	word ptr $S477,0004h
+    mov ax,word ptr $S453
+	mov	__oBounds,ax
+	mov	word ptr $S478,0080h
+    mov ax,word ptr $S456
+    sub ax,word ptr $S453
+	mov	$S238,ax
+	mov	word ptr $S479,00C0h
+	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	retf
+__om_init:
+	push	bp
+	mov	bp,sp
+	sub	sp,+002h
+	push	cs
+	call	GenInit
+	mov	ax,offset DGROUP:$S480
+	push	ds
+	push	ax
+	call	far ptr __upref
+	add	sp,+004h
+	cmp	ax,0FFFFh
+	jz	$L481
+	mov	word ptr $S230,0001h
+$L481:	sub	ax,ax
+	push	ax
+	call	far ptr __GetGrip
+	add	sp,+002h
+	mov	__xgrip1,ax
+	sub	ax,ax
+	push	ax
+	call	far ptr __GetGrip
+	add	sp,+002h
+	mov	__xgrip2,ax
+	sub	ax,ax
+	push	ax
+	call	far ptr __GetGrip
+	add	sp,+002h
+	mov	__xgrip3,ax
+	mov	ax,offset DGROUP:$S482
+	push	ds
+	push	ax
+	call	far ptr __upref
+	add	sp,+004h
+	mov	[bp-002h],ax
+	cmp	ax,0FFFFh
+	jz	$L483
+	cmp	ax,0004h
+	jnc	$L484
+	mov	ax,0004h
+	jmp	short $L485
+	nop
+$L484:	mov	ax,[bp-002h]
+	sub	ax,0010h
+	sbb	cx,cx
+	and	ax,cx
+	add	ax,0010h
+$L485:	mov	__xsegmin,ax
+$L483:	mov	ax,offset DGROUP:$S486
+	push	ds
+	push	ax
+	call	far ptr __upref
+	add	sp,+004h
+	mov	[bp-002h],ax
+	cmp	ax,0FFFFh
+	jz	$L487
+	mov	word ptr __xsafe,0001h
+$L487:	mov	ax,2001h
+	push	ax
+	mov	ax,offset OmReceiver
+	mov	dx,seg OmReceiver
+	push	dx
+	push	ax
+	call	far ptr __evRegReceiverFunc
+	mov	ax,[bp+006h]
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+
+OM_TEXT	ENDS
+
+_DATA	SEGMENT
+
+
+__oGen0	dw	00000h
+
+; $S43    struct_1    <00000h>
+$S43    dw  77 dup (?)
+
+$S453	=	$ - 0008Ah
+$S454	=	$ - 00088h
+$S455	=	$ - 00086h
+$S456	=	$ - 00084h
+$S457	=	$ - 00082h
+$S458	=	$ - 00080h
+$S466	=	$ - 00062h
+$S467	=	$ - 00060h
+$S40	=	$ - 0005Eh
+$S459	=	$ - 0005Ch
+$S460	=	$ - 0005Ah
+$S461	=	$ - 00058h
+$S462	=	$ - 00056h
+$S57	=	$ - 00054h
+$S35	=	$ - 00046h
+$S36	=	$ - 00044h
+$S33	=	$ - 00042h
+$S37	=	$ - 0003Ah
+$S38	=	$ - 00038h
+$S449	=	$ - 00036h
+$S448	=	$ - 00034h
+$S452	=	$ - 0000Eh
+$S450	=	$ - 0000Ch
+$S451	=	$ - 0000Ah
+$S468	=	$ - 00008h
+__oGen1	dw	00000h
+
+; $S277   struct_1    <00000h>
+$S277   dw  77 dup (?)
+
+$S469	=	$ - 0008Ah
+$S470	=	$ - 00088h
+$S471	=	$ - 00086h
+$S472	=	$ - 00084h
+$S473	=	$ - 00082h
+$S474	=	$ - 00080h
+$S475	=	$ - 0005Eh
+$S280	=	$ - 0005Ch
+$S279	=	$ - 0005Ah
+$S476	=	$ - 00058h
+$S281	=	$ - 00056h
+$S477	=	$ - 00054h
+__oGen	dw	DGROUP:__oGen0
+	dw	DGROUP:__oGen1
+__oBounds	dw	00000h
+$S478	dw	00000h
+$S238	dw	00000h
+$S479	dw	00000h
+__opf	dw	00000h
+__opx	dw	00000h
+$S438	dw	00000h
+$S441	dw	00000h
+
+
+    ; struct_0    <00000h>
+        dw  30 dup (?)
+
+
+__xlock	dw	00000h
+__xgrip1	dw	00000h
+__xgrip2	dw	00000h
+__xgrip3	dw	00000h
+__xsegmin	dw	00004h
+__xsafe	dw	00000h
+$S137	dw	00000h
+$S186	dw	00000h
+$S117	dw	00000h
+$S230	dw	00000h
+	db	000h
+	db	000h
+$S47	dw	00000h
+$S48	dw	00000h
+
+$S368	db	'BASE',000h
+$S369	db	'array dimension',000h
+$S480	db	'SQUAWK',000h
+$S482	db	'XSEG',000h
+$S486	db	'XSAFE',000h
+
+_DATA	ENDS
+
+	END
+

@@ -1,0 +1,14 @@
+BLINKER INCREMENTAL OFF
+// MAP A,S
+
+DEFBEGIN
+   name        FiveOS2 WindowAPI
+   description 'Clipper for OS2 library'
+   exetype     OS2
+   code        moveable discardable
+   data        moveable
+   stacksize   8500
+   heapsize    8500
+DEFEND
+
+search   FiveOS2, OS2Api, Clipper

@@ -1,0 +1,17 @@
+#include "..\INCLUDE\OS2API.CH"
+
+BITMAP IDB_OS2      .\..\bitmaps\os2.bmp
+BITMAP IDB_FIVEOS2  .\..\bitmaps\fiveos2p.bmp
+
+DLGTEMPLATE DLG_ABOUT LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Product information", 1001, 9, 17, 276, 137,WS_VISIBLE,FCF_TITLEBAR | FCF_SYSMENU
+    BEGIN
+        CONTROL         IDB_OS2, IDB_OS2 , 61, 76, 21, 21, WC_STATIC,SS_BITMAP | WS_GROUP | WS_VISIBLE
+        CONTROL         IDB_FIVEOS2, IDB_FIVEOS2 , 161, 76, 21, 21, WC_STATIC,SS_BITMAP | WS_GROUP | WS_VISIBLE
+        CTEXT           "(C) Copyright Five Technologies 1994. All Rights reserved.", 256, 7, 54, 255, 8
+        CTEXT           "OS/2 is a registered trademark of", 258, 7, 44, 255,8
+        CTEXT           "International Business Machines Corp.", 257, 7, 34,255, 8
+        DEFPUSHBUTTON   "~OK", 1, 111, 8, 45, 15
+    END
+END

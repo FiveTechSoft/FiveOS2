@@ -1,0 +1,17 @@
+#include "..\include\OS2Api.ch"
+#include "Clients.h"
+
+icon   1             .\..\icons\FiveOS2.ico
+icon   2             .\..\icons\Phone.ico
+icon   3             .\..\icons\Fax.ico
+
+BITMAP IDB_INFO      .\..\bitmaps\Info.bmp
+BITMAP IDB_CLIENT    .\..\bitmaps\Client.bmp
+BITMAP IDB_EXIT      .\..\bitmaps\Exit.bmp
+BITMAP IDB_CALC      .\..\bitmaps\calc.bmp
+BITMAP IDB_FACE1     .\..\bitmaps\Face1.bmp
+BITMAP IDB_CALENDAR  .\..\bitmaps\calendar.bmp
+BITMAP IDB_ICONEDIT  .\..\bitmaps\IconEdit.bmp
+
+RCINCLUDE "Clients.dlg"
+RCINCLUDE "About.dlg"

@@ -1,0 +1,4141 @@
+; OBJASM version 2.0 released on Jan 3, 1991
+; (C) Copyright 1988,1989,1990,1991 by Robert F. Day.  All rights reserved
+
+	TITLE	D:\CC\PLANKTON\PLANKTON.ASM
+
+	.386p					; Enable USE32/USE16 usage
+	.387					; Enable floating point also
+
+XNCB	SEGMENT	WORD PUBLIC USE16 'DATA'
+XNCB	ENDS
+
+XNC	SEGMENT	WORD PUBLIC USE16 'DATA'
+XNC	ENDS
+
+XNCE	SEGMENT	WORD PUBLIC USE16 'DATA'
+XNCE	ENDS
+
+PLANKTON_TEXT	SEGMENT	WORD PUBLIC USE16 'CODE'
+PLANKTON_TEXT	ENDS
+
+PLANK_DATA SEGMENT WORD PUBLIC USE16 'DATA'
+PLANK_DATA ENDS
+
+_DATA	SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA	ENDS
+
+OPERR	SEGMENT	WORD  USE16 'CONST'
+OPERR	ENDS
+
+DGROUP	GROUP	XNCB, XNC, XNCE, _DATA
+
+	; A2h (162) - Undocumented Comment Record Type
+
+
+	EXTRN		__dvadd:NEAR
+	EXTRN		__fbase:WORD
+	EXTRN		__putc:NEAR
+	EXTRN		__dvlt:NEAR
+	EXTRN		__dvgt:NEAR
+	EXTRN		__salt:WORD
+	EXTRN		__ipushblock:NEAR
+	EXTRN		__dveq:NEAR
+	EXTRN		__dvne:NEAR
+	EXTRN		__dvle:NEAR
+	EXTRN		__eval:WORD
+	EXTRN		__dvge:NEAR
+	EXTRN		_VSTR2:NEAR
+	EXTRN		__ibreakcont:NEAR
+	EXTRN		__iarrayput:NEAR
+	EXTRN		__tos:WORD
+	EXTRN		__iprivates:NEAR
+	EXTRN		__stackslop:WORD
+	EXTRN		_VSTR:NEAR
+	EXTRN		__Set:WORD
+	EXTRN		__eOp:NEAR
+	EXTRN		__ibeginseq:NEAR
+	EXTRN		__stackbase:WORD
+	EXTRN		__strminus:NEAR
+	EXTRN		__fzzcount:WORD
+	EXTRN		__line_num:WORD
+	EXTRN		__ipushflr:NEAR
+	EXTRN		__sysflags:WORD
+	EXTRN		__evStrobe:NEAR
+	EXTRN		__ntrimlen:ABS
+	EXTRN		__izzblock:NEAR
+	EXTRN		__iarrayat:NEAR
+	EXTRN		__ipublics:NEAR
+	EXTRN		__exactcmp:NEAR
+	EXTRN		__imvclean:NEAR
+	EXTRN		__eNoAlias:NEAR
+	EXTRN		__evalhigh:WORD
+	EXTRN		_BYTESNEW2:NEAR
+	EXTRN		__iarrayc2:NEAR
+	EXTRN		__ipushsr:NEAR
+	EXTRN		__ipushmr:NEAR
+	EXTRN		__ipushlr:NEAR
+	EXTRN		__xunlock:NEAR
+	EXTRN		__ipushqf:NEAR
+	EXTRN		_BYTESNEW:NEAR
+	EXTRN		__eNoFunc:ABS
+	EXTRN		__iparams:NEAR
+	EXTRN		__ixblock:NEAR
+	EXTRN		__ePStack:NEAR
+	EXTRN		__iendseq:NEAR
+	EXTRN		__isframe:NEAR
+	EXTRN		__imakela:NEAR
+	EXTRN		__weedbed:ABS
+	EXTRN		__xpushm:NEAR
+	EXTRN		__ipushv:NEAR
+	EXTRN		__pcount:WORD
+	EXTRN		__ipushm:NEAR
+	EXTRN		__izzact:NEAR
+	EXTRN		__ierror:NEAR
+	EXTRN		__isinit:NEAR
+	EXTRN		__ipushf:NEAR
+	EXTRN		__ipopqf:NEAR
+	EXTRN		__isendp:NEAR
+	EXTRN		__efault:NEAR
+	EXTRN		__ltable:DWORD
+	EXTRN		__AllocF:ABS
+	EXTRN		__imakea:NEAR
+	EXTRN		__xpopm:NEAR
+	EXTRN		__dvtol:NEAR
+	EXTRN		__putcl:NEAR
+	EXTRN		__dvmul:NEAR
+	EXTRN		__ipopm:NEAR
+	EXTRN		__dvsub:NEAR
+	EXTRN		__xlock:WORD
+	EXTRN		__ipopf:NEAR
+	EXTRN		__dvdiv:NEAR
+	EXTRN		__dvfml:NEAR
+	EXTRN		__dvneg:NEAR
+	EXTRN		__dvinc:NEAR
+	EXTRN		__dvabs:NEAR
+	EXTRN		__sbase:WORD
+	EXTRN		__FreeF:ABS
+	EXTRN		__lbase:WORD
+	EXTRN		__dvdec:NEAR
+	EXTRN		__icall:NEAR
+
+	PUBLIC		__plank_init		; Located at 4:0000h Type = 1
+	PUBLIC		__TPLANK		; Located at 4:002Dh Type = 1
+	PUBLIC		_ErrorBuild		; Located at 4:0066h Type = 1
+	PUBLIC		_ErrorCycle		; Located at 4:00D3h Type = 1
+	PUBLIC		__PLANKTON		; Located at 4:0133h Type = 1
+	PUBLIC		__SPLANKTON		; Located at 4:01BFh Type = 1
+	PUBLIC		__DPLANKTON		; Located at 4:01DEh Type = 1
+	PUBLIC		_DbgEntry		; Located at 4:0405h Type = 1
+	PUBLIC		_DbgExit		; Located at 4:0423h Type = 1
+	PUBLIC		__NoCode		; Located at 4:0441h Type = 1
+	PUBLIC		__DynBadNews		; Located at 4:0449h Type = 1
+	PUBLIC		__0ERR			; Located at 4:0454h Type = 1
+	PUBLIC		__0ENDPROC		; Located at 4:045Eh Type = 1
+	PUBLIC		__0NOP			; Located at 4:0471h Type = 1
+	PUBLIC		__0LINE			; Located at 4:0474h Type = 1
+	PUBLIC		__0EVENTS		; Located at 4:04B5h Type = 1
+	PUBLIC		__0JMP			; Located at 4:04C9h Type = 1
+	PUBLIC		__0JF			; Located at 4:04D0h Type = 1
+	PUBLIC		__0JFPT			; Located at 4:04EEh Type = 1
+	PUBLIC		__0JT			; Located at 4:050Fh Type = 1
+	PUBLIC		__0JTPF			; Located at 4:052Dh Type = 1
+	PUBLIC		__0JDBG			; Located at 4:054Eh Type = 1
+	PUBLIC		__0UNDEF		; Located at 4:056Eh Type = 1
+	PUBLIC		__0TRUE			; Located at 4:0576h Type = 1
+	PUBLIC		__0FALSE		; Located at 4:0585h Type = 1
+	PUBLIC		__0NULL			; Located at 4:0592h Type = 1
+	PUBLIC		__0ZER0			; Located at 4:05ABh Type = 1
+	PUBLIC		__0ONE1			; Located at 4:05C0h Type = 1
+	PUBLIC		__0PUSHW		; Located at 4:05D7h Type = 1
+	PUBLIC		__0PUSHI		; Located at 4:05ECh Type = 1
+	PUBLIC		__0PUSHN		; Located at 4:0604h Type = 1
+	PUBLIC		__0PUSHC		; Located at 4:062Eh Type = 1
+	PUBLIC		__0PUSHBL		; Located at 4:0656h Type = 1
+	PUBLIC		__0ZZBLOCK		; Located at 4:0688h Type = 1
+	PUBLIC		__0DO			; Located at 4:069Ah Type = 1
+	PUBLIC		__ddo			; Located at 4:0789h Type = 1
+	PUBLIC		__xdo			; Located at 4:0885h Type = 1
+	PUBLIC		__0FUNC			; Located at 4:08A7h Type = 1
+	PUBLIC		__0XBLOCK		; Located at 4:09B8h Type = 1
+	PUBLIC		__xeval			; Located at 4:0A30h Type = 1
+	PUBLIC		__0SEND			; Located at 4:0AFCh Type = 1
+	PUBLIC		__0CALL			; Located at 4:0BEDh Type = 1
+	PUBLIC		__0PCOUNT		; Located at 4:0CD2h Type = 1
+	PUBLIC		__0FRAME		; Located at 4:0CEAh Type = 1
+	PUBLIC		__0SINIT		; Located at 4:0D33h Type = 1
+	PUBLIC		__0SFRAME		; Located at 4:0D5Bh Type = 1
+	PUBLIC		__0PUBLICS		; Located at 4:0D7Bh Type = 1
+	PUBLIC		__0PRIVATES		; Located at 4:0D94h Type = 1
+	PUBLIC		__0PARAMS		; Located at 4:0DADh Type = 1
+	PUBLIC		__0ARRAYATI		; Located at 4:0DC6h Type = 1
+	PUBLIC		__0ARRAYAT		; Located at 4:0DEDh Type = 1
+	PUBLIC		__0ARRAYPUTI		; Located at 4:0E59h Type = 1
+	PUBLIC		__0ARRAYPUT		; Located at 4:0E80h Type = 1
+	PUBLIC		__0MAKEA		; Located at 4:0EECh Type = 1
+	PUBLIC		__0MAKELA		; Located at 4:0F05h Type = 1
+	PUBLIC		__0PUSHL		; Located at 4:0F1Eh Type = 1
+	PUBLIC		__0POPL			; Located at 4:0F63h Type = 1
+	PUBLIC		__0PUSHLR		; Located at 4:0FB1h Type = 1
+	PUBLIC		__0PUSHFL		; Located at 4:0FCAh Type = 1
+	PUBLIC		__0POPFL		; Located at 4:1012h Type = 1
+	PUBLIC		__0PUSHFLR		; Located at 4:105Ah Type = 1
+	PUBLIC		__0PUSHS		; Located at 4:1084h Type = 1
+	PUBLIC		__0POPS			; Located at 4:109Bh Type = 1
+	PUBLIC		__0PUSHSR		; Located at 4:10B2h Type = 1
+	PUBLIC		__0PUSHM		; Located at 4:10CBh Type = 1
+	PUBLIC		__0MPUSHM		; Located at 4:10F3h Type = 1
+	PUBLIC		__0POPM			; Located at 4:1111h Type = 1
+	PUBLIC		__0MPOPM		; Located at 4:1139h Type = 1
+	PUBLIC		__0PUSHMR		; Located at 4:1157h Type = 1
+	PUBLIC		__0MPUSHMR		; Located at 4:117Fh Type = 1
+	PUBLIC		__0PUSHF		; Located at 4:119Dh Type = 1
+	PUBLIC		__0MPUSHF		; Located at 4:11C5h Type = 1
+	PUBLIC		__0POPF			; Located at 4:11E3h Type = 1
+	PUBLIC		__0MPOPF		; Located at 4:120Bh Type = 1
+	PUBLIC		__0PUSHQF		; Located at 4:1229h Type = 1
+	PUBLIC		__0MPUSHQF		; Located at 4:1251h Type = 1
+	PUBLIC		__0POPQF		; Located at 4:126Fh Type = 1
+	PUBLIC		__0MPOPQF		; Located at 4:1297h Type = 1
+	PUBLIC		__0PUSHV		; Located at 4:12B5h Type = 1
+	PUBLIC		__0MPUSHV		; Located at 4:12DDh Type = 1
+	PUBLIC		__0PUSHRV		; Located at 4:12FBh Type = 1
+	PUBLIC		__0SAVE_RET		; Located at 4:1319h Type = 1
+	PUBLIC		__0DOOP			; Located at 4:1320h Type = 1
+	PUBLIC		__0QSELF		; Located at 4:1326h Type = 1
+	PUBLIC		__0POP			; Located at 4:1330h Type = 1
+	PUBLIC		__0PUSHA		; Located at 4:1336h Type = 1
+	PUBLIC		__0MPUSHA		; Located at 4:138Fh Type = 1
+	PUBLIC		__0PUSHP		; Located at 4:13B1h Type = 1
+	PUBLIC		__0MPUSHP		; Located at 4:13B4h Type = 1
+	PUBLIC		__0SYMBOL		; Located at 4:13B7h Type = 1
+	PUBLIC		__0SYMF			; Located at 4:13DBh Type = 1
+	PUBLIC		__0MSYMBOL		; Located at 4:1404h Type = 1
+	PUBLIC		__0MSYMF		; Located at 4:141Ah Type = 1
+	PUBLIC		__0BEGIN_SEQ		; Located at 4:1435h Type = 1
+	PUBLIC		__0BREAK		; Located at 4:145Ch Type = 1
+	PUBLIC		__0END_SEQ		; Located at 4:1463h Type = 1
+	PUBLIC		_CoerceNums		; Located at 4:1476h Type = 1
+	PUBLIC		_CoerceDnums		; Located at 4:14EDh Type = 1
+	PUBLIC		__0JNEI			; Located at 4:159Dh Type = 1
+	PUBLIC		__0JISW			; Located at 4:15DDh Type = 1
+	PUBLIC		__xeq			; Located at 4:161Dh Type = 1
+	PUBLIC		__0EEQ			; Located at 4:164Ah Type = 1
+	PUBLIC		__0EQ			; Located at 4:1753h Type = 1
+	PUBLIC		__0NE			; Located at 4:181Ch Type = 1
+	PUBLIC		__0LT			; Located at 4:18E8h Type = 1
+	PUBLIC		__xlt			; Located at 4:19A4h Type = 1
+	PUBLIC		__0LE			; Located at 4:19D9h Type = 1
+	PUBLIC		__0GT			; Located at 4:1A95h Type = 1
+	PUBLIC		__0GE			; Located at 4:1B51h Type = 1
+	PUBLIC		__0NOT			; Located at 4:1C0Dh Type = 1
+	PUBLIC		__0AND			; Located at 4:1C21h Type = 1
+	PUBLIC		__0OR			; Located at 4:1C3Eh Type = 1
+	PUBLIC		__0NEGATE		; Located at 4:1C5Bh Type = 1
+	PUBLIC		__0ABS			; Located at 4:1CBAh Type = 1
+	PUBLIC		__0PLUS			; Located at 4:1D23h Type = 1
+	PUBLIC		__0MINUS		; Located at 4:1E9Ch Type = 1
+	PUBLIC		__0MULT			; Located at 4:1F7Bh Type = 1
+	PUBLIC		__0DIVIDE		; Located at 4:1FFDh Type = 1
+	PUBLIC		__0DEC			; Located at 4:2098h Type = 1
+	PUBLIC		__0INC			; Located at 4:20FBh Type = 1
+	PUBLIC		__pfversion		; Located at 5:0000h Type = 4
+	PUBLIC		__pflock		; Located at 5:0002h Type = 4
+	PUBLIC		__dyn_getpp		; Located at 5:0004h Type = 5
+	PUBLIC		__dbgcomm		; Located at 5:0008h Type = 4
+
+struct_0	struc
+s0m_0	db	36 dup (?)
+struct_0	ends
+
+
+XNC	SEGMENT
+
+
+	dd	PLANKTON_TEXT:__plank_init
+
+XNC	ENDS
+
+PLANK_DATA SEGMENT
+PLANKTON_TEXT	SEGMENT
+	assume	cs: PLANKTON_TEXT
+
+
+__plank_init:
+	push	si
+	push	di
+	mov	ax,seg __weedbed
+	assume	ds: DGROUP
+	mov	$S1,ax
+	mov	ax,offset __weedbed
+	mov	$S2,ax
+	mov	si,offset DGROUP:__ltable
+	mov	cx,0052h
+$L4:	lodsw
+	mov	dx,ax
+	lodsw
+	or	ax,dx
+	jnz	$L3
+	mov	word ptr [si-004h],offset PLANKTON_TEXT:__NoCode
+	mov	word ptr [si-002h],seg PLANKTON_TEXT
+$L3:	loop	$L4
+	sub	ax,ax
+	pop	di
+	pop	si
+	retf
+__TPLANK:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	les	si,dword ptr [bp+006h]
+	cld
+	sub	ax,ax
+	lods	byte ptr es:[si]
+	mov	bx,ax
+	shl	bx,1
+	cmp	al,7Eh
+	jnc	$L5
+	mov	di,__tos
+	call	[bx+$S6]
+	mov	__tos,di
+	jmp	short $L7
+	nop
+$L5:	shl	bx,1
+	mov	di,es
+	call	dword ptr [bx+__ltable - 001F8h]
+	mov	es,di
+$L7:	mov	dx,si
+	les	si,dword ptr [bp+006h]
+	sub	dx,si
+	pop	di
+	pop	si
+	pop	bp
+	retf
+_ErrorBuild:
+	push	es
+	push	si
+	push	di
+	push	cx
+	mov	bx,0000h
+	test	ax,8000h
+	jz	$L8
+	or	bx,+002h
+$L8:	test	ax,4000h
+	jz	$L9
+	or	bx,+001h
+$L9:	mov	word ptr $S10.s0m_0 + 00006h,bx
+	mov	word ptr $S10.s0m_0,0002h
+	mov	bx,ax
+	and	bx,07FFh
+	add	bx,03E8h
+    mov word ptr $S11,bx
+	mov	bx,ax
+	and	bx,07C0h
+	mov	cl,06h
+	shr	bx,cl
+	mov	word ptr $S10.s0m_0 + 00002h,bx
+	mov	bx,ax
+	and	bx,+03Fh
+	dec	bx
+	shl	bx,1
+	mov	dx,seg OPERR
+	mov	es,dx
+	assume	es: OPERR
+	mov	bx,es:[bx+$S12]
+    mov word ptr $S13,bx
+	mov	word ptr $S14,es
+	mov	word ptr $S15,offset OPERR:$S16
+	mov	word ptr $S17,es
+	and	ax,3800h
+	mov	cl,0Bh
+	shr	ax,cl
+	pop	cx
+	pop	di
+	pop	si
+	pop	es
+	ret
+_ErrorCycle:
+	mov	__tos,di
+	test	word ptr __sysflags,0040h
+	jz	$L18
+	mov	ax,0FFFFh
+	ret
+$L18:	cmp	ax,0FFFFh
+	jz	$L19
+	push	es
+	push	cx
+	call	_ErrorBuild
+	push	ax
+	push	ds
+	mov	bx,offset DGROUP:$S10.s0m_0
+	push	bx
+	call	far ptr __eOp
+	add	sp,+006h
+	pop	cx
+	pop	es
+	mov	di,__tos
+	cmp	ax,0000h
+	jnz	$L20
+	ret
+$L20:	cmp	ax,0001h
+	jnz	$L19
+	sub	si,cx
+	sub	ax,ax
+	ret
+$L19:	mov	__salt,ax
+	push	es
+	push	bp
+	call	far ptr __ibreakcont
+	add	sp,+002h
+	pop	es
+	mov	di,__tos
+	or	ax,ax
+	jz	$L21
+	mov	si,ax
+	sub	ax,ax
+	mov	__salt,ax
+	ret
+$L21:	mov	ax,0FFFFh
+	ret
+__PLANKTON:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	push	$S22
+	push	$S23
+	les	bx,dword ptr [bp+00Ah]
+	mov	word ptr $S22,es
+	mov	$S23,bx
+	les	si,dword ptr [bp+006h]
+$S30:	mov	bx,__stackbase
+	add	bx,__stackslop
+	cmp	bx,sp
+	jbe	$L24
+	call	far ptr __ePStack
+	jmp	short $L25
+	nop
+$L24:	mov	di,__tos
+	cmp	di,__evalhigh
+	jbe	$L26
+	push	es
+	call	far ptr __efault
+	pop	es
+$L26:	or	word ptr __sysflags,+001h
+	cld
+	sub	ax,ax
+$L28:	lods	byte ptr es:[si]
+	mov	bx,ax
+	shl	bx,1
+	cmp	al,7Eh
+	jnc	$L27
+	call	[bx+$S6]
+	or	ax,ax
+	jz	$L28
+	jmp	short $L29
+$L27:	shl	bx,1
+	mov	__tos,di
+	mov	di,es
+	call	dword ptr [bx+__ltable - 001F8h]
+	mov	es,di
+	mov	di,__tos
+	or	ax,ax
+	jz	$L28
+	mov	cx,0001h
+$L29:	call	_ErrorCycle
+	or	ax,ax
+	jz	$L28
+$L25:	pop	$S23
+	pop	$S22
+	mov	__tos,di
+	pop	di
+	pop	si
+	pop	bp
+	retf
+__SPLANKTON:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	push	$S22
+	push	$S23
+	les	bx,dword ptr $S2
+	mov	word ptr $S22,es
+	mov	$S23,bx
+	les	si,dword ptr [bp+006h]
+	jmp	$S30
+__DPLANKTON:
+	push	bp
+	mov	bp,sp
+	sub	sp,+004h
+	push	si
+	push	di
+	push	$S22
+	push	$S23
+	les	bx,dword ptr $S2
+	mov	word ptr $S22,es
+	mov	$S23,bx
+	or	word ptr __sysflags,+003h
+	mov	bx,__stackbase
+	add	bx,__stackslop
+	cmp	bx,sp
+	jbe	$L31
+	call	far ptr __ePStack
+	jmp	$S32
+$L31:	mov	di,__tos
+	cmp	di,__evalhigh
+	jbe	$L33
+	call	far ptr __efault
+$L33:	cld
+	mov	word ptr [bp-002h],0000h
+	mov	si,[bp+008h]
+$L35:	add	si,[bp-002h]
+$S39:	mov	ax,si
+	and	ax,0FC00h
+	mov	[bp-002h],ax
+	mov	ax,si
+	mov	al,ah
+	sub	ah,ah
+	shr	ax,1
+	shr	ax,1
+	add	ax,[bp+006h]
+	and	si,03FFh
+	push	ax
+	call	dword ptr __dyn_getpp
+	add	sp,+002h
+	or	ax,dx
+	jnz	$L34
+	mov	ax,0309h
+	push	ax
+	call	far ptr __ierror
+$L34:	mov	ax,__pfversion
+	mov	[bp-004h],ax
+	mov	es,dx
+	sub	ax,ax
+$L37:	cmp	si,0400h
+	jnc	$L35
+	mov	bx,__pfversion
+	cmp	bx,[bp-004h]
+	jnz	$L35
+	lods	byte ptr es:[si]
+	mov	bx,ax
+	shl	bx,1
+	cmp	al,7Eh
+	jnc	$L36
+	call	[bx+$S6]
+	or	ax,ax
+	jz	$L37
+	jmp	short $L38
+$L36:	shl	bx,1
+	mov	__tos,di
+	mov	di,es
+	call	dword ptr [bx+__ltable - 001F8h]
+	mov	es,di
+	mov	di,__tos
+	or	ax,ax
+	jz	$L37
+	mov	cx,0001h
+$L38:	add	si,[bp-002h]
+	mov	word ptr [bp-002h],0000h
+	call	_ErrorCycle
+	or	ax,ax
+	jnz	$S32
+	jmp	$S39
+$S32:	pop	$S23
+	pop	$S22
+	mov	__tos,di
+	pop	di
+	pop	si
+	mov	sp,bp
+	pop	bp
+	retf
+$S65:	add	sp,+002h
+	mov	__tos,di
+	lods	byte ptr es:[si]
+	mov	di,ax
+	inc	di
+	mov	word ptr __pflock,0001h
+	push	es
+	push	ax
+	call	far ptr _BYTESNEW
+	pop	es
+	mov	word ptr __pflock,0000h
+	mov	cx,di
+	mov	bx,cx
+	add	bx,si
+	cmp	bx,0400h
+	jnbe	$L40
+	push	ds
+	mov	bx,es
+	mov	ds,bx
+	mov	es,dx
+	mov	di,ax
+	shr	cx,1
+	repz	movsw
+	jnc	$L41
+	movsb
+$L41:	mov	es,bx
+	pop	ds
+$S45:	mov	di,__tos
+	add	di,+00Eh
+	mov	word ptr [di],0400h
+	mov	bx,__eval
+	mov	ax,[bx+002h]
+	mov	[di+002h],ax
+	mov	ax,[bx+006h]
+	mov	[di+006h],ax
+	mov	ax,[bx+008h]
+	mov	[di+008h],ax
+	sub	ax,ax
+	jmp	$L37
+$L40:	mov	bx,cx
+	mov	cx,0400h
+	sub	cx,si
+	sub	bx,cx
+	push	bx
+	push	ds
+	mov	bx,es
+	mov	ds,bx
+	mov	di,ax
+	mov	es,dx
+	shr	cx,1
+	repz	movsw
+	jnc	$L42
+	movsb
+$L42:	pop	ds
+	sub	di,ax
+	mov	ax,[bp-002h]
+	add	ax,si
+	and	ax,0FC00h
+	mov	[bp-002h],ax
+	mov	al,ah
+	sub	ah,ah
+	shr	ax,1
+	shr	ax,1
+	add	ax,[bp+006h]
+	push	ax
+	call	dword ptr __dyn_getpp
+	add	sp,+002h
+	pop	cx
+	or	ax,dx
+	jz	$L43
+	mov	ax,__pfversion
+	mov	[bp-004h],ax
+	mov	word ptr __pflock,0001h
+	push	dx
+	push	cx
+	push	__eval
+	call	far ptr _VSTR
+	mov	es,dx
+	add	di,ax
+	pop	cx
+	pop	dx
+	mov	word ptr __pflock,0000h
+	push	ds
+	mov	ds,dx
+	sub	si,si
+	shr	cx,1
+	repz	movsw
+	jnc	$L44
+	movsb
+$L44:	pop	ds
+	mov	es,dx
+	jmp	$S45
+$L43:	mov	ax,030Ah
+	push	ax
+	call	far ptr __ierror
+$S67:	add	sp,+002h
+	lods	word ptr es:[si]
+	push	ax
+	push	es
+	mov	cx,ax
+	mov	ax,[bp-002h]
+	add	ax,si
+	mov	bx,[bp+006h]
+	push	$S22
+	push	$S23
+	push	cx
+	push	bx
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushblock
+	mov	di,__tos
+	add	sp,+00Ah
+	pop	es
+	pop	cx
+	add	si,cx
+	add	cx,+003h
+	sub	ax,ax
+	jmp	$L37
+$S126:	add	sp,+002h
+	push	es
+	lods	word ptr es:[si]
+	add	ax,si
+	add	ax,[bp-002h]
+	push	ax
+	push	bp
+	mov	__tos,di
+	call	far ptr __ibeginseq
+	mov	di,__tos
+	add	sp,+004h
+
+	pop	es
+	mov	cx,0003h
+	jmp	$L37
+_DbgEntry:
+	push	es
+	push	si
+	push	ax
+	push	cx
+    mov ax, word ptr $S46
+    or  ax, word ptr $S47
+	jz	$L48
+	mov	__tos,di
+	call	dword ptr $S46
+	mov	di,__tos
+$L48:	pop	cx
+	pop	ax
+	pop	si
+	pop	es
+	ret
+_DbgExit:
+	push	es
+	push	si
+	push	ax
+	push	cx
+    mov ax, word ptr $S46
+    or  ax, word ptr $S47
+	jz	$L49
+	mov	__tos,di
+	call	dword ptr $S46
+	mov	di,__tos
+$L49:	pop	cx
+	pop	ax
+	pop	si
+	pop	es
+	ret
+__NoCode:
+	push	si
+	push	di
+	call	__0ERR
+	pop	di
+	pop	si
+	retf
+__DynBadNews:
+	push	si
+	push	di
+	mov	ax,0305h
+	push	ax
+	call	far ptr __ierror
+__0ERR:	mov	ax,03E7h
+	push	ax
+	call	far ptr __ierror
+	ret
+__0ENDPROC:
+	add	sp,+002h
+	sub	ax,ax
+	test	word ptr __sysflags,0002h
+	jnz	$L50
+	jmp	$L25
+$L50:	jmp	$S32
+__0NOP:	sub	ax,ax
+	ret
+__0LINE:
+	lods	word ptr es:[si]
+	mov	__line_num,ax
+    mov ax, word ptr $S51
+    or  ax, word ptr $S52
+	jnz	$L53
+	ret
+$L53:	test	word ptr __sysflags,0010h
+	jz	$L54
+	push	es
+	mov	__tos,di
+	call	far ptr __evStrobe
+	mov	di,__lbase
+	les	di,dword ptr [di+00Ah]
+	les	di,dword ptr es:[di+008h]
+	push	es
+	push	di
+	push	__line_num
+	call	dword ptr $S51
+	add	sp,+006h
+	mov	di,__tos
+	pop	es
+$L54:	sub	ax,ax
+	ret
+__0EVENTS:
+	mov	__tos,di
+	mov	di,es
+	call	far ptr __evStrobe
+	mov	es,di
+	mov	di,__tos
+	sub	ax,ax
+	ret
+__0JMP:	lods	word ptr es:[si]
+	add	si,ax
+	sub	ax,ax
+	ret
+__0JF:	lods	word ptr es:[si]
+	cmp	word ptr [di],0080h
+	jnz	$L55
+	test	word ptr [di+006h],0FFFFh
+	jnz	$L56
+	add	si,ax
+$L56:	sub	di,+00Eh
+	sub	ax,ax
+	ret
+$L55:	mov	ax,0842h
+	mov	cx,0003h
+	ret
+__0JFPT:
+	lods	word ptr es:[si]
+	cmp	word ptr [di],0080h
+	jnz	$L57
+	test	word ptr [di+006h],0FFFFh
+	jz	$L58
+	sub	di,+00Eh
+	sub	ax,ax
+	ret
+$L58:	add	si,ax
+	sub	ax,ax
+	ret
+$L57:	mov	ax,0842h
+	mov	cx,0003h
+	ret
+__0JT:	lods	word ptr es:[si]
+	cmp	word ptr [di],0080h
+	jnz	$L59
+	test	word ptr [di+006h],0FFFFh
+	jz	$L60
+	add	si,ax
+$L60:	sub	di,+00Eh
+	sub	ax,ax
+	ret
+$L59:	mov	ax,0842h
+	mov	cx,0003h
+	ret
+__0JTPF:
+	lods	word ptr es:[si]
+	cmp	word ptr [di],0080h
+	jnz	$L61
+	test	word ptr [di+006h],0FFFFh
+	jnz	$L62
+	sub	di,+00Eh
+	sub	ax,ax
+	ret
+$L62:	add	si,ax
+	sub	ax,ax
+	ret
+$L61:	mov	ax,0842h
+	mov	cx,0003h
+	ret
+__0JDBG:
+	lods	word ptr es:[si]
+	test	word ptr __dbgcomm,0FFFFh
+	jnz	$L63
+	add	si,ax
+	or	word ptr __sysflags,+010h
+    mov ax, word ptr $S46
+    or  ax, word ptr $S47
+	jz	$L63
+	call	_DbgEntry
+$L63:	sub	ax,ax
+	ret
+__0UNDEF:
+	add	di,+00Eh
+	sub	ax,ax
+	mov	[di],ax
+	ret
+__0TRUE:
+	add	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+__0FALSE:
+	add	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+__0NULL:
+	mov	__tos,di
+	push	es
+	sub	ax,ax
+	push	ax
+	push	ax
+	call	far ptr __putc
+	add	sp,+004h
+	pop	es
+	mov	di,__tos
+	sub	ax,ax
+	ret
+__0ZER0:
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	mov	word ptr [di+002h],000Ah
+	sub	ax,ax
+	mov	[di+006h],ax
+	mov	[di+008h],ax
+	ret
+__0ONE1:
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	mov	word ptr [di+002h],000Ah
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	mov	[di+008h],ax
+	ret
+__0PUSHW:
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	lods	word ptr es:[si]
+	mov	[di+006h],ax
+	sub	ax,ax
+	mov	[di+008h],ax
+	mov	[di+002h],ax
+	ret
+__0PUSHI:
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	mov	word ptr [di+002h],000Ah
+	lods	word ptr es:[si]
+	cwd
+	mov	[di+006h],ax
+	mov	[di+008h],dx
+	sub	ax,ax
+	ret
+__0PUSHN:
+	add	di,+00Eh
+	mov	word ptr [di],0008h
+	lods	byte ptr es:[si]
+	mov	[di+002h],ax
+	lods	byte ptr es:[si]
+	mov	[di+004h],ax
+	mov	dx,ds
+	mov	bx,es
+	mov	ds,bx
+	mov	es,dx
+	add	di,+006h
+	movsw
+	movsw
+	movsw
+	movsw
+	mov	ds,dx
+	mov	es,bx
+	sub	di,+00Eh
+	sub	ax,ax
+	ret
+__0PUSHC:
+	test	word ptr __sysflags,0002h
+	jz	$L64
+	jmp	$S65
+$L64:	lods	byte ptr es:[si]
+	push	es
+	mov	__tos,di
+	push	ax
+	push	es
+	push	si
+	add	si,ax
+	inc	si
+	call	far ptr __putcl
+	add	sp,+006h
+	mov	di,__tos
+	pop	es
+	sub	ax,ax
+	ret
+__0PUSHBL:
+	test	word ptr __sysflags,0002h
+	jz	$L66
+	jmp	$S67
+$L66:	lods	word ptr es:[si]
+	push	ax
+	push	es
+	push	$S22
+	push	$S23
+	push	ax
+	push	es
+	push	si
+	mov	__tos,di
+	call	far ptr __ipushblock
+	mov	di,__tos
+	add	sp,+00Ah
+	pop	es
+	pop	cx
+	add	si,cx
+	add	cx,+003h
+	ret
+__0ZZBLOCK:
+	mov	__tos,di
+	mov	di,es
+	call	far ptr __izzblock
+	mov	es,di
+	mov	di,__tos
+	ret
+__0DO:	push	es
+	mov	bx,__eval
+	mov	word ptr [bx],0000h
+	mov	bx,__lbase
+	mov	ax,__pcount
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__sysflags,ax
+	mov	__line_num,ax
+	lods	word ptr es:[si]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+	les	bx,dword ptr [bx+00Ah]
+	mov	ax,es:[bx+00Ch]
+	or	ax,es:[bx+00Eh]
+	jz	$L68
+$L72:	mov	__tos,di
+	call	dword ptr es:[bx+00Ch]
+	mov	di,__tos
+	mov	di,__lbase
+	test	word ptr [di],8000h
+	jz	$L69
+	call	far ptr __izzact
+$L69:	test	word ptr __sysflags,0008h
+	jz	$L70
+	call	far ptr __imvclean
+$L70:	mov	bx,[di+002h]
+	mov	__lbase,bx
+	mov	ax,[bx+012h]
+	mov	__line_num,ax
+	mov	ax,[bx+010h]
+	mov	__sysflags,ax
+	sub	ax,ax
+	mov	al,[bx+004h]
+	mov	__pcount,ax
+	mov	al,[bx+005h]
+	mov	__fzzcount,ax
+	mov	ax,[bx+018h]
+	mov	__sbase,ax
+	mov	ax,[bx+01Ah]
+	mov	__fbase,ax
+	sub	di,+00Eh
+	test	word ptr __xlock,0FFFFh
+	jz	$L71
+	call	far ptr __xunlock
+$L71:	pop	es
+	mov	ax,__salt
+	mov	cx,0000h
+	call	_DbgExit
+	ret
+$L68:	mov	word ptr es:[bx+00Ch],offset __eNoFunc
+	mov	word ptr es:[bx+00Eh],seg __eNoFunc
+    jmp $L72
+__ddo:	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	mov	di,__tos
+	mov	bx,__eval
+	mov	word ptr [bx],0000h
+	mov	bx,__lbase
+	mov	ax,__pcount
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__line_num,ax
+	mov	word ptr __sysflags,0040h
+	mov	ax,[bp+006h]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+
+	les	bx,dword ptr [bx+00Ah]
+	mov	ax,es:[bx+00Ch]
+	or	ax,es:[bx+00Eh]
+	jnz	$L73
+	mov	word ptr __salt,0FFFFh
+	jmp	short $L74
+	nop
+$L73:	mov	__tos,di
+	call	dword ptr es:[bx+00Ch]
+	mov	di,__tos
+$L74:	mov	di,__lbase
+	test	word ptr [di],8000h
+	jz	$L75
+	call	far ptr __izzact
+$L75:	test	word ptr __sysflags,0008h
+	jz	$L76
+	call	far ptr __imvclean
+$L76:	mov	bx,[di+002h]
+	mov	__lbase,bx
+	mov	ax,[bx+012h]
+	mov	__line_num,ax
+	mov	ax,[bx+010h]
+	mov	__sysflags,ax
+	sub	ax,ax
+	mov	al,[bx+004h]
+	mov	__pcount,ax
+	mov	al,[bx+005h]
+	mov	__fzzcount,ax
+	mov	ax,[bx+018h]
+	mov	__sbase,ax
+	mov	ax,[bx+01Ah]
+	mov	__fbase,ax
+	sub	di,+00Eh
+	test	word ptr __xlock,0FFFFh
+	jz	$L77
+	call	far ptr __xunlock
+$L77:	mov	ax,__salt
+	mov	cx,0000h
+	call	_DbgExit
+	mov	__tos,di
+	pop	di
+	pop	si
+	pop	bp
+	retf
+__xdo:	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	mov	ax,[bp+006h]
+	mov	$S78,ax
+	mov	ax,seg DGROUP
+	mov	es,ax
+	mov	si,offset DGROUP:$S78
+	mov	di,__tos
+	call	__0DO
+	mov	__tos,di
+	pop	di
+	pop	si
+	pop	bp
+	retf
+__0FUNC:
+	push	es
+	mov	bx,__eval
+	mov	word ptr [bx],0000h
+	mov	bx,__lbase
+	mov	ax,__pcount
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__sysflags,ax
+	mov	__line_num,ax
+	lods	word ptr es:[si]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+	les	bx,dword ptr [bx+00Ah]
+	mov	ax,es:[bx+00Ch]
+	or	ax,es:[bx+00Eh]
+	jnz	$L79
+	jmp	$S80
+$L79:	mov	__tos,di
+	call	dword ptr es:[bx+00Ch]
+	mov	di,__tos
+	mov	di,__lbase
+	test	word ptr [di],8000h
+	jz	$L81
+	call	far ptr __izzact
+$L81:	test	word ptr __sysflags,0008h
+	jz	$L82
+	call	far ptr __imvclean
+$L82:	mov	bx,[di+002h]
+	mov	__lbase,bx
+	mov	ax,[bx+012h]
+	mov	__line_num,ax
+	mov	ax,[bx+010h]
+	mov	__sysflags,ax
+	sub	ax,ax
+	mov	al,[bx+004h]
+	mov	__pcount,ax
+	mov	al,[bx+005h]
+	mov	__fzzcount,ax
+	mov	ax,[bx+018h]
+	mov	__sbase,ax
+	mov	ax,[bx+01Ah]
+	mov	__fbase,ax
+	cmp	word ptr __salt,-001h
+	jz	$L83
+	mov	dx,ds
+	mov	es,dx
+	mov	bx,__eval
+	mov	dx,si
+	mov	si,bx
+	mov	cx,0007h
+	repz	movsw
+	mov	si,dx
+	mov	word ptr [bx],0000h
+	sub	di,+00Eh
+$L83:	test	word ptr __xlock,0FFFFh
+	jz	$L84
+	call	far ptr __xunlock
+$L84:	pop	es
+	mov	ax,__salt
+	mov	cx,0000h
+	call	_DbgExit
+	ret
+$S80:	mov	word ptr es:[bx+00Ch],offset __eNoFunc
+	mov	word ptr es:[bx+00Eh],seg __eNoFunc
+	jmp	$L79
+__0XBLOCK:
+	push	es
+	mov	bx,__eval
+	mov	word ptr [bx],0000h
+	mov	bx,__lbase
+	mov	ax,__pcount
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__sysflags,ax
+	mov	__line_num,ax
+	lods	word ptr es:[si]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+	mov	__tos,di
+	call	far ptr __ixblock
+	mov	di,__tos
+	mov	di,__lbase
+	jmp	$L81
+__xeval:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	mov	di,__tos
+	mov	bx,__eval
+	mov	word ptr [bx],0000h
+	mov	bx,__lbase
+	mov	ax,__pcount
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__sysflags,ax
+	mov	__line_num,ax
+	mov	ax,[bp+006h]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+	mov	__tos,di
+	call	far ptr __ixblock
+	mov	di,__tos
+	mov	__salt,ax
+	mov	di,__lbase
+	test	word ptr __sysflags,0008h
+	jz	$L85
+	call	far ptr __imvclean
+$L85:	mov	bx,[di+002h]
+	mov	__lbase,bx
+	mov	ax,[bx+012h]
+	mov	__line_num,ax
+	mov	ax,[bx+010h]
+	mov	__sysflags,ax
+	sub	ax,ax
+	mov	al,[bx+004h]
+	mov	__pcount,ax
+	mov	al,[bx+005h]
+	mov	__fzzcount,ax
+	mov	ax,[bx+018h]
+	mov	__sbase,ax
+	mov	ax,[bx+01Ah]
+	mov	__fbase,ax
+	sub	di,+00Eh
+	mov	__tos,di
+	mov	ax,__salt
+	call	_DbgExit
+	pop	di
+	pop	si
+	pop	bp
+	retf
+__0SEND:
+	push	es
+	mov	bx,__eval
+	mov	word ptr [bx],0000h
+	mov	bx,__lbase
+	mov	ax,__pcount
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__sysflags,ax
+	mov	__line_num,ax
+	lods	word ptr es:[si]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+	mov	__tos,di
+	call	far ptr __isendp
+	mov	$S86,ax
+	mov	$S87,dx
+	call	dword ptr $S86
+	mov	di,__tos
+	mov	di,__lbase
+	test	word ptr [di],8000h
+	jz	$L88
+	call	far ptr __izzact
+$L88:	test	word ptr __sysflags,0008h
+	jz	$L89
+	call	far ptr __imvclean
+$L89:	mov	bx,[di+002h]
+	mov	__lbase,bx
+	mov	ax,[bx+012h]
+	mov	__line_num,ax
+	mov	ax,[bx+010h]
+	mov	__sysflags,ax
+	sub	ax,ax
+	mov	al,[bx+004h]
+	mov	__pcount,ax
+	mov	al,[bx+005h]
+	mov	__fzzcount,ax
+	mov	ax,[bx+018h]
+	mov	__sbase,ax
+	mov	ax,[bx+01Ah]
+	mov	__fbase,ax
+	cmp	word ptr __salt,-001h
+	jz	$L90
+	mov	dx,ds
+	mov	es,dx
+	mov	bx,__eval
+	mov	dx,si
+	mov	si,bx
+	mov	cx,0007h
+	repz	movsw
+	mov	si,dx
+	mov	word ptr [bx],0000h
+	sub	di,+00Eh
+$L90:	pop	es
+	mov	ax,__salt
+	mov	cx,0000h
+	call	_DbgExit
+	ret
+__0CALL:
+	push	es
+	mov	bx,__lbase
+	mov	ax,__pcount
+
+	mov	[bx+004h],al
+	mov	ax,__fzzcount
+	mov	[bx+005h],al
+	mov	ax,__sbase
+	mov	[bx+018h],ax
+	mov	ax,__fbase
+	mov	[bx+01Ah],ax
+	mov	ax,__sysflags
+	mov	[bx+010h],ax
+	mov	ax,__line_num
+	mov	[bx+012h],ax
+	sub	ax,ax
+	mov	__sysflags,ax
+	mov	__line_num,ax
+	lods	word ptr es:[si]
+	mov	__pcount,ax
+	mov	dx,bx
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	mov	bx,di
+	sub	bx,ax
+	mov	__lbase,bx
+	mov	[bx+002h],dx
+	mov	ax,[bx+006h]
+	mov	[bx+00Ah],ax
+	mov	ax,[bx+008h]
+	mov	[bx+00Ch],ax
+	les	bx,dword ptr [bx+00Ah]
+	mov	ax,es:[bx+00Ch]
+	or	ax,es:[bx+00Eh]
+	jz	$L91
+$L95:	mov	__tos,di
+	call	far ptr __icall
+	mov	di,__tos
+	mov	di,__lbase
+	test	word ptr [di],8000h
+	jz	$L92
+	call	far ptr __izzact
+$L92:	test	word ptr __sysflags,0008h
+	jz	$L93
+	call	far ptr __imvclean
+$L93:	mov	bx,[di+002h]
+	mov	__lbase,bx
+	mov	ax,[bx+012h]
+	mov	__line_num,ax
+	mov	ax,[bx+010h]
+	mov	__sysflags,ax
+	sub	ax,ax
+	mov	al,[bx+004h]
+	mov	__pcount,ax
+	mov	al,[bx+005h]
+	mov	__fzzcount,ax
+	mov	ax,[bx+018h]
+	mov	__sbase,ax
+	mov	ax,[bx+01Ah]
+	mov	__fbase,ax
+	sub	di,+00Eh
+	test	word ptr __xlock,0FFFFh
+	jz	$L94
+	call	far ptr __xunlock
+$L94:	pop	es
+	mov	ax,__salt
+	mov	cx,0000h
+	ret
+$L91:	mov	word ptr es:[bx+00Ch],offset __eNoFunc
+	mov	word ptr es:[bx+00Eh],seg __eNoFunc
+    jmp $L95
+__0PCOUNT:
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	mov	word ptr [di+002h],000Ah
+	mov	ax,__pcount
+	mov	[di+006h],ax
+	sub	ax,ax
+	mov	[di+008h],ax
+	ret
+__0FRAME:
+	lods	word ptr es:[si]
+	sub	ch,ch
+	mov	cl,ah
+	sub	bh,bh
+	mov	bl,al
+	mov	__fzzcount,bx
+	add	__fzzcount,cx
+	mov	ax,__pcount
+	sub	ax,bx
+	jnbe	$L96
+	neg	ax
+	add	cx,ax
+$L101:	jcxz	$L97
+	sub	ax,ax
+$L98:	add	di,+00Eh
+	mov	[di],ax
+	loop	$L98
+$L97:	cmp	di,__evalhigh
+	jc	$L99
+	mov	__tos,di
+	push	es
+	call	far ptr __efault
+	pop	es
+	sub	ax,ax
+$L99:	ret
+$L96:	push	cx
+	mov	cx,ax
+$L100:	push	cx
+	call	__0POP
+	pop	cx
+	loop	$L100
+	pop	cx
+	jmp	short $L101
+__0SINIT:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __isinit
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0SFRAME:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+    les ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	call	far ptr __isframe
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0PUBLICS:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipublics
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0PRIVATES:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __iprivates
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0PARAMS:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __iparams
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0ARRAYATI:
+	push	es
+	lods	word ptr es:[si]
+	cmp	word ptr [di],8000h
+	jnz	$L102
+	push	ax
+	mov	__tos,di
+	call	far ptr __iarrayat
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+$L102:	pop	es
+	mov	ax,8844h
+	mov	cx,0003h
+	ret
+__0ARRAYAT:
+	push	es
+	cmp	word ptr [di-00Eh],8000h
+	jnz	$L103
+	cmp	word ptr [di],+002h
+	jz	$L104
+	cmp	word ptr [di],+008h
+	jnz	$L103
+	call	$S105
+$L104:	mov	ax,[di+008h]
+	or	ax,ax
+	jnz	$L106
+	mov	ax,[di+006h]
+	sub	di,+00Eh
+	mov	__tos,di
+	mov	di,ax
+	push	ax
+	call	far ptr __iarrayat
+	add	sp,+002h
+	or	ax,ax
+	jnz	$L107
+	mov	di,__tos
+	pop	es
+	ret
+$L107:	mov	bx,di
+	mov	di,__tos
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	mov	word ptr [di+002h],000Ah
+	mov	[di+006h],bx
+	mov	word ptr [di+008h],0000h
+	mov	cx,0001h
+	jmp	short $L108
+	nop
+$L103:	mov	ax,9044h
+	mov	cx,0001h
+	jmp	short $L108
+	nop
+$L106:	mov	ax,0D084h
+	mov	cx,0001h
+$L108:	pop	es
+	ret
+__0ARRAYPUTI:
+	push	es
+	lods	word ptr es:[si]
+	cmp	word ptr [di],8000h
+	jnz	$L109
+	push	ax
+	mov	__tos,di
+	call	far ptr __iarrayput
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+$L109:	mov	ax,1045h
+	mov	cx,0001h
+	pop	es
+	ret
+__0ARRAYPUT:
+	push	es
+	cmp	word ptr [di-00Eh],8000h
+	jnz	$L110
+	cmp	word ptr [di],+002h
+	jz	$L111
+	cmp	word ptr [di],+008h
+	jnz	$L110
+	call	$S105
+$L111:	mov	ax,[di+008h]
+	or	ax,ax
+	jnz	$L112
+	mov	ax,[di+006h]
+	sub	di,+00Eh
+	mov	__tos,di
+	mov	di,ax
+	push	ax
+	call	far ptr __iarrayput
+	add	sp,+002h
+	or	ax,ax
+	jnz	$L113
+	mov	di,__tos
+	pop	es
+	ret
+$L113:	mov	bx,di
+	mov	di,__tos
+	add	di,+00Eh
+	mov	word ptr [di],0002h
+	mov	word ptr [di+002h],000Ah
+	mov	[di+006h],bx
+	mov	word ptr [di+008h],0000h
+	mov	cx,0001h
+	jmp	short $L114
+	nop
+$L110:	mov	ax,1845h
+	mov	cx,0001h
+	jmp	short $L114
+	nop
+$L112:	mov	ax,5885h
+	mov	cx,0001h
+$L114:	pop	es
+	ret
+__0MAKEA:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __imakea
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MAKELA:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __imakela
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0PUSHL:
+	push	es
+	lods	word ptr es:[si]
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	add	ax,__lbase
+$S118:	xchg	ax,si
+	test	word ptr [si],6000h
+	jnz	$L115
+	mov	dx,ds
+	mov	es,dx
+	add	di,+00Eh
+	mov	cx,0007h
+	repz	movsw
+	sub	di,+00Eh
+	mov	si,ax
+	sub	ax,ax
+	pop	es
+	ret
+$L115:	xchg	ax,si
+	mov	__tos,di
+	push	ds
+	push	ax
+	call	far ptr __xpushm
+	add	sp,+004h
+	mov	di,__tos
+	pop	es
+	ret
+__0POPL:
+	push	es
+	lods	word ptr es:[si]
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	add	ax,__lbase
+$S120:	mov	bx,ax
+	test	word ptr [bx],6000h
+	jnz	$L116
+	xchg	ax,si
+	mov	dx,ds
+	mov	es,dx
+	xchg	si,di
+	and	word ptr [si],0F7FFh
+	mov	cx,0007h
+	repz	movsw
+	xchg	si,di
+	sub	di,+01Ch
+	mov	si,ax
+	sub	ax,ax
+	pop	es
+	ret
+$L116:	push	ds
+	push	bx
+	mov	__tos,di
+	call	far ptr __xpopm
+	mov	di,__tos
+	add	sp,+004h
+	mov	cx,0003h
+	pop	es
+	ret
+__0PUSHLR:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushlr
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0PUSHFL:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,__fbase
+	cmp	bx,-001h
+	jz	$L117
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	add	ax,bx
+	jmp	$S118
+$L117:	push	ax
+	add	di,+00Eh
+	mov	bx,__lbase
+
+	mov	ax,[bx+006h]
+	mov	[di+006h],ax
+	mov	ax,[bx+008h]
+	mov	[di+008h],ax
+	mov	word ptr [di],8000h
+	mov	__tos,di
+	call	far ptr __iarrayat
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	ret
+__0POPFL:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,__fbase
+	cmp	bx,-001h
+	jz	$L119
+	inc	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	add	ax,bx
+	jmp	$S120
+$L119:	push	ax
+	add	di,+00Eh
+	mov	bx,__lbase
+	mov	ax,[bx+006h]
+	mov	[di+006h],ax
+	mov	ax,[bx+008h]
+	mov	[di+008h],ax
+	mov	word ptr [di],8000h
+	mov	__tos,di
+	call	far ptr __iarrayput
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	ret
+__0PUSHFLR:
+	push	es
+	lods	word ptr es:[si]
+	cmp	word ptr __fbase,-001h
+	jnz	$L121
+	add	di,+00Eh
+	sub	ax,ax
+	mov	[di],ax
+	jmp	short $L122
+	nop
+$L121:	push	ax
+	mov	__tos,di
+	call	far ptr __ipushflr
+	mov	di,__tos
+	add	sp,+002h
+$L122:	pop	es
+	mov	cx,0003h
+	ret
+__0PUSHS:
+	push	es
+	lods	word ptr es:[si]
+	dec	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	add	ax,__sbase
+	jmp	$S118
+__0POPS:
+	push	es
+	lods	word ptr es:[si]
+	dec	ax
+	mov	cx,ax
+	shl	ax,1
+	shl	ax,1
+	shl	ax,1
+	sub	ax,cx
+	shl	ax,1
+	add	ax,__sbase
+	jmp	$S120
+__0PUSHSR:
+	push	es
+	lods	word ptr es:[si]
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushsr
+	mov	di,__tos
+	add	sp,+002h
+	pop	es
+	mov	cx,0003h
+	ret
+__0PUSHM:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushm
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPUSHM:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipushm
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0POPM:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipopm
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPOPM:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipopm
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0PUSHMR:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushmr
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPUSHMR:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipushmr
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0PUSHF:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPUSHF:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipushf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0POPF:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+    les ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipopf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPOPF:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipopf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0PUSHQF:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushqf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPUSHQF:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipushqf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0POPQF:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+	les	ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipopqf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPOPQF:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipopqf
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0PUSHV:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+    les ax,dword ptr es:[bx+00Ch]
+	push	es
+	push	ax
+	mov	__tos,di
+	call	far ptr __ipushv
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0MPUSHV:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	push	ax
+	push	bx
+	mov	__tos,di
+	call	far ptr __ipushv
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0005h
+	ret
+__0PUSHRV:
+	push	es
+	mov	ax,__eval
+	mov	bx,ax
+	xchg	ax,si
+	mov	dx,ds
+	mov	es,dx
+	add	di,+00Eh
+	mov	cx,0007h
+	repz	movsw
+	sub	di,+00Eh
+	mov	si,ax
+	sub	ax,ax
+	mov	[bx],ax
+	pop	es
+	ret
+__0SAVE_RET:
+	push	es
+	mov	ax,__eval
+	jmp	$S120
+__0DOOP:
+	push	es
+	mov	ax,di
+	jmp	$S118
+__0QSELF:
+	push	es
+	mov	ax,__lbase
+	add	ax,000Eh
+	jmp	$S118
+__0POP:	sub	di,+00Eh
+	sub	ax,ax
+	ret
+__0PUSHA:
+	push	es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+    les ax,dword ptr es:[bx+00Ch]
+	mov	bx,ax
+	mov	ax,es:[bx+006h]
+	or	ax,ax
+	jz	$L123
+	add	di,+00Eh
+	mov	word ptr [di],0200h
+	mov	[di+006h],ax
+	sub	ax,ax
+	mov	[di+008h],ax
+	pop	es
+	ret
+$L123:	push	si
+	mov	__tos,di
+	push	es
+	push	bx
+	call	far ptr __eNoAlias
+	pop	bx
+	pop	es
+	mov	di,__tos
+	pop	si
+	cmp	ax,0FFFFh
+	jz	$L124
+	mov	ax,es:[bx+006h]
+	add	di,+00Eh
+	mov	word ptr [di],0200h
+	mov	[di+006h],ax
+	sub	ax,ax
+	mov	[di+008h],ax
+$L124:	pop	es
+	ret
+__0MPUSHA:
+	push	es
+	lods	word ptr es:[si]
+	mov	bx,ax
+	lods	word ptr es:[si]
+	mov	es,ax
+	mov	ax,es:[bx+006h]
+	or	ax,ax
+	jz	$L123
+	add	di,+00Eh
+	mov	word ptr [di],0200h
+	mov	[di+006h],ax
+	sub	ax,ax
+	mov	[di+008h],ax
+	pop	es
+	ret
+__0PUSHP:
+	jmp	__0PUSHMR
+__0MPUSHP:
+	jmp	__0MPUSHMR
+__0SYMBOL:
+	mov	dx,es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+    les ax,dword ptr es:[bx+00Ch]
+	add	di,+00Eh
+	mov	word ptr [di],0100h
+	mov	[di+006h],ax
+	mov	word ptr [di+008h],es
+	sub	ax,ax
+	mov	es,dx
+	ret
+__0SYMF:
+	mov	dx,es
+	lods	word ptr es:[si]
+
+    nop           ; add ax, word ptr $S22
+    shl ax, 4     ; mov es,ax
+    les bx, dword ptr $S23  ; mov bx, word ptr $S23
+    add bx, ax
+
+    les ax,dword ptr es:[bx+00Ch]
+
+	add	di,+00Eh
+	mov	word ptr [di],0100h
+	mov	[di+006h],ax
+	mov	word ptr [di+008h],es
+	sub	ax,ax
+	add	di,+00Eh
+	mov	[di],ax
+	mov	es,dx
+	ret
+__0MSYMBOL:
+	push	es
+	add	di,+00Eh
+	mov	word ptr [di],0100h
+	lods	word ptr es:[si]
+	mov	[di+006h],ax
+	lods	word ptr es:[si]
+	mov	[di+008h],ax
+	sub	ax,ax
+	pop	es
+	ret
+__0MSYMF:
+	push	es
+	add	di,+00Eh
+	mov	word ptr [di],0100h
+	lods	word ptr es:[si]
+	mov	[di+006h],ax
+	lods	word ptr es:[si]
+	mov	[di+008h],ax
+	sub	ax,ax
+	add	di,+00Eh
+	mov	[di],ax
+	pop	es
+	ret
+__0BEGIN_SEQ:
+	test	word ptr __sysflags,0002h
+	jz	$L125
+	jmp	$S126
+$L125:	push	es
+	lods	word ptr es:[si]
+	add	ax,si
+	push	ax
+	push	bp
+	mov	__tos,di
+	call	far ptr __ibeginseq
+	mov	di,__tos
+	add	sp,+004h
+	pop	es
+	mov	cx,0003h
+	ret
+__0BREAK:
+	call	__0SAVE_RET
+	mov	ax,0FFFFh
+	ret
+__0END_SEQ:
+	push	es
+	mov	__tos,di
+	call	far ptr __iendseq
+	mov	di,__tos
+	mov	cx,0001h
+	pop	es
+	ret
+_CoerceNums:
+	test	ax,000Ah
+	jz	$L127
+	test	word ptr [di],000Ah
+	jz	$L127
+	cmp	ax,0002h
+	jnz	$L128
+$S245:	push	es
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvfml
+	add	sp,+004h
+	pop	es
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di-008h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	sub	ax,ax
+	mov	[di-00Ah],ax
+	mov	ax,0008h
+	mov	[di-00Eh],ax
+	ret
+$L128:	push	es
+	push	[di+008h]
+	push	[di+006h]
+	call	far ptr __dvfml
+	add	sp,+004h
+	pop	es
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	sub	ax,ax
+	mov	[di+004h],ax
+	mov	ax,0008h
+	mov	[di],ax
+	ret
+$L127:	stc
+	ret
+_CoerceDnums:
+	push	es
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvtol
+	add	sp,+008h
+	pop	es
+	mov	[di-008h],ax
+	mov	[di-006h],dx
+	mov	ax,0002h
+	mov	[di-00Eh],ax
+	ret
+$S105:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	call	far ptr __dvtol
+	add	sp,+008h
+	pop	es
+	mov	[di+006h],ax
+	mov	[di+008h],dx
+	mov	ax,0002h
+	mov	[di],ax
+	ret
+	stc
+	ret
+$S135:	mov	ax,[di-008h]
+	or	ax,[di-006h]
+	jnz	$L129
+	mov	ax,[di-002h]
+	mov	dx,ax
+	mov	bx,ax
+	and	ax,7FFFh
+	mov	cl,04h
+	shr	ax,cl
+	jz	$L130
+	sub	ax,03FFh
+	cmp	ax,000Fh
+	jnbe	$L129
+	mov	cx,ax
+	mov	ax,[di-004h]
+	test	ax,001Fh
+	jnz	$L129
+	shr	dx,1
+	rcr	ax,1
+	shr	dx,1
+	rcr	ax,1
+	shr	dx,1
+	rcr	ax,1
+	shr	dx,1
+	rcr	ax,1
+	shr	ax,1
+	or	ax,8000h
+	inc	cx
+	rol	ax,cl
+	mov	dx,ax
+	shr	dx,cl
+	jnz	$L129
+	sub	dx,dx
+	test	bx,8000h
+	jz	$L131
+	cmp	ax,7FFFh
+	jnbe	$L129
+	neg	ax
+$L130:	cwd
+$L131:	mov	[di-008h],ax
+	mov	[di-006h],dx
+	mov	ax,0002h
+	mov	[di-00Eh],ax
+	sub	ax,ax
+	ret
+$L129:	stc
+	ret
+__0JNEI:
+	cmp	word ptr [di-00Eh],+002h
+	jnz	$L132
+$L136:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$L133
+	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jnz	$L133
+	sub	di,+01Ch
+	add	si,+002h
+	sub	ax,ax
+	ret
+$L133:	sub	di,+01Ch
+	lods	word ptr es:[si]
+	add	si,ax
+	sub	ax,ax
+	ret
+$L132:	cmp	word ptr [di-00Eh],+008h
+	jnz	$L134
+	call	$S135
+	jnc	$L136
+	jmp	short $L133
+$L134:	add	si,+002h
+	mov	ax,9046h
+	mov	cx,0003h
+	ret
+__0JISW:
+	cmp	word ptr [di-00Eh],+002h
+	jnz	$L137
+$L140:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$L138
+	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jnz	$L138
+	sub	di,+01Ch
+	add	si,+002h
+	sub	ax,ax
+	ret
+$L138:	sub	di,+00Eh
+	lods	word ptr es:[si]
+	add	si,ax
+	sub	ax,ax
+	ret
+$L137:	cmp	word ptr [di-00Eh],+008h
+	jnz	$L139
+	call	$S135
+	jnc	$L140
+	jmp	short $L138
+$L139:	add	si,+002h
+	mov	ax,9046h
+	mov	cx,0003h
+	ret
+__xeq:	push	si
+	push	di
+	mov	di,__tos
+	call	__0EQ
+	or	ax,ax
+	jz	$L141
+	sub	di,+00Eh
+	mov	word ptr [di+006h],0000h
+$L141:	mov	ax,[di+006h]
+	sub	di,+00Eh
+	mov	__tos,di
+	mov	di,__eval
+	mov	word ptr [di],0080h
+	mov	[di+006h],ax
+	pop	di
+	pop	si
+	retf
+__0EEQ:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L142
+$L154:	cmp	ax,0002h
+	jz	$L143
+	test	ax,0400h
+	jnz	$L144
+	cmp	ax,0008h
+	jnz	$L145
+	jmp	$S146
+$L145:	cmp	ax,0020h
+	jnz	$L147
+	jmp	short $L143
+	nop
+$L147:	cmp	ax,0080h
+	jnz	$L148
+	jmp	$S149
+$L148:	cmp	ax,8000h
+	jz	$L150
+	cmp	ax,0000h
+	jz	$L151
+$L142:	or	ax,ax
+	jnz	$L152
+	jmp	$S153
+$L152:	test	word ptr [di],0FFFFh
+	jz	$S153
+	call	_CoerceNums
+	jnc	$L154
+	jmp	$S155
+$L150:	mov	__tos,di
+	mov	di,es
+	call	far ptr __iarrayc2
+	mov	es,di
+	mov	di,__tos
+$L143:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$S153
+	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jnz	$S153
+	jmp	short $L151
+	nop
+$L144:	mov	cx,[di-00Ch]
+	cmp	cx,[di+002h]
+	jz	$L156
+	jmp	short $L157
+$L156:	jcxz	$L157
+	push	es
+	push	si
+	mov	__tos,di
+	push	cx
+	sub	di,+00Eh
+	push	di
+	push	__tos
+	mov	ax,offset DGROUP:$S158
+	push	ax
+	mov	ax,offset DGROUP:$S159
+	push	ax
+	call	far ptr _VSTR2
+	pop	cx
+	mov	bx,ds
+	les	di,dword ptr $S159
+	lds	si,dword ptr $S158
+	repz	cmpsb
+	mov	ds,bx
+	mov	di,__tos
+	pop	si
+	pop	es
+$L157:	jnz	$S153
+$L151:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$S153:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+$S146:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dveq
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L151
+	jmp	short $S153
+$S149:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$S153
+	jmp	short $L151
+$S155:	mov	ax,9046h
+	mov	cx,0001h
+	ret
+__0EQ:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L160
+$L170:	cmp	ax,0002h
+	jz	$L161
+	test	ax,0400h
+	jnz	$L162
+	cmp	ax,0008h
+	jnz	$L163
+    jmp $L164
+	nop
+$L163:	cmp	ax,0020h
+	jnz	$L165
+	jmp	short $L161
+	nop
+$L165:	cmp	ax,0080h
+	jnz	$L166
+	jmp	$S167
+$L166:	cmp	ax,0000h
+	jz	$L168
+$L160:	or	ax,ax
+	jz	$L169
+	test	word ptr [di],0FFFFh
+	jz	$L169
+	call	_CoerceNums
+	jnc	$L170
+	mov	ax,9047h
+	mov	cx,0001h
+	ret
+$L161:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$L169
+	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jnz	$L169
+	jmp	short $L168
+	nop
+$L162:	push	es
+	mov	ax,0001h
+	push	ax
+	mov	__tos,di
+	call	far ptr __exactcmp
+	add	sp,+002h
+	push	ax
+	pop	ax
+	pop	es
+	or	ax,ax
+	jnz	$L168
+	jmp	short $L169
+	nop
+$L168:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$L169:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+
+	mov	[di+006h],ax
+	ret
+$L164:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dveq
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L168
+	jmp	short $L169
+$S167:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$L169
+	jmp	short $L168
+__0NE:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L171
+$L181:	cmp	ax,0002h
+	jz	$L172
+	test	ax,0400h
+	jnz	$L173
+	cmp	ax,0008h
+	jnz	$L174
+    jmp $L175
+	nop
+$L174:	cmp	ax,0020h
+	jnz	$L176
+	jmp	short $L172
+	nop
+$L176:	cmp	ax,0080h
+	jnz	$L177
+	jmp	$S178
+$L177:	cmp	ax,0000h
+	jz	$L179
+$L171:	or	ax,ax
+	jz	$L180
+	test	word ptr [di],0FFFFh
+	jz	$L180
+	call	_CoerceNums
+	jnc	$L181
+    jmp $L182
+	nop
+$L172:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnz	$L180
+	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jnz	$L180
+	jmp	short $L179
+	nop
+$L173:	push	es
+	mov	ax,0002h
+	push	ax
+	mov	__tos,di
+	call	far ptr __exactcmp
+	add	sp,+002h
+	push	ax
+	pop	ax
+	pop	es
+	or	ax,ax
+	jnz	$L180
+	jmp	short $L179
+	nop
+$L180:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$L179:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+$L175:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvne
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L180
+	jmp	short $L179
+$S178:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jz	$L179
+	jmp	short $L180
+$L182:	mov	ax,9048h
+	mov	cx,0001h
+	ret
+__0LT:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L183
+$L190:	cmp	ax,0002h
+	jz	$L184
+	test	ax,0400h
+	jnz	$L185
+	cmp	ax,0008h
+	jnz	$L186
+	jmp	short $L187
+	nop
+$L186:	cmp	ax,0020h
+	jnz	$L188
+	jmp	short $L184
+	nop
+$L188:	cmp	ax,0080h
+	jnz	$L183
+	jmp	$S189
+$L183:	call	_CoerceNums
+	jnc	$L190
+	mov	ax,9049h
+	mov	cx,0001h
+	ret
+$L184:	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jl	$L191
+	jg	$L192
+	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnc	$L192
+	jmp	short $L191
+	nop
+$L185:	push	es
+	mov	ax,0004h
+	push	ax
+	mov	__tos,di
+	call	far ptr __exactcmp
+	add	sp,+002h
+	push	ax
+	pop	ax
+	pop	es
+	or	ax,ax
+	jnz	$L191
+	jmp	short $L192
+	nop
+$L191:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$L192:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+$L187:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvlt
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L191
+	jmp	short $L192
+$S189:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jc	$L191
+	jmp	short $L192
+__xlt:	push	si
+	push	di
+	mov	di,__tos
+	call	__0LT
+	or	ax,ax
+	jnz	$L193
+	mov	ax,[di+006h]
+	jmp	short $L194
+$L193:	mov	ax,0001h
+	mov	bx,[di-00Eh]
+	cmp	bx,[di]
+	jnbe	$L195
+	dec	ax
+$L195:	sub	di,+00Eh
+$L194:	sub	di,+00Eh
+	mov	__tos,di
+	mov	di,__eval
+	mov	word ptr [di],0080h
+	mov	[di+006h],ax
+	pop	di
+	pop	si
+	retf
+__0LE:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L196
+$L203:	cmp	ax,0002h
+	jz	$L197
+	test	ax,0400h
+	jnz	$L198
+	cmp	ax,0008h
+	jnz	$L199
+	jmp	short $L200
+	nop
+$L199:	cmp	ax,0020h
+	jnz	$L201
+	jmp	short $L197
+	nop
+$L201:	cmp	ax,0080h
+	jnz	$L196
+	jmp	$S202
+$L196:	call	_CoerceNums
+	jnc	$L203
+	mov	ax,904Ah
+	mov	cx,0001h
+	ret
+$L197:	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jl	$L204
+	jg	$L205
+	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnbe	$L205
+	jmp	short $L204
+	nop
+$L198:	push	es
+	mov	ax,0008h
+	push	ax
+	mov	__tos,di
+	call	far ptr __exactcmp
+	add	sp,+002h
+	push	ax
+	pop	ax
+	pop	es
+	or	ax,ax
+	jnz	$L204
+	jmp	short $L205
+	nop
+$L204:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$L205:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+$L200:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvle
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L204
+	jmp	short $L205
+$S202:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jbe	$L204
+	jmp	short $L205
+__0GT:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L206
+$L213:	cmp	ax,0002h
+	jz	$L207
+	test	ax,0400h
+	jnz	$L208
+	cmp	ax,0008h
+	jnz	$L209
+	jmp	short $L210
+	nop
+$L209:	cmp	ax,0020h
+	jnz	$L211
+	jmp	short $L207
+	nop
+$L211:	cmp	ax,0080h
+	jnz	$L206
+	jmp	$S212
+$L206:	call	_CoerceNums
+	jnc	$L213
+	mov	ax,904Bh
+	mov	cx,0001h
+	ret
+$L207:	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jg	$L214
+	jl	$L215
+	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jbe	$L215
+	jmp	short $L214
+	nop
+$L208:	push	es
+	mov	ax,0010h
+	push	ax
+	mov	__tos,di
+	call	far ptr __exactcmp
+	add	sp,+002h
+	push	ax
+	pop	ax
+	pop	es
+	or	ax,ax
+	jnz	$L214
+	jmp	short $L215
+	nop
+$L214:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$L215:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+$L210:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvgt
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L214
+	jmp	short $L215
+$S212:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnbe	$L214
+	jmp	short $L215
+__0GE:	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L216
+$L223:	cmp	ax,0002h
+	jz	$L217
+	test	ax,0400h
+	jnz	$L218
+	cmp	ax,0008h
+	jnz	$L219
+	jmp	short $L220
+	nop
+$L219:	cmp	ax,0020h
+	jnz	$L221
+	jmp	short $L217
+	nop
+$L221:	cmp	ax,0080h
+	jnz	$L216
+	jmp	$S222
+$L216:	call	_CoerceNums
+	jnc	$L223
+	mov	ax,904Ch
+	mov	cx,0001h
+	ret
+$L217:	mov	ax,[di-006h]
+	cmp	ax,[di+008h]
+	jg	$L224
+	jl	$L225
+	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jc	$L225
+	jmp	short $L224
+	nop
+$L218:	push	es
+	mov	ax,0020h
+	push	ax
+	mov	__tos,di
+	call	far ptr __exactcmp
+	add	sp,+002h
+	push	ax
+	pop	ax
+	pop	es
+	or	ax,ax
+	jnz	$L224
+	jmp	short $L225
+	nop
+$L224:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	mov	word ptr [di+006h],0001h
+	sub	ax,ax
+	ret
+$L225:	sub	di,+00Eh
+	mov	word ptr [di],0080h
+	sub	ax,ax
+	mov	[di+006h],ax
+	ret
+$L220:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvge
+	add	sp,+010h
+	pop	es
+	or	ax,ax
+	jnz	$L224
+	jmp	short $L225
+$S222:	mov	ax,[di-008h]
+	cmp	ax,[di+006h]
+	jnc	$L224
+	jmp	short $L225
+__0NOT:	cmp	word ptr [di],0080h
+	jnz	$L226
+	xor	word ptr [di+006h],+001h
+	sub	ax,ax
+	ret
+$L226:	mov	ax,884Dh
+	mov	cx,0001h
+	ret
+__0AND:	mov	ax,[di-00Eh]
+	and	ax,[di]
+	cmp	ax,0080h
+	jnz	$L227
+	mov	ax,[di+006h]
+	sub	di,+00Eh
+	and	[di+006h],ax
+	sub	ax,ax
+	ret
+$L227:	mov	ax,904Eh
+	mov	cx,0001h
+	ret
+__0OR:	mov	ax,[di-00Eh]
+	and	ax,[di]
+	cmp	ax,0080h
+	jnz	$L228
+	mov	ax,[di+006h]
+	sub	di,+00Eh
+	or	[di+006h],ax
+	sub	ax,ax
+	ret
+$L228:	mov	ax,904Fh
+	mov	cx,0001h
+	ret
+__0NEGATE:
+	mov	ax,[di]
+	cmp	ax,0008h
+	jz	$L229
+	cmp	ax,0002h
+    jnz $L230
+    neg word ptr [di+006h]
+	mov	ax,[di+008h]
+	adc	ax,0000h
+	neg	ax
+	mov	[di+008h],ax
+	jo	$L231
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L231:	call	$L128
+$L229:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	call	far ptr __dvneg
+	add	sp,+008h
+	pop	es
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L230:	mov	ax,8850h
+	mov	cx,0001h
+	ret
+__0ABS:	mov	ax,[di]
+	cmp	ax,0008h
+	jz	$L232
+	cmp	ax,0002h
+	jnz	$L233
+	mov	ax,[di+008h]
+	or	ax,ax
+	js	$L234
+	sub	ax,ax
+	ret
+$L234:  neg word ptr [di+006h]
+	mov	ax,[di+008h]
+	adc	ax,0000h
+	neg	ax
+	mov	[di+008h],ax
+	jo	$L235
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L235:	call	$L128
+$L232:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	call	far ptr __dvabs
+	add	sp,+008h
+	pop	es
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L233:	mov	ax,8859h
+	mov	cx,0001h
+	ret
+__0PLUS:
+	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L236
+$L242:	cmp	ax,0002h
+	jz	$L237
+	cmp	ax,0008h
+	jz	$L238
+	test	ax,0400h
+	jz	$L239
+	jmp	$S240
+$L239:	cmp	ax,0020h
+	jnz	$L236
+	jmp	short $L241
+	nop
+$L236:	call	_CoerceNums
+	jnc	$L242
+	cmp	word ptr [di-00Eh],+020h
+	jnz	$L243
+	cmp	word ptr [di],+002h
+	jz	$L241
+	cmp	word ptr [di],+008h
+	jnz	$L244
+	call	$S105
+	jmp	short $L241
+	nop
+$L243:	cmp	word ptr [di],+020h
+	jnz	$L244
+	cmp	word ptr [di-00Eh],+002h
+	jz	$L241
+	cmp	word ptr [di-00Eh],+008h
+	jnz	$L244
+	call	$S245
+	jmp	short $L238
+	nop
+$L241:	mov	word ptr [di-00Eh],0020h
+$L237:	mov	ax,[di-008h]
+	mov	dx,[di-006h]
+	add	ax,[di+006h]
+	adc	dx,[di+008h]
+	jo	$L246
+	sub	di,+00Eh
+	mov	[di+006h],ax
+	mov	[di+008h],dx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L246:	call	$S245
+	call	$L128
+	jmp	short $L238
+	nop
+$L244:	mov	ax,9051h
+	mov	cx,0001h
+	ret
+$L238:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvadd
+	add	sp,+010h
+	pop	es
+	mov	bx,[di+004h]
+	mov	cx,[di-00Ah]
+	cmp	bx,cx
+	jnc	$L247
+	mov	bx,cx
+$L247:	cmp	bx,+009h
+	jbe	$L248
+	mov	bx,0009h
+$L248:	sub	di,+00Eh
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	mov	[di+004h],bx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L249:	mov	ax,90D1h
+	mov	cx,0001h
+	pop	si
+	pop	es
+	ret
+$S240:	push	es
+	push	si
+	mov	__tos,di
+	mov	ax,[di-00Ch]
+	add	ax,[di+002h]
+	jc	$L249
+	cmp	ax,0FFECh
+	jnbe	$L249
+	push	ax
+	lea	si,[di-00Eh]
+	push	si
+	mov	bx,offset DGROUP:$S250
+	push	bx
+	mov	bx,offset DGROUP:$S158
+	push	bx
+	call	far ptr _BYTESNEW2
+	mov	bx,ds
+	mov	cx,[di-00Ch]
+	les	di,dword ptr $S250
+	lds	si,dword ptr $S158
+	shr	cx,1
+	repz	movsw
+	jnc	$L251
+	movsb
+$L251:	mov	ds,bx
+	mov	di,__tos
+	push	__eval
+	push	__tos
+	mov	ax,offset DGROUP:$S250
+	push	ax
+	mov	ax,offset DGROUP:$S159
+	push	ax
+	call	far ptr _VSTR2
+	mov	bx,ds
+	mov	cx,[di+002h]
+	mov	dx,[di-00Ch]
+	les	di,dword ptr $S250
+	add	di,dx
+	lds	si,dword ptr $S159
+	shr	cx,1
+	repz	movsw
+	jnc	$L252
+	movsb
+$L252:	mov	ds,bx
+	mov	es,bx
+	mov	di,__tos
+	sub	di,+00Eh
+	mov	si,__eval
+	mov	cx,0007h
+	repz	movsw
+	sub	di,+00Eh
+	pop	si
+	pop	es
+	sub	ax,ax
+	ret
+__0MINUS:
+	and	word ptr [di],0F7FFh
+	and	word ptr [di-00Eh],0F7FFh
+	mov	ax,[di-00Eh]
+	cmp	ax,[di]
+	jnz	$L253
+$L258:	cmp	ax,0002h
+	jz	$L254
+	test	ax,0400h
+	jnz	$L255
+	cmp	ax,0008h
+	jnz	$L256
+	jmp	short $L257
+	nop
+$L256:	cmp	ax,0020h
+	jnz	$L253
+	mov	word ptr [di-00Eh],0002h
+	jmp	short $L254
+	nop
+$L253:	call	_CoerceNums
+    jnc short $L258
+	cmp	word ptr [di-00Eh],+020h
+	jnz	$L259
+	cmp	word ptr [di],+002h
+	jz	$L254
+	cmp	word ptr [di],+008h
+	jnz	$L259
+	call	$S105
+$L254:	mov	ax,[di-008h]
+	mov	dx,[di-006h]
+	sub	ax,[di+006h]
+	sbb	dx,[di+008h]
+	jo	$L260
+	sub	di,+00Eh
+	mov	[di+006h],ax
+	mov	[di+008h],dx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L260:	call	$S245
+	call	$L128
+	jmp	short $L257
+	nop
+$L259:	mov	ax,9052h
+	mov	cx,0001h
+	ret
+$L255:	push	es
+	push	si
+	mov	__tos,di
+	call	far ptr __strminus
+	mov	di,__tos
+	pop	si
+	pop	es
+	ret
+$L257:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvsub
+	add	sp,+010h
+	pop	es
+	mov	bx,[di+004h]
+	mov	cx,[di-00Ah]
+	cmp	bx,cx
+	jnc	$L261
+	mov	bx,cx
+$L261:	cmp	bx,+009h
+	jbe	$L262
+	mov	bx,0009h
+$L262:	sub	di,+00Eh
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	mov	[di+004h],bx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+__0MULT:
+	mov	ax,[di-00Eh]
+	and	ax,[di]
+	cmp	ax,0008h
+	jnz	$L263
+$L267:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvmul
+	add	sp,+010h
+	pop	es
+	mov	bx,[di+004h]
+	add	bx,[di-00Ah]
+	cmp	bx,+009h
+	jbe	$L264
+	mov	bx,0009h
+$L264:	sub	di,+00Eh
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	mov	[di+004h],bx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L263:	cmp	word ptr [di-00Eh],+008h
+	jz	$L265
+
+	cmp	word ptr [di-00Eh],+002h
+	jnz	$L266
+	call	$S245
+$L265:	cmp	word ptr [di],+008h
+	jz	$L267
+	cmp	word ptr [di],+002h
+	jnz	$L266
+	call	$L128
+	jmp	short $L267
+$L266:	mov	ax,9053h
+	mov	cx,0001h
+	ret
+__0DIVIDE:
+	mov	ax,[di-00Eh]
+	and	ax,[di]
+	cmp	ax,0008h
+	jnz	$L268
+$L273:	test	word ptr [di+006h],0FFFFh
+	jnz	$L269
+	test	word ptr [di+008h],0FFFFh
+	jnz	$L269
+	test	word ptr [di+00Ah],0FFFFh
+	jnz	$L269
+	test	word ptr [di+00Ch],0FFFFh
+	jz	$L270
+$L269:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	push	[di-002h]
+	push	[di-004h]
+	push	[di-006h]
+	push	[di-008h]
+	call	far ptr __dvdiv
+	add	sp,+010h
+	pop	es
+	sub	di,+00Eh
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	mov	ax,__Set + 00004h
+	mov	[di+004h],ax
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L268:	cmp	word ptr [di-00Eh],+008h
+	jz	$L271
+	cmp	word ptr [di-00Eh],+002h
+	jnz	$L272
+	call	$S245
+$L271:	cmp	word ptr [di],+008h
+	jz	$L273
+	cmp	word ptr [di],+002h
+	jnz	$L272
+	call	$L128
+	jmp	$L273
+$L272:	mov	ax,9054h
+	mov	cx,0001h
+	ret
+$L270:	mov	ax,9154h
+	mov	cx,0001h
+	ret
+__0DEC:	mov	ax,[di]
+	cmp	ax,0008h
+	jz	$L274
+	test	ax,0022h
+	jz	$L275
+	mov	ax,[di+006h]
+	mov	dx,[di+008h]
+	sub	ax,0001h
+	sbb	dx,+000h
+	jo	$L276
+	mov	[di+006h],ax
+	mov	[di+008h],dx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L276:	call	$L128
+$L274:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	call	far ptr __dvdec
+	add	sp,+008h
+	pop	es
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L275:	mov	ax,8857h
+	mov	cx,0001h
+	ret
+__0INC:	mov	ax,[di]
+	cmp	ax,0008h
+	jz	$L277
+	test	ax,0022h
+	jz	$L278
+	mov	ax,[di+006h]
+	mov	dx,[di+008h]
+	add	ax,0001h
+	adc	dx,+000h
+	jo	$L279
+	mov	[di+006h],ax
+	mov	[di+008h],dx
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L279:	call	$L128
+$L277:	push	es
+	push	[di+00Ch]
+	push	[di+00Ah]
+	push	[di+008h]
+	push	[di+006h]
+	call	far ptr __dvinc
+	add	sp,+008h
+	pop	es
+	push	ds
+	push	si
+	push	es
+	push	di
+	mov	si,ds
+	mov	es,si
+	lea	di,[di+006h]
+	mov	ds,dx
+	mov	si,ax
+	movsw
+	movsw
+	movsw
+	movsw
+	pop	di
+	pop	es
+	pop	si
+	pop	ds
+	sub	ax,ax
+	mov	[di+002h],ax
+	ret
+$L278:	mov	ax,8856h
+	mov	cx,0001h
+	ret
+
+PLANKTON_TEXT	ENDS
+PLANK_DATA ENDS
+
+_DATA	SEGMENT
+
+
+__pfversion	dw	00000h
+__pflock	dw	00000h
+__dyn_getpp	dd	PLANKTON_TEXT:__DynBadNews
+__dbgcomm	dw	00000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+$S51	dw	00000h
+$S52	dw	00000h
+$S46	dw	00000h
+$S47	dw	00000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+	db	000h
+$S86	dw	00000h
+$S87	dw	00000h
+$S78	dw	00000h
+$S159	dd	000000000h
+$S158	dd	000000000h
+$S250	dd	000000000h
+$S23	dw	00000h
+$S22	dw	00000h
+$S2	dw	00000h
+$S1	dw	00000h
+
+$S10	struct_0	<>
+
+$S11	=	$ - 0001Ah
+$S15	=	$ - 00018h
+$S17	=	$ - 00016h
+$S13	=	$ - 00010h
+$S14	=	$ - 0000Eh
+$S6	dw	PLANKTON_TEXT:__0NOP
+	dw	PLANKTON_TEXT:__0PUSHC
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0PUSHN
+	dw	PLANKTON_TEXT:__0POPF
+	dw	PLANKTON_TEXT:__0POPM
+	dw	PLANKTON_TEXT:__0POPQF
+	dw	PLANKTON_TEXT:__0PUSHA
+	dw	PLANKTON_TEXT:__0PUSHF
+	dw	PLANKTON_TEXT:__0PUSHM
+	dw	PLANKTON_TEXT:__0PUSHMR
+	dw	PLANKTON_TEXT:__0PUSHP
+	dw	PLANKTON_TEXT:__0PUSHQF
+	dw	PLANKTON_TEXT:__0PUSHV
+	dw	PLANKTON_TEXT:__0SFRAME
+	dw	PLANKTON_TEXT:__0SINIT
+	dw	PLANKTON_TEXT:__0SYMBOL
+	dw	PLANKTON_TEXT:__0SYMF
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0BEGIN_SEQ
+	dw	PLANKTON_TEXT:__0JDBG
+	dw	PLANKTON_TEXT:__0JF
+	dw	PLANKTON_TEXT:__0JFPT
+	dw	PLANKTON_TEXT:__0JISW
+	dw	PLANKTON_TEXT:__0JMP
+	dw	PLANKTON_TEXT:__0JNEI
+	dw	PLANKTON_TEXT:__0JT
+	dw	PLANKTON_TEXT:__0JTPF
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0PUSHBL
+	dw	PLANKTON_TEXT:__0ARRAYATI
+	dw	PLANKTON_TEXT:__0ARRAYPUTI
+	dw	PLANKTON_TEXT:__0CALL
+	dw	PLANKTON_TEXT:__0DO
+	dw	PLANKTON_TEXT:__0FRAME
+	dw	PLANKTON_TEXT:__0FUNC
+	dw	PLANKTON_TEXT:__0LINE
+	dw	PLANKTON_TEXT:__0MAKEA
+	dw	PLANKTON_TEXT:__0MAKELA
+	dw	PLANKTON_TEXT:__0PARAMS
+	dw	PLANKTON_TEXT:__0POPFL
+	dw	PLANKTON_TEXT:__0POPL
+	dw	PLANKTON_TEXT:__0POPS
+	dw	PLANKTON_TEXT:__0PRIVATES
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0PUBLICS
+	dw	PLANKTON_TEXT:__0PUSHFL
+	dw	PLANKTON_TEXT:__0PUSHFLR
+	dw	PLANKTON_TEXT:__0PUSHI
+	dw	PLANKTON_TEXT:__0PUSHL
+	dw	PLANKTON_TEXT:__0PUSHLR
+	dw	PLANKTON_TEXT:__0PUSHS
+	dw	PLANKTON_TEXT:__0PUSHSR
+	dw	PLANKTON_TEXT:__0PUSHW
+	dw	PLANKTON_TEXT:__0SEND
+	dw	PLANKTON_TEXT:__0XBLOCK
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0MPOPF
+	dw	PLANKTON_TEXT:__0MPOPM
+	dw	PLANKTON_TEXT:__0MPOPQF
+	dw	PLANKTON_TEXT:__0MPUSHA
+	dw	PLANKTON_TEXT:__0MPUSHF
+	dw	PLANKTON_TEXT:__0MPUSHM
+	dw	PLANKTON_TEXT:__0MPUSHMR
+	dw	PLANKTON_TEXT:__0MPUSHP
+	dw	PLANKTON_TEXT:__0MPUSHQF
+	dw	PLANKTON_TEXT:__0MPUSHV
+	dw	PLANKTON_TEXT:__0MSYMBOL
+	dw	PLANKTON_TEXT:__0MSYMF
+	dw	PLANKTON_TEXT:__0ABS
+	dw	PLANKTON_TEXT:__0AND
+	dw	PLANKTON_TEXT:__0ARRAYAT
+	dw	PLANKTON_TEXT:__0ARRAYPUT
+	dw	PLANKTON_TEXT:__0BREAK
+	dw	PLANKTON_TEXT:__0DEC
+	dw	PLANKTON_TEXT:__0DIVIDE
+	dw	PLANKTON_TEXT:__0DOOP
+	dw	PLANKTON_TEXT:__0EEQ
+	dw	PLANKTON_TEXT:__0ENDPROC
+	dw	PLANKTON_TEXT:__0ENDPROC
+	dw	PLANKTON_TEXT:__0END_SEQ
+	dw	PLANKTON_TEXT:__0EQ
+	dw	PLANKTON_TEXT:__0EVENTS
+	dw	PLANKTON_TEXT:__0FALSE
+	dw	PLANKTON_TEXT:__0GE
+	dw	PLANKTON_TEXT:__0GT
+	dw	PLANKTON_TEXT:__0INC
+	dw	PLANKTON_TEXT:__0LE
+	dw	PLANKTON_TEXT:__0LT
+	dw	PLANKTON_TEXT:__0MINUS
+	dw	PLANKTON_TEXT:__0MULT
+	dw	PLANKTON_TEXT:__0NE
+	dw	PLANKTON_TEXT:__0ERR
+	dw	PLANKTON_TEXT:__0NEGATE
+	dw	PLANKTON_TEXT:__0NOP
+	dw	PLANKTON_TEXT:__0NOT
+	dw	PLANKTON_TEXT:__0NULL
+	dw	PLANKTON_TEXT:__0ONE1
+	dw	PLANKTON_TEXT:__0OR
+	dw	PLANKTON_TEXT:__0PCOUNT
+	dw	PLANKTON_TEXT:__0PLUS
+	dw	PLANKTON_TEXT:__0POP
+	dw	PLANKTON_TEXT:__0PUSHRV
+	dw	PLANKTON_TEXT:__0QSELF
+	dw	PLANKTON_TEXT:__0SAVE_RET
+	dw	PLANKTON_TEXT:__0TRUE
+	dw	PLANKTON_TEXT:__0UNDEF
+	dw	PLANKTON_TEXT:__0ZER0
+	dw	PLANKTON_TEXT:__0ZZBLOCK
+
+_DATA	ENDS
+
+OPERR	SEGMENT
+
+
+$S16	db	'BASE',000h
+$S280	db	026h
+	db	000h
+$S281	db	'conditional',000h
+$S282	db	'array dimension',000h
+$S283	db	'array access',000h
+$S284	db	'array assign',000h
+$S285	db	'==',000h
+$S286	db	03Dh
+	db	000h
+$S287	db	'<>',000h
+$S288	db	03Ch
+	db	000h
+$S289	db	'<=',000h
+$S290	db	03Eh
+	db	000h
+$S291	db	'>=',000h
+$S292	db	'.NOT.',000h
+$S293	db	'.AND.',000h
+$S294	db	'.OR.',000h
+$S295	db	02Dh
+	db	000h
+$S296	db	02Bh
+	db	000h
+$S297	db	02Dh
+	db	000h
+$S298	db	02Ah
+	db	000h
+$S299	db	02Fh
+	db	000h
+$S300	db	025h
+	db	000h
+$S301	db	'++',000h
+$S302	db	'--',000h
+$S303	db	05Eh
+	db	000h
+$S304	db	'ABS',000h
+$S305	db	'INT',000h
+$S306	db	'WORD',000h
+$S307	db	'MIN',000h
+$S308	db	'MAX',000h
+$S309	db	'ROUND',000h
+$S310	db	'LOG',000h
+$S311	db	'EXP',000h
+$S312	db	'SQRT',000h
+$S313	db	'VAL',000h
+$S314	db	'STR',000h
+$S315	db	'TRIM',000h
+$S316	db	'LTRIM',000h
+$S317	db	'UPPER',000h
+$S318	db	'LOWER',000h
+$S319	db	'CHR',000h
+$S320	db	'SPACE',000h
+$S321	db	'REPLICATE',000h
+$S322	db	'ASC',000h
+$S323	db	'AT',000h
+$S324	db	024h
+	db	000h
+$S325	db	'SUBSTR',000h
+$S326	db	'LEN',000h
+$S327	db	'YEAR',000h
+$S328	db	'MONTH',000h
+$S329	db	'DAY',000h
+$S330	db	'DOW',000h
+$S331	db	'CMONTH',000h
+$S332	db	'CDOW',000h
+$S333	db	'DTOC',000h
+$S334	db	'CTOD',000h
+$S335	db	'DTOS',000h
+$S336	db	'TYPE',000h
+$S337	db	'TRANSFORM',000h
+$S338	db	'AADD',000h
+$S339	db	'LEFT',000h
+$S12	dw	OPERR:$S280
+	dw	OPERR:$S281
+	dw	OPERR:$S282
+	dw	OPERR:$S283
+	dw	OPERR:$S284
+	dw	OPERR:$S285
+	dw	OPERR:$S286
+	dw	OPERR:$S287
+	dw	OPERR:$S288
+	dw	OPERR:$S289
+	dw	OPERR:$S290
+	dw	OPERR:$S291
+	dw	OPERR:$S292
+	dw	OPERR:$S293
+	dw	OPERR:$S294
+	dw	OPERR:$S295
+	dw	OPERR:$S296
+	dw	OPERR:$S297
+	dw	OPERR:$S298
+	dw	OPERR:$S299
+	dw	OPERR:$S300
+	dw	OPERR:$S301
+	dw	OPERR:$S302
+	dw	OPERR:$S303
+	dw	OPERR:$S304
+	dw	OPERR:$S305
+	dw	OPERR:$S306
+	dw	OPERR:$S307
+	dw	OPERR:$S308
+	dw	OPERR:$S309
+	dw	OPERR:$S310
+	dw	OPERR:$S311
+	dw	OPERR:$S312
+	dw	OPERR:$S313
+	dw	OPERR:$S314
+	dw	OPERR:$S315
+	dw	OPERR:$S316
+	dw	OPERR:$S317
+	dw	OPERR:$S318
+	dw	OPERR:$S319
+	dw	OPERR:$S320
+	dw	OPERR:$S321
+	dw	OPERR:$S322
+	dw	OPERR:$S323
+	dw	OPERR:$S324
+	dw	OPERR:$S325
+	dw	OPERR:$S326
+	dw	OPERR:$S327
+	dw	OPERR:$S328
+	dw	OPERR:$S329
+	dw	OPERR:$S330
+	dw	OPERR:$S331
+	dw	OPERR:$S332
+	dw	OPERR:$S333
+	dw	OPERR:$S334
+	dw	OPERR:$S335
+	dw	OPERR:$S336
+	dw	OPERR:$S337
+	dw	OPERR:$S338
+	dw	OPERR:$S339
+
+OPERR	ENDS
+
+	END
+

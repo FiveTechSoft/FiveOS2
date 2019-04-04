@@ -1,0 +1,6 @@
+screens.obj : screens.c
+   bcc -c -ml -I..\include;..\include\api screens.c
+
+screens.dll : screens.obj screens.def
+   blinker fi screens @screens.lnk
+   // link /se:700 /NOE screens,screens.dll,nul,, screens.def

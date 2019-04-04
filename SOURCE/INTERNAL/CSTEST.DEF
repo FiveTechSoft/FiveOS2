@@ -1,0 +1,7 @@
+LIBRARY     DosCalls
+
+DESCRIPTION 'Testing'
+
+EXPORTS
+         DOSCREATEDSALIAS     @44
+

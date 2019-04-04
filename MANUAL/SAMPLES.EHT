@@ -1,0 +1,57 @@
+!short: ^BFiveWin samples guide
+ ^BFiveWin samples guide
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  We do recommend learning FiveWin through samples. Try them, modify them,
+  feel free to use any part of them you may need.
+!short:컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+!short: BROWSE.PRG    clude "FiveOS2.ch"
+!file: BROWSE.eho
+!seealso: BROWSE.rc
+!short: CLIENTS.PRG   clude "FiveOS2.ch"
+!file: CLIENTS.eho
+!seealso: CLIENTS.rc
+!short: JOSE.PRG      clude "FiveOs2.ch"
+!file: JOSE.eho
+!short: TEST.PRG      clude "FiveOS2.ch"
+!file: TEST.eho
+!short: TESTBRW.PRG   clude "FiveOS2.ch"
+!file: TESTBRW.eho
+!short: TESTCTRL.PRG  clude "FiveOS2.ch"
+!file: TESTCTRL.eho
+!seealso: TESTCTRL.rc
+!short: TESTDLG1.PRG  clude "FiveOS2.ch"
+!file: TESTDLG1.eho
+!short: TESTDLL.PRG   clude "FiveOS2.ch"
+!file: TESTDLL.eho
+!short: TESTGET.PRG   clude "FiveOS2.ch"
+!file: TESTGET.eho
+!short: TESTINI.PRG   Sample showing how to use INI files with FiveOS2
+!file: TESTINI.eho
+!short: TESTMDI.PRG   clude "FiveOS2.ch"
+!file: TESTMDI.eho
+!seealso: TESTMDI.rc
+!short: TESTMETR.PRG  clude "FiveWin.ch"
+!file: TESTMETR.eho
+!short: TESTTIME.PRG  Using Timers. Timers are also Objects!
+!file: TESTTIME.eho
+!short: TESTWND.PRG   clude "FiveOS2.ch"
+!file: TESTWND.eho
+!short: TUTOR01.PRG   clude "FiveOS2.ch"
+!file: TUTOR01.eho
+!short: TUTOR02.PRG   clude "FiveOS2.ch"
+!file: TUTOR02.eho
+!seealso: TUTOR02.rc
+!short: TUTOR03.PRG   FiveOS2 : CA-Clipper for IBM-OS2 library demo.
+!file: TUTOR03.eho
+!seealso: TUTOR03.rc
+!short: TUTOR04.PRG   clude "FiveOs2.ch"
+!file: TUTOR04.eho
+!seealso: TUTOR04.rc
+!short: TUTOR05.PRG   clude "FiveOS2.ch"
+!file: TUTOR05.eho
+!short: TUTOR06.PRG   FiveOS2 : CA-Clipper for IBM-OS2 library demo.
+!file: TUTOR06.eho
+!seealso: TUTOR06.rc
+

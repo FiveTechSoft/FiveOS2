@@ -1,0 +1,100 @@
+// Rmake para actualizar/crear FiveOS2.lib
+
+makepath[.prg]=".\source\classes;.\source\function;.\source\errorsys;.\source\internal"
+makepath[.obj]=".\obj"
+makepath[.ch]=".\include;\clipper5\include"
+makepath[.c]=".\source\os2api;.\source\function;.\source\internal"
+makepath[.tsm]=".\source\internal"
+makepath[.def]=".\lib"
+makepath[.lib]=".\lib"
+
+ .def.lib:
+  cd lib
+  IMPLIB $*.lib $*.def
+  lib WinApi + $*.lib,,
+  cd..
+
+ .prg.obj:
+  CLIPPER $< /A /N /M /W /Q /O$@ /I.\include;c:\clipper5\include
+  ECHO ÿ
+  Lib .\Lib\FiveOS2.Lib -+$@ , ,
+
+ .c.obj:
+  BCC -3 -c -ml -O2 -G -Tq -Iinclude;include\api;source\internal -o$@ $<
+  Lib .\lib\FiveOS2.LIB -+$@ , ,
+
+ .tsm.obj:
+  tasm $< $@ ;
+  Lib .\lib\FiveOS2.LIB -+$@ , ,
+
+// dependencias "C"
+cursors.obj:   cursors.c
+datetime.obj:  datetime.c
+dirs.obj:      dirs.c
+dlls.obj:      dlls.c
+gettextw.obj:  gettextw.c
+gtOs.obj:      gtOs.c
+winexec.obj:   winexec.c
+// getfile.obj:   getfile.c
+wndsay.obj:    wndsay.c
+bartools.obj:  bartools.c
+colorton.obj:  colorton.c
+controls.obj:  controls.c
+rects.obj:     rects.c
+dialogs.obj:   dialogs.c
+gpi.obj:       gpi.c
+hiloword.obj:  hiloword.c
+// init.obj:      init.c
+keyb.obj:      keyb.c
+menus.obj:     menus.c
+msgbox.obj:    msgbox.c
+msgs.obj:      msgs.c
+or.obj:        or.c
+osmem.obj:     osmem.c
+pointers.obj:  pointers.c
+profile.obj:   profile.c
+// valtochr.obj:  valtochr.c
+// vmo.obj:       vmo.c
+// weed.obj:      weed.c
+termOs.obj:    TermOs.c
+timers.obj:    timers.c
+windows.obj:   windows.c
+// wndlist.obj:   wndlist.c
+wbrwline.obj:  wbrwline.c
+
+// dependencias asm
+wb.obj:        wb.tsm
+
+// dependencias prg
+about.obj:     about.prg
+brush.obj:     brush.prg
+getfile.obj:   getfile.prg
+wbrowse.obj:   wbrowse.prg
+btnbmp.obj:    btnbmp.prg
+msgbar.obj:    msgbar.prg
+bar.obj:       bar.prg
+font.obj:      font.prg
+icon.obj:      icon.prg
+ini.obj:       ini.prg
+listbox.obj:   listbox.prg
+combobox.obj:  combobox.prg
+control.obj:   control.prg
+checkbox.obj:  checkbox.prg
+//meter.obj:   meter.prg
+scrlbar.obj:   scrlbar.prg
+button.obj:    button.prg
+control.obj:   control.prg
+dialog.obj:    dialog.prg
+errsyso.obj:   errsyso.prg
+keys.obj:      keys.prg
+menu.obj:      menu.prg
+menuitem.obj:  menuitem.prg
+pdmenu.obj:    pdmenu.prg
+radio.obj:     radio.prg
+radmenu.obj:   radmenu.prg
+rect.obj:      rect.prg
+say.obj:       say.prg
+TGet.obj:      TGet.prg
+timer.obj:     timer.prg
+window.obj:    window.prg
+wndclien.obj:  wndclien.prg

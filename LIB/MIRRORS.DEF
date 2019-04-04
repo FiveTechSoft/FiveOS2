@@ -1,0 +1,7 @@
+LIBRARY     MIRRORS                       
+
+DESCRIPTION 'Mirrors 2.0 (C) Copyright 1988-1992 Micrografx, Inc.'
+
+EXPORTS
+            _DOS3CALL                      @111
+            GETOPENFILENAME                @679

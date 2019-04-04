@@ -1,0 +1,12 @@
+Test.exe : Test.obj CsTest.obj CsTest.lib
+   SET LIB=c:\FiveOS2.10\lib;c:\clipper5\lib
+   link /se:700 /NOE /CO Test CsTest,,nul,FiveOS2 OS2Api Clipper CsTest, ..\..\include\FiveOS2.def
+
+Test.obj : Test.prg
+   clipper Test /n
+
+CsTest.obj : CsTest.c
+   bcc -c -ml -I..\..\include\api;..\..\include CsTest.c
+
+CsTest.lib : CsTest.def
+   implib CsTest.lib CsTest.def

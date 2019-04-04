@@ -1,0 +1,102 @@
+; OBJASM version 2.0 released on Jan 3, 1991
+; (C) Copyright 1988,1989,1990,1991 by Robert F. Day.  All rights reserved
+
+	TITLE	D:\CC\ALLOC\OSMEM.ASM
+
+	.386p					; Enable USE32/USE16 usage
+	.387					; Enable floating point also
+
+OSMEM_TEXT	SEGMENT	WORD PUBLIC USE16 'CODE'
+OSMEM_TEXT	ENDS
+
+_DATA	SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA	ENDS
+
+DGROUP	GROUP	_DATA
+
+	; A2h (162) - Undocumented Comment Record Type
+
+
+	EXTRN		__atopsp:ABS
+	EXTRN		__asizds:WORD
+	EXTRN		__abrktb:WORD
+
+	PUBLIC		__osAllocDefSeg		; Located at 1:0000h Type = 1
+	PUBLIC		__osAvail		; Located at 1:002Ah Type = 1
+	PUBLIC		__osAlloc		; Located at 1:003Ah Type = 1
+	PUBLIC		__osSize		; Located at 1:004Eh Type = 1
+
+
+OSMEM_TEXT	SEGMENT
+	assume	cs: OSMEM_TEXT
+
+
+__osAllocDefSeg:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	les	di,dword ptr [bp+006h]
+	mov	word ptr es:[di],ds
+	assume	ds: DGROUP
+	mov	ax,__asizds
+	and	ax,0FFFEh
+	les	di,dword ptr [bp+00Ah]
+	mov	es:[di],ax
+	mov	ax,__abrktb
+	inc	ax
+	and	ax,0FFFEh
+	les	di,dword ptr [bp+00Eh]
+	mov	es:[di],ax
+	sub	ax,ax
+	pop	di
+	pop	si
+	pop	bp
+	retf
+__osAvail:
+	push	bp
+	mov	bp,sp
+	push	si
+	mov	bx,0FFFFh
+	mov	ah,48h
+    call far ptr _Dos3Call ; int 21h
+	mov	ax,bx
+	pop	si
+	pop	bp
+	retf
+__osAlloc:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	mov	bx,[bp+006h]
+	mov	ah,48h
+    call far ptr _Dos3Call ; int 21h
+	jnc	$L1
+	sub	ax,ax
+$L1:	pop	di
+	pop	si
+	pop	bp
+	retf
+__osSize:
+	push	bp
+	mov	bp,sp
+	push	si
+	push	di
+	mov	es,word ptr [bp+006h]
+	mov	bx,[bp+008h]
+	mov	ah,4Ah
+    call far ptr _Dos3Call; int 21h
+	jc	$L2
+	sub	ax,ax
+$L2:	pop	di
+	pop	si
+	pop	bp
+	retf
+
+OSMEM_TEXT	ENDS
+
+    extrn _Dos3Call:far
+
+	END
+

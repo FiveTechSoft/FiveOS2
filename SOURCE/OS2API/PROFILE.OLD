@@ -1,0 +1,99 @@
+#define INCL_BASE
+#define INCL_WIN
+#define INCL_GPI
+
+#include <OS2Ten.h>
+#include <OS2.h>
+#include <ClipApi.h>
+
+HAB GetHab( void );
+void ValToChar( LPCLIPVAR pVal );   // Returns cStr at _eval
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFOPENPRO() // FILE( cIniFile )  --> hIni
+{
+   _retnl( ( LONG ) PrfOpenProfile( GetHab(), _parc( 1 ) ) );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFCLOSEPR() // OFILE( hIni )  --> lSuccess
+{
+   _retl( PrfCloseProfile( ( HINI ) _parnl( 1 ) ) );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFQUERYIN() // T( hIni, cAppName, cKeyName, nDefault ) --> nValue
+{
+   _retnl( PrfQueryProfileInt( ( HINI ) _parnl( 1 ), _parc( 2 ),
+                               _parc( 3 ), _parnl( 4 ) ) );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFQUERYST() // RING( hIni, cAppName, cKeyName, cDefault )  --> cValue
+{
+   LONG lSize;
+   BYTE * pBuffer;
+
+   if( PrfQueryProfileSize( ( HINI ) _parnl( 1 ), _parc( 2 ), _parc( 3 ),
+                            ( PULONG ) &lSize ) )
+   {
+      pBuffer = _xgrab( lSize );
+      PrfQueryProfileString( ( HINI ) _parnl( 1 ), _parc( 2 ), _parc( 3 ),
+                             _parc( 4 ), pBuffer, lSize );
+      _retc( pBuffer );
+      _xfree( pBuffer );
+   }
+   else
+      _retc( "" );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFWRITEST() // RING( hIni, cAppName, cKeyName, cValue )  --> lSuccess
+{
+   _retl( PrfWriteProfileString( ( HINI ) _parnl( 1 ), _parc( 2 ), _parc( 3 ),
+                                 _parc( 4 ) ) );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFWRITEDA() // TA( hIni, cAppName, cKeyName, uValue )  --> lSuccess
+{
+   ValToChar( _param( 4, -1 ) );
+
+   _retl( PrfWriteProfileData( ( HINI ) _parnl( 1 ), _parc( 2 ), _parc( 3 ),
+                               _parc( -1 ), _parclen( -1 ) ) );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFRESET() // ( cUserIni ) --> lSuccess
+{
+   PRFPROFILE prf;
+
+   PrfQueryProfile( GetHab(), &prf );   // System name must remain the same
+
+   prf.cchUserName = _parclen( 2 );
+   prf.pszUserName = _parc( 2 );
+
+   _retl( PrfReset( GetHab(), &prf ) );
+}
+
+//----------------------------------------------------------------------------//
+
+CLIPPER PRFQUERYPR() // OFILE() --> { cUserName, cSysName }
+{
+   PRFPROFILE prf;
+
+   PrfQueryProfile( GetHab(), &prf );
+
+   _reta( 2 );
+   _storc( prf.pszUserName, -1, 1 );
+   _storc( prf.pszSysName,  -1, 2 );
+}
+
+//----------------------------------------------------------------------------//

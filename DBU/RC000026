@@ -1,0 +1,8 @@
+#line 0 "dbu.RC"
+#line 1 "dbu.RC"
+
+icon   1             .\..\icons\FiveOS2.ico
+
+BITMAP IDB_INFO      .\..\bitmaps\Info.bmp
+BITMAP IDB_EXIT      .\..\bitmaps\Exit.bmp
+

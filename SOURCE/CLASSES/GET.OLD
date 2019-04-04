@@ -1,0 +1,71 @@
+#include "FiveOS2.ch"
+
+//----------------------------------------------------------------------------//
+
+CLASS TGet FROM TControl
+
+   DATA   oGet
+
+   METHOD New( nRow, nCol, nWidth, nHeight, bSetGet, oWnd, bValid ) CONSTRUCTOR
+
+   METHOD ReDefine( nId, oWnd, bSetGet ) CONSTRUCTOR
+
+   METHOD Init( hDlg ) INLINE  Super:Init( hDlg ),;
+                               ::SetText( Eval( ::bSetGet ) )
+
+   METHOD Refresh() INLINE ::SetText( Eval( ::bSetGet ) )
+
+   METHOD Display() VIRTUAL   // Standard displaying control
+
+   METHOD GotFocus() INLINE  ::SetText( Eval( ::bSetGet ) ),;
+                             Super:GotFocus()
+
+   METHOD LostFocus() INLINE Eval( ::bSetGet, ::GetText() ),;
+                             Super:LostFocus()
+
+   METHOD cToChar( nClassName, nControls, nDynData ) INLINE ;
+          Super:cToChar( WC_ENTRYFIELD, nControls, nDynData )
+
+   METHOD VarPut( uValue ) INLINE Eval( ::bSetGet, uValue ), ::Refresh()
+
+ENDCLASS
+
+//----------------------------------------------------------------------------//
+
+METHOD New( nRow, nCol, nWidth, nHeight, bSetGet, oWnd, bValid ) CLASS TGet
+
+   DEFAULT nWidth := 80, nHeight := 25, bSetGet := { || "Not defined!!!" }, ;
+           oWnd   := GetWndDefault()
+
+   ::nTop     = nRow
+   ::nLeft    = nCol
+   ::nBottom  = nRow + nHeight - 1
+   ::nRight   = nCol + nWidth - 1
+   ::bSetGet  = bSetGet
+   ::cCaption = cValToChar( Eval( bSetGet ) )
+   ::oWnd     = If( ! Empty( oWnd:oWndClient ), oWnd:oWndClient, oWnd )
+   ::nStyle   = nOr( WS_VISIBLE, WS_TABSTOP, ES_MARGIN )
+   ::bValid   = bValid
+
+   if ! Empty( oWnd:hWnd )
+      ::Create( WC_ENTRYFIELD )
+      oWnd:AddControl( Self )
+   else
+      oWnd:DefControl( Self )
+   endif
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD ReDefine( nId, oWnd, bSetGet ) CLASS TGet
+
+   ::nId     = nId
+   ::oWnd    = oWnd
+   ::bSetGet = bSetGet
+
+   oWnd:DefControl( Self )
+
+return nil
+
+//----------------------------------------------------------------------------//

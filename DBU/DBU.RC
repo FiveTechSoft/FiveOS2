@@ -1,0 +1,6 @@
+#include "..\include\OS2Api.ch"
+
+icon   1             .\..\icons\FiveOS2.ico
+
+BITMAP 10  .\..\bitmaps\Info.bmp
+BITMAP 30  .\..\bitmaps\Exit.bmp

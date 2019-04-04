@@ -1,0 +1,73 @@
+#include "FiveOS2.ch"
+
+//----------------------------------------------------------------------------//
+
+CLASS TButton FROM TControl
+
+   DATA   bAction
+
+   METHOD New( nTop, nLeft, nWidth, nHeight, cPrompt, oWnd,;
+               bAction ) CONSTRUCTOR
+
+   METHOD ReDefine( nId, oDlg, bAction ) CONSTRUCTOR
+
+   METHOD HandleEvent( nMsg, nLParam1, nLParam2 )
+
+   METHOD cToChar( nClassName, nControls, nDynData ) INLINE ;
+          Super:cToChar( WC_BUTTON, nControls, nDynData )
+
+ENDCLASS
+
+//----------------------------------------------------------------------------//
+
+METHOD New( nTop, nLeft, nWidth, nHeight, cPrompt, oWnd, bAction ) CLASS TButton
+
+   DEFAULT nWidth := 80, nHeight := 25, cPrompt := "~Button",;
+           oWnd   := GetWndDefault()
+
+   ::nTop     = nTop
+   ::nLeft    = nLeft
+   ::nBottom  = nTop + nHeight - 1
+   ::nRight   = nLeft + nWidth - 1
+   ::cCaption = cPrompt
+   ::oWnd     = If( ! Empty( oWnd:oWndClient ), oWnd:oWndClient, oWnd )
+   ::bAction  = bAction
+   ::nStyle   = nOr( WS_VISIBLE, WS_TABSTOP )
+
+   if ! Empty( oWnd:hWnd )
+      ::hWnd = WinCreateWindow( ::oWnd:hWnd, WC_BUTTON, cPrompt, ::nStyle,;
+                                nTop, nLeft, nWidth, nHeight, ::oWnd:hWnd )
+      ::Link()
+      oWnd:AddControl( Self )
+   else
+      oWnd:DefControl( Self )
+   endif
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD ReDefine( nId, oDlg, bAction ) CLASS TButton
+
+   ::nId     = nId
+   ::oWnd    = oDlg
+   ::bAction = bAction
+
+   ::oWnd:DefControl( Self )
+
+return nil
+
+//----------------------------------------------------------------------------//
+
+METHOD HandleEvent( nMsg, nLParam1, nLParam2 ) CLASS TButton
+
+   do case
+      case nMsg == FO_CLICK
+           if ::bAction != nil
+              Eval( ::bAction, Self )
+           endif
+   endcase
+
+return nil
+
+//----------------------------------------------------------------------------//

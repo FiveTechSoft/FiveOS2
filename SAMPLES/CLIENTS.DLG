@@ -1,0 +1,40 @@
+DLGINCLUDE 1 "CLIENTS.H"
+
+DLGTEMPLATE CLIENTS LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Clients Management", CLIENTS, 11, 20, 370, 148, WS_VISIBLE, 
+            FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        LTEXT           "Name:", 101, 15, 133, 27, 8
+        ENTRYFIELD      "", ID_NAME, 45, 133, 183, 8, ES_MARGIN
+        LTEXT           "Address:", 102, 4, 120, 35, 8
+        ENTRYFIELD      "", ID_STREET, 45, 120, 183, 8, ES_MARGIN
+        LTEXT           "Country:", 113, 6, 107, 36, 8
+        CONTROL         "", ID_COUNTRY, 43, 66, 66, 50, WC_COMBOBOX, CBS_DROPDOWN |
+                        WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        AUTOCHECKBOX    "Active", 114, 190, 104, 40, 10
+        ICON            IDB_INFO, 111, 13, 90, 21, 16
+        LTEXT           "Notes:", 115, 14, 75, 26, 8
+        MLE             "", ID_NOTES, 43, 18, 186, 71, MLS_HSCROLL |
+                        MLS_VSCROLL
+        GROUPBOX        "Photo", 117, 233, 18, 135, 129
+        PUSHBUTTON      "~First", ID_TOP, 6, 2, 36, 14
+        PUSHBUTTON      "~Prev", ID_PREV, 42, 2, 33, 14
+        PUSHBUTTON      "~Next", ID_NEXT, 75, 2, 31, 14
+        PUSHBUTTON      "~Last", ID_BOTTOM, 106, 2, 33, 14
+        PUSHBUTTON      "N~ew", 105, 139, 2, 30, 14
+        PUSHBUTTON      "~Edit", 106, 169, 2, 31, 14
+        PUSHBUTTON      "~Del", 107, 200, 2, 32, 14
+        PUSHBUTTON      "~Search", ID_SEARCH, 232, 2, 38, 14
+        PUSHBUTTON      "~Print", 102, 270, 2, 36, 14
+        PUSHBUTTON      "~End", IDB_INFO, 338, 2, 30, 14
+        CONTROL         "", ID_HORBAR, 236, 20, 129, 7, WC_SCROLLBAR, 
+                        SBS_HORZ | WS_VISIBLE
+        ICON            DID_OK, 104, 11, 35, 21, 16
+        CONTROL         IDB_FACE1, 108, 236, 27, 108, 94, WC_STATIC, 
+                        SS_BITMAP | WS_VISIBLE
+        ENTRYFIELD      "", 116, 45, 93, 84, 8, ES_MARGIN
+        ENTRYFIELD      "", 118, 163, 93, 65, 8, ES_MARGIN
+        ICON            IDB_CLIENT, 112, 136, 90, 21, 16, WS_GROUP
+    END
+END

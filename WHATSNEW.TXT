@@ -1,0 +1,53 @@
+
+
+                      FiveOS2 - Beta development news
+                      ===============================
+
+
+  We really thank you for your support and suggestions (and code!) through
+                       this Beta period of FiveOS2.
+
+ Version 0E
+ ==========
+
+* A lot of classes from FiveWin have been ported into FiveOS2:
+  TGet, TSay, TButton...
+
+* New samples!
+
+* A lot of new stuff!
+
+
+ Version 0D
+ ==========
+
+* Browses are running. We really high compatible with FiveWin browses!
+
+* Timers are done!
+
+
+
+ Version 0C
+ ==========
+
+* We have been developing all controls creation from source code. See
+  SAMPLES\TestDlg1.prg for a full sample.
+
+* See SAMPLES\CLients.prg for the first bussiness application sample
+  we are developing. See Clients.rc as a very good sample for understanding
+  how to use resources in OS2.
+
+* We are working on browses and printing. Those are just the missing parts
+  to nearly start delivering FiveOS2 vers. 1.0.
+
+* We are looking for a good routine to read bitmaps from disk dinamically,
+  so we may offer the same functionality as FiveWin. Would you help us ?
+
+* We would like to find a full working sample of folder-book controls.
+  Any help will be great!
+
+* We are almost ready to start directly porting big parts of FiveWin. The
+  Five OOPS architecture is the perfect base to do it! See RadMenu.prg
+  and Radio.prg for a 100% ported code from FiveWin!
+
+

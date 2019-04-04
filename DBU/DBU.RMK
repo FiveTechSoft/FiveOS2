@@ -1,0 +1,7 @@
+Dbu.exe : Dbu.obj ..\lib\FiveOS2.lib
+   SET LIB=..\lib;c:\clipper5\lib
+   blinker fi Dbu @..\include\FiveOS2
+
+Dbu.obj : Dbu.prg
+   clipper dbu /n/i..\include
+

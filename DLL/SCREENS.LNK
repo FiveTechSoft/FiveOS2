@@ -1,0 +1,7 @@
+BLINKER INCREMENTAL OFF
+
+DEFBEGIN
+   LIBRARY     screens
+   DESCRIPTION 'FiveOS2 DLL for user-defined resources'
+   EXETYPE     OS2
+DEFEND

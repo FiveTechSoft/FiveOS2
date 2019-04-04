@@ -1,0 +1,29 @@
+
+DLGTEMPLATE 100 LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "FiveOS2 Controls Test", 100, 8, 50, 272, 122, WS_VISIBLE, 
+            FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        PUSHBUTTON      "PushButton", 101, 99, 4, 70, 14
+        AUTOCHECKBOX    "Check", 102, 5, 89, 40, 10
+        ENTRYFIELD      "", 103, 36, 106, 129, 8, ES_MARGIN
+        LTEXT           "Entry", 104, 6, 106, 22, 8
+        AUTORADIOBUTTON "Radio", 105, 51, 88, 39, 10, WS_GROUP | WS_TABSTOP
+        AUTORADIOBUTTON "Radio", 106, 51, 77, 39, 10
+        AUTORADIOBUTTON "Radio", 107, 51, 65, 39, 10
+        LISTBOX         108, 180, 51, 80, 61
+        LTEXT           "ListBox", 109, 182, 109, 38, 8
+        CONTROL         "", 110, 98, 49, 69, 45, WC_COMBOBOX, 
+                        CBS_DROPDOWNLIST | WS_GROUP | WS_TABSTOP | 
+                        WS_VISIBLE
+        LTEXT           "ComboBox", 111, 97, 95, 45, 8
+        CONTROL         "", 112, 4, 25, 102, 7, WC_SCROLLBAR, SBS_HORZ | 
+                        WS_VISIBLE
+        LTEXT           "Horizontal ScrollBar", 113, 4, 33, 85, 8
+        CONTROL         "", 114, 111, 26, 9, 40, WC_SCROLLBAR, SBS_VERT | 
+                        WS_VISIBLE
+        LTEXT           "Vertical", 115, 123, 59, 36, 8
+        LTEXT           "ScrollBar", 116, 124, 51, 42, 8
+        LTEXT           "Slider", 118, 163, 29, 25, 8
+    END
+END

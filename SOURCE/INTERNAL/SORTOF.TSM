@@ -1,0 +1,2361 @@
+; OBJASM version 2.0 released on Jan 3, 1991
+; (C) Copyright 1988,1989,1990,1991 by Robert F. Day.  All rights reserved
+
+	TITLE	D:\CC\DBF\SORTOF.C
+
+	.8086
+	.8087
+	; Large Memory Model
+	; Optimizations Enabled
+
+	; CodeView Enabled
+
+SORTOF_TEXT	SEGMENT	WORD PUBLIC 'CODE'
+SORTOF_TEXT	ENDS
+
+_DATA	SEGMENT	WORD PUBLIC 'DATA'
+_DATA	ENDS
+
+CONST	SEGMENT	WORD PUBLIC 'CONST'
+CONST	ENDS
+
+_BSS	SEGMENT	WORD PUBLIC 'BSS'
+_BSS	ENDS
+
+DGROUP	GROUP	CONST, _BSS, _DATA
+
+	; A2h (162) - Undocumented Comment Record Type
+
+
+	EXTRN		__xfree:NEAR
+	EXTRN		__s_order:NEAR
+	EXTRN		__AllocF:NEAR
+	EXTRN		__srsize:WORD
+	EXTRN		__srbase:WORD
+	EXTRN		__slbase:WORD
+	EXTRN		__sfcount:WORD
+	EXTRN		__sfields:WORD
+	EXTRN		__tctemp:NEAR
+	EXTRN		__aFldiv:NEAR
+	EXTRN		__upref:NEAR
+	EXTRN		__vmStatE:NEAR
+	EXTRN		__uprefp:NEAR
+	EXTRN		__aFuldiv:NEAR
+	EXTRN		__vmStatN:NEAR
+	EXTRN		__aFulmul:NEAR
+	EXTRN		__vmStat:NEAR
+	EXTRN		__vmUnlock:NEAR
+	EXTRN		__ierror:NEAR
+	EXTRN		__vmLock:NEAR
+	EXTRN		__fsSeek:NEAR
+	EXTRN		__vmXfr:NEAR
+	EXTRN		__fsWrite:NEAR
+	EXTRN		__vmTwo:NEAR
+	EXTRN		__vmDirtyPtr:NEAR
+	EXTRN		__fsRead:NEAR
+	EXTRN		__vmPtr:NEAR
+	EXTRN		__fsClose:NEAR
+	EXTRN		__bcopy:NEAR
+	EXTRN		__bset:NEAR
+	EXTRN		__bmove:NEAR
+	EXTRN		__vmFree:NEAR
+	EXTRN		__fsDelete:NEAR
+	EXTRN		__vmAlloc:NEAR
+	EXTRN		__acrtused:ABS
+
+;Static	PUBLIC		SortCreateTemp		; Located at 1:0000h Type = 1
+;Static	PUBLIC		AuxStreamEnd		; Located at 1:00C4h Type = 1
+;Static	PUBLIC		AuxStreamOut		; Located at 1:01AAh Type = 1
+;Static	PUBLIC		AuxStreamStart		; Located at 1:02C0h Type = 1
+;Static	PUBLIC		StreamK			; Located at 1:034Ch Type = 1
+;Static	PUBLIC		StreamEnd		; Located at 1:03A4h Type = 1
+;Static	PUBLIC		StreamAdvance		; Located at 1:053Eh Type = 1
+	PUBLIC		__sortEnd		; Located at 1:06ECh Type = 1
+;Static	PUBLIC		next_order		; Located at 1:0802h Type = 1
+;Static	PUBLIC		sift			; Located at 1:08C2h Type = 1
+;Static	PUBLIC		init_heap		; Located at 1:0960h Type = 1
+;Static	PUBLIC		KillStream		; Located at 1:09DCh Type = 1
+	PUBLIC		_Merge			; Located at 1:0A32h Type = 1
+	PUBLIC		__sortComplete		; Located at 1:0C6Ch Type = 1
+;Static	PUBLIC		QOrder			; Located at 1:0DF8h Type = 1
+;Static	PUBLIC		median			; Located at 1:0F5Ah Type = 1
+;Static	PUBLIC		p_order			; Located at 1:104Ah Type = 1
+;Static	PUBLIC		small_sort		; Located at 1:10C6h Type = 1
+;Static	PUBLIC		QSort			; Located at 1:116Ah Type = 1
+	PUBLIC		__sortSort		; Located at 1:13DCh Type = 1
+	PUBLIC		__sortAdvance		; Located at 1:150Eh Type = 1
+	PUBLIC		__sortSetField		; Located at 1:163Eh Type = 1
+	PUBLIC		__sortInit		; Located at 1:167Eh Type = 1
+
+struct_0	struc
+s0m_0	dw	12 dup (?)
+struct_0	ends
+
+
+SORTOF_TEXT	SEGMENT
+	assume	cs: SORTOF_TEXT
+
+
+SortCreateTemp:
+	push	bp
+	mov	bp,sp
+	sub	sp,+050h
+	push	di
+	push	si
+	mov	ax,offset DGROUP:$S1
+	push	ds
+	push	ax
+	call	far ptr __uprefp
+	add	sp,+004h
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	or	dx,ax
+	jz	$L2
+	les	bx,dword ptr [bp-004h]
+	mov	al,es:[bx]
+	mov	[bp-04Eh],al
+	cmp	al,27h
+	jz	$L3
+	cmp	al,22h
+	jnz	$L4
+$L3:	inc	word ptr [bp-004h]
+$L4:	sub	cx,cx
+	mov	word ptr [bp-050h],ds
+	lds	si,dword ptr [bp-004h]
+$L8:	mov	bx,cx
+	cmp	byte ptr [bx+si],20h
+	jz	$L5
+	cmp	byte ptr [bx+si],27h
+	jz	$L5
+	cmp	byte ptr [bx+si],22h
+	jnz	$L6
+$L5:	mov	ds,word ptr [bp-050h]
+	mov	[bp-006h],cx
+	mov	si,cx
+	mov	byte ptr [bp+si-04Ch],00h
+	jmp	short $L7
+$L6:	mov	bx,cx
+	mov	al,[bx+si]
+	mov	di,cx
+	mov	[bp+di-04Ch],al
+	inc	cx
+	cmp	cx,+042h
+	jnc	$L5
+	jmp	short $L8
+	nop
+$L2:	mov	byte ptr [bp-04Ch],2Eh
+	mov	byte ptr [bp-04Bh],5Ch
+	mov	byte ptr [bp-04Ah],00h
+$L7:	les	bx,dword ptr [bp+004h]
+	push	es:[bx+022h]
+	push	es:[bx+020h]
+	sub	ax,ax
+	push	ax
+	lea	ax,[bp-04Ch]
+	push	ss
+	push	ax
+	call	far ptr __tctemp
+	add	sp,+00Ah
+	les	bx,dword ptr [bp+004h]
+	mov	es:[bx+024h],ax
+	cmp	ax,0FFFFh
+	jnz	$L9
+	mov	ax,1148h
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L9:	les	bx,dword ptr [bp+004h]
+	mov	word ptr es:[bx+01Eh],0001h
+	sub	ax,ax
+	mov	es:[bx+028h],ax
+	mov	es:[bx+026h],ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+AuxStreamEnd:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	assume	ds: DGROUP
+	push	$S10.s0m_0 + 00002h
+	push	$S10.s0m_0
+	sub	ax,ax
+	push	ax
+	push	$S11
+	call	far ptr __aFulmul
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	sub	ax,ax
+	push	ax
+	push	$S12
+	push	ax
+	push	$S12
+	mov	ax,[bp-004h]
+	sub	ax,0001h
+	sbb	dx,+000h
+	push	dx
+	push	ax
+	call	far ptr __aFuldiv
+	push	dx
+	push	ax
+	call	far ptr __aFulmul
+    add ax, word ptr $S13
+    adc dx, word ptr $S14
+	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	cmp	word ptr $S15,+000h
+	jz	$L16
+	sub	ax,ax
+	push	ax
+	push	dx
+	push	[bp-008h]
+	push	$S17
+	call	far ptr __fsSeek
+	add	sp,+008h
+    mov ax, word ptr $S15
+	dec	ax
+	mov	cl,0Ah
+	shr	ax,cl
+	shl	ax,cl
+	add	ah,04h
+	mov	[bp-00Ah],ax
+	push	ax
+	push	$S18
+	push	$S19
+	push	$S17
+	call	far ptr __fsWrite
+	add	sp,+008h
+	mov	ax,[bp-00Ah]
+	sub	dx,dx
+	add	[bp-008h],ax
+	adc	[bp-006h],dx
+$L16:	les	bx,dword ptr [bp+004h]
+	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	mov	es:[bx+026h],ax
+	mov	es:[bx+028h],dx
+	push	$S10.s0m_0 + 00006h
+	push	$S10.s0m_0 + 00004h
+	call	far ptr __vmUnlock
+	add	sp,+004h
+	push	$S10.s0m_0 + 00006h
+	push	$S10.s0m_0 + 00004h
+	call	far ptr __vmFree
+	sub	ax,ax
+	mov	$S10.s0m_0 + 00006h,ax
+	mov	$S10.s0m_0 + 00004h,ax
+    mov word ptr $S20,ax
+    mov ax, word ptr $S10.s0m_0
+    mov dx, word ptr $S10.s0m_0 + 00002h
+	mov	$S21,ax
+	mov	$S22,dx
+	mov	sp,bp
+	pop	bp
+	ret
+AuxStreamOut:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ch
+    mov ax, word ptr $S15
+    add ax, word ptr $S11
+    cmp ax, word ptr $S12
+	jnbe	$L23
+	jmp	$L24
+$L23:   mov ax, word ptr $S12
+    sub ax, word ptr $S15
+	mov	[bp-006h],ax
+	push	ax
+	push	[bp+008h]
+	push	[bp+006h]
+    mov ax, word ptr $S15
+    add ax, word ptr $S19
+    mov dx, word ptr $S18
+	push	dx
+	push	ax
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	push	$S10.s0m_0 + 00002h
+	push	$S10.s0m_0
+	sub	ax,ax
+	push	ax
+	push	$S11
+	call	far ptr __aFulmul
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	sub	ax,ax
+	push	ax
+	push	$S12
+	push	ax
+	push	$S12
+	mov	ax,[bp-004h]
+	sub	ax,0001h
+	sbb	dx,+000h
+	push	dx
+	push	ax
+	call	far ptr __aFuldiv
+	push	dx
+	push	ax
+	call	far ptr __aFulmul
+    add ax, word ptr $S13
+    adc dx, word ptr $S14
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	sub	ax,ax
+	push	ax
+	push	dx
+	push	[bp-00Ah]
+	push	$S17
+	call	far ptr __fsSeek
+	add	sp,+008h
+	push	$S12
+	push	$S18
+	push	$S19
+	push	$S17
+	call	far ptr __fsWrite
+	add	sp,+008h
+    mov ax, word ptr $S11
+	sub	ax,[bp-006h]
+	mov	[bp-00Ch],ax
+	push	ax
+	mov	ax,[bp-006h]
+	add	ax,[bp+006h]
+	mov	dx,[bp+008h]
+	push	dx
+	push	ax
+	push	$S18
+	push	$S19
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	mov	ax,[bp-00Ch]
+	mov	$S15,ax
+	jmp	short $L25
+	nop
+$L24:	push	$S11
+	push	[bp+008h]
+	push	[bp+006h]
+    mov ax, word ptr $S15
+    add ax, word ptr $S19
+    mov dx, word ptr $S18
+	push	dx
+	push	ax
+	call	far ptr __bcopy
+	add	sp,+00Ah
+    mov ax, word ptr $S11
+	add	$S15,ax
+$L25:	add	word ptr $S10.s0m_0,+001h
+	adc	word ptr $S10.s0m_0 + 00002h,+000h
+	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	retf
+AuxStreamStart:
+	push	bp
+	mov	bp,sp
+	mov	ax,001Ch
+	push	ax
+	sub	ax,ax
+	push	ax
+	mov	ax,offset DGROUP:$S21
+	push	ds
+	push	ax
+	call	far ptr __bset
+	add	sp,+008h
+	mov	ax,[bp+008h]
+	sub	ax,003Ch
+	sbb	cx,cx
+	and	ax,cx
+	add	ax,003Ch
+    mov word ptr $S20,ax
+	push	ax
+	call	far ptr __vmAlloc
+	add	sp,+002h
+	mov	$S10.s0m_0 + 00004h,ax
+	mov	$S10.s0m_0 + 00006h,dx
+	push	dx
+	push	ax
+	call	far ptr __vmLock
+	add	sp,+004h
+	mov	$S19,ax
+	mov	$S18,dx
+    mov ax, word ptr $S20
+	mov	cl,0Ah
+	shl	ax,cl
+	mov	$S12,ax
+	mov	word ptr $S15,0000h
+	les	bx,dword ptr [bp+004h]
+	cmp	word ptr es:[bx+01Eh],+000h
+	jnz	$L26
+	push	es
+	push	bx
+	call	SortCreateTemp
+	add	sp,+004h
+$L26:	les	bx,dword ptr [bp+004h]
+	mov	ax,es:[bx+024h]
+	mov	$S17,ax
+	mov	ax,es:[bx]
+	mov	$S11,ax
+	mov	ax,es:[bx+026h]
+	mov	dx,es:[bx+028h]
+    mov word ptr $S13,ax
+    mov word ptr $S14,dx
+	pop	bp
+	ret
+	nop
+StreamK:
+	push	bp
+	mov	bp,sp
+	sub	sp,+004h
+	les	bx,dword ptr [bp+004h]
+	mov	ax,es:[bx]
+	shr	ax,1
+	mov	[bp-002h],ax
+	inc	word ptr [bp-002h]
+	mov	ax,[bp+008h]
+	sub	dx,dx
+	div	word ptr [bp-002h]
+	mov	[bp-004h],ax
+	mov	ax,[bp+008h]
+	sub	dx,dx
+	div	word ptr [bp-002h]
+	mov	ax,dx
+	sub	dx,dx
+	div	word ptr [bp-002h]
+	add	[bp-004h],ax
+	mov	ax,[bp+008h]
+	sub	ax,[bp-004h]
+	cmp	ax,0004h
+	jnc	$L27
+	mov	ax,0004h
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+$L27:	mov	ax,[bp+008h]
+	sub	ax,[bp-004h]
+	sub	ax,0040h
+	sbb	cx,cx
+	and	ax,cx
+	add	ax,0040h
+	mov	sp,bp
+	pop	bp
+	ret
+StreamEnd:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ch
+	les	bx,dword ptr [bp+004h]
+	mov	ax,es:[bx+032h]
+
+	mov	dx,es:[bx+034h]
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	or	dx,ax
+	jnz	$L28
+	jmp	$L29
+$L28:	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx+004h]
+	mov	dx,es:[bx+006h]
+	mov	es:[bx],ax
+	mov	es:[bx+002h],dx
+	les	bx,dword ptr [bp+004h]
+	add	es:[bx+010h],ax
+	adc	es:[bx+012h],dx
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx+00Ch]
+	mov	[bp-006h],ax
+	les	bx,dword ptr [bp+004h]
+	mov	ax,[bp+008h]
+	cmp	es:[bx+00Eh],ax
+	jnbe	$L30
+	jmp	$L31
+$L30:	mov	ax,0004h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	mov	cx,[bp-006h]
+	shl	cx,1
+	cmp	cx,ax
+	jnbe	$L32
+	push	[bp-006h]
+	call	far ptr __vmStatE
+	add	sp,+002h
+	or	ax,ax
+	jz	$L32
+	jmp	$L31
+$L32:	les	bx,dword ptr [bp+004h]
+	cmp	word ptr es:[bx+01Eh],+000h
+	jnz	$L33
+	push	es
+	push	bx
+	call	SortCreateTemp
+	add	sp,+004h
+$L33:	les	bx,dword ptr [bp-00Ch]
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	call	far ptr __vmPtr
+	add	sp,+004h
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx+004h]
+	les	bx,dword ptr [bp+004h]
+	mul	word ptr es:[bx]
+	mov	[bp-008h],ax
+	add	ax,03FFh
+	and	ax,0FC00h
+	mov	[bp-008h],ax
+	mov	ax,es:[bx+026h]
+	mov	dx,es:[bx+028h]
+	les	bx,dword ptr [bp-00Ch]
+	mov	es:[bx+018h],ax
+	mov	es:[bx+01Ah],dx
+	sub	ax,ax
+	push	ax
+	les	bx,dword ptr [bp+004h]
+	push	es:[bx+028h]
+	push	es:[bx+026h]
+	push	es:[bx+024h]
+	call	far ptr __fsSeek
+	add	sp,+008h
+	cmp	word ptr [bp-008h],+000h
+	jnz	$L34
+	mov	ax,0FC00h
+	push	ax
+	push	[bp-002h]
+	push	[bp-004h]
+	les	bx,dword ptr [bp+004h]
+	push	es:[bx+024h]
+	call	far ptr __fsWrite
+	add	sp,+008h
+	mov	ax,0400h
+	push	ax
+	mov	ax,[bp-004h]
+	mov	dx,[bp-002h]
+	add	ah,0FCh
+	push	dx
+	push	ax
+	les	bx,dword ptr [bp+004h]
+	push	es:[bx+024h]
+	call	far ptr __fsWrite
+	add	sp,+008h
+	les	bx,dword ptr [bp+004h]
+	add	word ptr es:[bx+026h],+000h
+	adc	word ptr es:[bx+028h],+001h
+	jmp	short $L35
+$L34:	push	[bp-008h]
+	push	[bp-002h]
+	push	[bp-004h]
+	les	bx,dword ptr [bp+004h]
+	push	es:[bx+024h]
+	call	far ptr __fsWrite
+	add	sp,+008h
+	les	bx,dword ptr [bp+004h]
+	mov	ax,[bp-008h]
+	sub	dx,dx
+	add	es:[bx+026h],ax
+	adc	es:[bx+028h],dx
+$L35:	les	bx,dword ptr [bp-00Ch]
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	call	far ptr __vmFree
+	add	sp,+004h
+	les	bx,dword ptr [bp-00Ch]
+	sub	ax,ax
+	mov	es:[bx+00Ah],ax
+	mov	es:[bx+008h],ax
+	mov	es:[bx+00Ch],ax
+	les	bx,dword ptr [bp+004h]
+$L31:	les	bx,dword ptr [bp+004h]
+	sub	ax,ax
+	mov	es:[bx+034h],ax
+	mov	es:[bx+032h],ax
+$L29:	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	ret
+StreamAdvance:
+	push	bp
+	mov	bp,sp
+	sub	sp,+01Ah
+	push	si
+	mov	ax,001Ch
+	mul	word ptr [bp+008h]
+	les	bx,dword ptr [bp+004h]
+	mov	cx,es:[bx+02Ah]
+	mov	si,es:[bx+02Ch]
+	add	cx,ax
+	mov	[bp-01Ah],cx
+	mov	[bp-018h],si
+	les	bx,dword ptr [bp-01Ah]
+	mov	ax,es:[bx+004h]
+	or	ax,es:[bx+006h]
+	jnz	$L36
+	sub	ax,ax
+	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+$L36:	les	bx,dword ptr [bp+004h]
+	mov	si,es:[bx]
+	les	bx,dword ptr [bp-01Ah]
+	add	es:[bx+014h],si
+	mov	ax,es:[bx+016h]
+	cmp	es:[bx+014h],ax
+	jz	$L37
+	jmp	$L38
+$L37:	mov	ax,es:[bx]
+	mov	dx,es:[bx+002h]
+	sub	ax,es:[bx+004h]
+	sbb	dx,es:[bx+006h]
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+	sub	ax,ax
+	push	ax
+	push	si
+	push	dx
+	push	[bp-00Eh]
+	call	far ptr __aFulmul
+	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	and	ax,0FC00h
+	mov	[bp-016h],ax
+	mov	[bp-014h],dx
+	mov	ax,[bp-008h]
+	sub	ax,[bp-016h]
+	mov	[bp-012h],ax
+	les	bx,dword ptr [bp-01Ah]
+	mov	ax,es:[bx+012h]
+	mov	cl,0Ah
+	shl	ax,cl
+	mov	[bp-010h],ax
+	sub	ax,[bp-012h]
+	sub	dx,dx
+	div	si
+	mov	[bp-00Ah],ax
+	mov	ax,es:[bx]
+	mov	dx,es:[bx+002h]
+	sub	ax,[bp-00Eh]
+	sbb	dx,[bp-00Ch]
+	mov	cx,[bp-00Ah]
+	sub	bx,bx
+	cmp	dx,bx
+	jnbe	$L39
+	jc	$L40
+	cmp	ax,cx
+	jnc	$L39
+$L40:	mov	bx,[bp-01Ah]
+	mov	ax,es:[bx]
+	sub	ax,[bp-00Eh]
+	mov	[bp-00Ah],ax
+$L39:	les	bx,dword ptr [bp+004h]
+	mov	ax,es:[bx]
+	mul	word ptr [bp-00Ah]
+	add	ax,[bp-012h]
+	mov	[bp-010h],ax
+	les	bx,dword ptr [bp-01Ah]
+	mov	ax,es:[bx+008h]
+	or	ax,es:[bx+00Ah]
+	jz	$L41
+	mov	ax,[bp-010h]
+	dec	ax
+	mov	cl,0Ah
+	shr	ax,cl
+	inc	ax
+	push	ax
+	mov	ax,0400h
+	cwd
+	push	dx
+	push	ax
+	push	[bp-014h]
+	push	[bp-016h]
+	call	far ptr __aFldiv
+	push	ax
+	les	bx,dword ptr [bp-01Ah]
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	push	es:[bx+010h]
+	push	es:[bx+00Eh]
+	call	far ptr __vmXfr
+	add	sp,+00Ch
+	jmp	short $L42
+	nop
+$L41:	les	bx,dword ptr [bp+004h]
+	cmp	word ptr es:[bx+01Eh],+000h
+	jz	$L42
+	sub	ax,ax
+	push	ax
+	les	bx,dword ptr [bp-01Ah]
+	mov	ax,es:[bx+018h]
+	mov	dx,es:[bx+01Ah]
+	add	ax,[bp-016h]
+	adc	dx,[bp-014h]
+	push	dx
+	push	ax
+	les	bx,dword ptr [bp+004h]
+	push	es:[bx+024h]
+	call	far ptr __fsSeek
+	add	sp,+008h
+	les	bx,dword ptr [bp-01Ah]
+	push	es:[bx+010h]
+	push	es:[bx+00Eh]
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	push	[bp-010h]
+	push	dx
+	push	ax
+	les	bx,dword ptr [bp+004h]
+	push	es:[bx+024h]
+	call	far ptr __fsRead
+	add	sp,+008h
+	cmp	ax,[bp-010h]
+	jz	$L42
+	mov	ax,1136h
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L42:	les	bx,dword ptr [bp-01Ah]
+	mov	ax,[bp-012h]
+	mov	es:[bx+014h],ax
+	mov	ax,[bp-010h]
+	mov	es:[bx+016h],ax
+$L38:	sub	word ptr es:[bx+004h],+001h
+	sbb	word ptr es:[bx+006h],+000h
+	mov	ax,0001h
+	pop	si
+	mov	sp,bp
+	pop	bp
+	ret
+__sortEnd:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	push	di
+	push	si
+	les	bx,dword ptr [bp+006h]
+	cmp	word ptr es:[bx+01Eh],+000h
+	jz	$L43
+	push	es:[bx+024h]
+	call	far ptr __fsClose
+	add	sp,+002h
+	mov	ax,offset DGROUP:$S44
+	push	ds
+	push	ax
+	call	far ptr __upref
+	add	sp,+004h
+	cmp	ax,0FFFFh
+	jnz	$L43
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+022h]
+	push	es:[bx+020h]
+	call	far ptr __fsDelete
+	add	sp,+004h
+$L43:	mov	word ptr [bp-002h],0000h
+	les	bx,dword ptr [bp+006h]
+	cmp	word ptr es:[bx+030h],+000h
+	jz	$L45
+	sub	si,si
+	mov	di,[bp-002h]
+$L48:	mov	ax,es:[bx+02Ah]
+	mov	dx,es:[bx+02Ch]
+	add	ax,si
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	les	bx,dword ptr [bp-006h]
+	mov	ax,es:[bx+008h]
+	or	ax,es:[bx+00Ah]
+	jz	$L46
+	push	es:[bx+00Ah]
+
+	push	es:[bx+008h]
+	call	far ptr __vmFree
+	add	sp,+004h
+$L46:	les	bx,dword ptr [bp-006h]
+	mov	ax,es:[bx+00Eh]
+	or	ax,es:[bx+010h]
+	jz	$L47
+	push	es:[bx+010h]
+	push	es:[bx+00Eh]
+	call	far ptr __vmFree
+	add	sp,+004h
+$L47:	add	si,+01Ch
+	inc	di
+	les	bx,dword ptr [bp+006h]
+	cmp	es:[bx+030h],di
+	jnbe	$L48
+	mov	[bp-002h],di
+$L45:	push	es:[bx+02Ch]
+	push	es:[bx+02Ah]
+	call	far ptr __xfree
+	add	sp,+004h
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+01Ch]
+	push	es:[bx+01Ah]
+	call	far ptr __xfree
+	add	sp,+004h
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+018h]
+	push	es:[bx+016h]
+	call	far ptr __xfree
+	add	sp,+004h
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+022h]
+	push	es:[bx+020h]
+	call	far ptr __xfree
+	add	sp,+004h
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+00Ch]
+	push	es:[bx+00Ah]
+	call	far ptr __xfree
+	add	sp,+004h
+	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+next_order:
+	push	bp
+	mov	bp,sp
+	sub	sp,+014h
+	mov	ax,001Ch
+	mul	word ptr [bp+004h]
+    add ax, word ptr $S49
+    mov dx, word ptr $S50
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	les	bx,dword ptr [bp-010h]
+	mov	ax,es:[bx+00Eh]
+	mov	dx,es:[bx+010h]
+	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	mov	ax,es:[bx+014h]
+	mov	[bp-002h],ax
+	mov	ax,001Ch
+	mul	word ptr [bp+006h]
+    add ax, word ptr $S49
+    mov dx, word ptr $S50
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	les	bx,dword ptr [bp-014h]
+	mov	ax,es:[bx+00Eh]
+	mov	dx,es:[bx+010h]
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	ax,es:[bx+014h]
+	mov	[bp-004h],ax
+	les	bx,dword ptr [bp-008h]
+	test	byte ptr es:[bx],04h
+	jz	$L51
+	les	bx,dword ptr [bp-00Ch]
+	test	byte ptr es:[bx],04h
+	jnz	$L52
+$L51:	push	[bp-00Ah]
+	push	[bp-00Ch]
+	push	[bp-006h]
+	push	[bp-008h]
+	call	far ptr __vmTwo
+	add	sp,+008h
+	jmp	short $L53
+$L52:	les	bx,dword ptr [bp-008h]
+	mov	ax,es:[bx]
+    or al, 7 ;                          and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+$L53:	add	ax,[bp-002h]
+	mov	__slbase,ax
+	mov	__slbase + 00002h,dx
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx]
+    or al, 7 ;                                and al,0F8h
+	mov	dx,ax
+	sub	ax,ax
+	add	ax,[bp-004h]
+	mov	__srbase,ax
+	mov	__srbase + 00002h,dx
+	sub	ax,ax
+	push	ax
+	push	ax
+	call	far ptr __s_order
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+sift:	push	bp
+	mov	bp,sp
+	sub	sp,+00Ch
+	push	di
+	push	si
+	mov	ax,[bp+004h]
+	mov	[bp-004h],ax
+	mov	si,ax
+	shl	si,1
+	les	bx,dword ptr $S54
+	mov	ax,es:[bx+si]
+	mov	[bp-002h],ax
+	mov	di,[bp-00Ch]
+	jmp	short $L55
+	nop
+$L58:	mov	di,si
+	shl	di,1
+	les	bx,dword ptr $S54
+	mov	ax,es:[bx+di]
+	mov	bx,[bp-004h]
+	shl	bx,1
+	add	bx,word ptr $S54
+	mov	es:[bx],ax
+	mov	[bp-004h],si
+	mov	si,di
+$L55:	cmp	si,[bp+006h]
+	jnbe	$L56
+	jnc	$L57
+	mov	ax,si
+	shl	ax,1
+	add	ax,word ptr $S54
+	mov	dx,es
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	les	bx,dword ptr [bp-00Ah]
+	push	es:[bx+002h]
+	push	es:[bx]
+	call	next_order
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L57
+	inc	si
+$L57:	mov	bx,si
+	shl	bx,1
+	add	bx,word ptr $S54
+	mov	es,word ptr $S54 + 00002h
+	push	es:[bx]
+	push	[bp-002h]
+	call	next_order
+	add	sp,+004h
+	or	ax,ax
+	jz	$L58
+$L56:	mov	[bp-006h],si
+	mov	bx,[bp-004h]
+	shl	bx,1
+	les	si,dword ptr $S54
+	mov	ax,[bp-002h]
+	mov	es:[bx+si],ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+init_heap:
+	push	bp
+	mov	bp,sp
+	sub	sp,+006h
+	push	di
+	push	si
+	mov	ax,[bp+004h]
+	shr	ax,1
+	inc	ax
+	mov	[bp-002h],ax
+	mov	ax,[bp+004h]
+	cmp	[bp-002h],ax
+	jnbe	$L59
+	mov	ax,[bp-002h]
+	shl	ax,1
+	add	ax,word ptr $S54
+	mov	dx,word ptr $S54 + 00002h
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	mov	si,[bp+004h]
+	mov	cx,[bp-002h]
+	les	di,dword ptr [bp-006h]
+$L60:	mov	ax,cx
+	dec	ax
+	mov	es:[di],ax
+	add	di,+002h
+	inc	cx
+	cmp	cx,si
+	jbe	$L60
+	mov	[bp-002h],cx
+$L59:	mov	ax,[bp+004h]
+	shr	ax,1
+	mov	[bp-002h],ax
+	or	ax,ax
+	jz	$L61
+	mov	di,ax
+	shl	di,1
+	mov	si,ax
+$L62:	les	bx,dword ptr $S54
+	lea	ax,[si-001h]
+	mov	es:[bx+di],ax
+	push	[bp+004h]
+	push	si
+	call	sift
+	add	sp,+004h
+	sub	di,+002h
+	dec	si
+	jnz	$L62
+	mov	[bp-002h],si
+$L61:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+KillStream:
+	push	bp
+	mov	bp,sp
+	les	bx,dword ptr [bp+004h]
+	mov	ax,es:[bx+008h]
+	or	ax,es:[bx+00Ah]
+	jz	$L63
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	call	far ptr __vmFree
+	add	sp,+004h
+	les	bx,dword ptr [bp+004h]
+	sub	ax,ax
+	mov	es:[bx+00Ah],ax
+	mov	es:[bx+008h],ax
+$L63:	mov	ax,es:[bx+00Eh]
+	or	ax,es:[bx+010h]
+	jz	$L64
+	push	es:[bx+010h]
+	push	es:[bx+00Eh]
+	call	far ptr __vmFree
+	add	sp,+004h
+	les	bx,dword ptr [bp+004h]
+	sub	ax,ax
+	mov	es:[bx+010h],ax
+	mov	es:[bx+00Eh],ax
+$L64:	pop	bp
+	ret
+_Merge:	push	bp
+	mov	bp,sp
+	sub	sp,+010h
+	push	di
+	push	si
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+02Ah]
+	mov	dx,es:[bx+02Ch]
+	mov	$S49,ax
+	mov	$S50,dx
+	mov	ax,[bp+00Ah]
+	shl	ax,1
+	add	ax,0002h
+	push	ax
+	call	far ptr __AllocF
+	add	sp,+002h
+	mov	word ptr $S54,ax
+	mov	word ptr $S54 + 00002h,dx
+	mov	word ptr [bp-00Ah],0000h
+	cmp	word ptr [bp+00Ah],+000h
+	jnz	$L65
+	jmp	$L66
+$L65:	mov	word ptr [bp-010h],0000h
+	mov	di,[bp+00Ch]
+	mov	si,[bp-00Ah]
+$L70:	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+02Ah]
+	mov	dx,es:[bx+02Ch]
+	add	ax,[bp-010h]
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+	les	bx,dword ptr [bp-00Eh]
+	mov	ax,es:[bx+008h]
+	or	ax,es:[bx+00Ah]
+	jz	$L67
+	cmp	es:[bx+00Ch],di
+	jnbe	$L67
+	mov	ax,es:[bx+00Ch]
+	mov	es:[bx+012h],ax
+	mov	ax,es:[bx+008h]
+	mov	dx,es:[bx+00Ah]
+	mov	es:[bx+00Eh],ax
+	mov	es:[bx+010h],dx
+	sub	ax,ax
+	mov	es:[bx+00Ah],ax
+	mov	es:[bx+008h],ax
+	mov	es:[bx+00Ch],ax
+	sub	word ptr es:[bx+004h],+001h
+	sbb	word ptr es:[bx+006h],+000h
+	jmp	short $L68
+$L67:	mov	es:[bx+012h],di
+	push	di
+	call	far ptr __vmAlloc
+	add	sp,+002h
+	les	bx,dword ptr [bp-00Eh]
+	mov	es:[bx+00Eh],ax
+	mov	es:[bx+010h],dx
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx]
+	les	bx,dword ptr [bp-00Eh]
+	mov	es:[bx+016h],ax
+	push	si
+	push	[bp+008h]
+	push	[bp+006h]
+	call	StreamAdvance
+	add	sp,+006h
+$L68:	add	word ptr [bp-010h],+01Ch
+	inc	si
+	cmp	si,[bp+00Ah]
+	jnc	$L69
+	jmp	$L70
+
+$L69:	mov	[bp-00Ah],si
+$L66:	push	[bp+00Ah]
+	call	init_heap
+	add	sp,+002h
+	sub	ax,ax
+	mov	[bp-006h],ax
+	mov	[bp-008h],ax
+	mov	di,[bp-00Ah]
+	mov	si,[bp+00Ah]
+	jmp	$L71
+$L72:	push	si
+	mov	ax,0001h
+	push	ax
+	call	sift
+	add	sp,+004h
+	jmp	$L71
+$L75:	les	bx,dword ptr $S54
+	mov	ax,001Ch
+	mul	word ptr es:[bx+002h]
+    add ax, word ptr $S49
+    mov dx, word ptr $S50
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+	les	bx,dword ptr [bp-00Eh]
+	push	es:[bx+010h]
+	push	es:[bx+00Eh]
+	call	far ptr __vmPtr
+	add	sp,+004h
+	les	bx,dword ptr [bp-00Eh]
+	mov	cx,es:[bx+014h]
+	add	cx,ax
+	mov	ax,dx
+	mov	[bp-004h],cx
+	mov	[bp-002h],ax
+	push	ax
+	push	cx
+	call	dword ptr [bp+00Eh]
+	add	sp,+004h
+	add	word ptr [bp-008h],+001h
+	adc	word ptr [bp-006h],+000h
+	les	bx,dword ptr $S54
+	push	es:[bx+002h]
+	push	[bp+008h]
+	push	[bp+006h]
+	call	StreamAdvance
+	add	sp,+006h
+	or	ax,ax
+	jnz	$L72
+	push	[bp-00Ch]
+	push	[bp-00Eh]
+	call	KillStream
+	add	sp,+004h
+	lea	ax,[si-001h]
+	cmp	ax,di
+	jz	$L73
+	mov	ax,si
+	les	bx,dword ptr $S54
+	sub	ax,es:[bx+002h]
+	mov	cx,001Ch
+	mul	cx
+	sub	ax,cx
+	push	ax
+	mov	ax,[bp-00Eh]
+	mov	dx,[bp-00Ch]
+	add	ax,cx
+	push	dx
+	push	ax
+	push	dx
+	push	[bp-00Eh]
+	call	far ptr __bmove
+	add	sp,+00Ah
+$L73:	dec	si
+	push	si
+	call	init_heap
+	add	sp,+002h
+$L71:	cmp	si,+001h
+	jbe	$L74
+	jmp	$L75
+$L74:	mov	[bp+00Ah],si
+    mov ax, word ptr $S49
+    mov dx, word ptr $S50
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+$L76:	les	bx,dword ptr [bp-00Eh]
+	push	es:[bx+010h]
+	push	es:[bx+00Eh]
+	call	far ptr __vmPtr
+	add	sp,+004h
+	les	bx,dword ptr [bp-00Eh]
+	mov	cx,es:[bx+014h]
+	add	cx,ax
+	mov	ax,dx
+	mov	[bp-004h],cx
+	mov	[bp-002h],ax
+	push	ax
+	push	cx
+	call	dword ptr [bp+00Eh]
+	add	sp,+004h
+	add	word ptr [bp-008h],+001h
+	adc	word ptr [bp-006h],+000h
+	sub	ax,ax
+	push	ax
+	push	[bp+008h]
+	push	[bp+006h]
+	call	StreamAdvance
+	add	sp,+006h
+	or	ax,ax
+	jnz	$L76
+	push	[bp-00Ch]
+	push	[bp-00Eh]
+	call	KillStream
+	add	sp,+004h
+	push	word ptr $S54 + 00002h
+	push	word ptr $S54
+	call	far ptr __xfree
+	add	sp,+004h
+	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+__sortComplete:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	di
+	push	si
+	les	bx,dword ptr [bp+006h]
+	cmp	word ptr es:[bx+030h],+000h
+	jnz	$L77
+	jmp	$L78
+$L77:	mov	ax,[bp+00Ah]
+	mov	[bp-00Ah],ax
+	mov	word ptr [bp-008h],0000h
+	mov	di,[bp-004h]
+	mov	si,[bp-002h]
+$L91:	mov	di,es:[bx+030h]
+	mov	ax,es:[bx]
+	sub	dx,dx
+	mov	cl,02h
+$L79:	shl	ax,1
+	rcl	dx,1
+	dec	cl
+	jnz	$L79
+	mov	cl,0Ah
+$L80:	shr	dx,1
+	rcr	ax,1
+	dec	cl
+	jnz	$L80
+	sub	ax,0004h
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,0004h
+	mov	[bp-006h],ax
+	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	div	di
+	cmp	ax,[bp-006h]
+	jnc	$L81
+	mov	ax,[bp-006h]
+	jmp	short $L82
+$L81:	mov	ax,[bp+00Ah]
+	sub	dx,dx
+	div	di
+	sub	ax,003Ch
+	sbb	cx,cx
+	and	ax,cx
+	add	ax,003Ch
+$L82:	mov	si,ax
+	jmp	short $L83
+	nop
+$L86:	cmp	di,+004h
+	jc	$L84
+	dec	di
+$L83:	push	si
+	call	far ptr __vmStatN
+	add	sp,+002h
+	cmp	ax,di
+	jnbe	$L85
+	cmp	[bp-006h],si
+	jnc	$L86
+	dec	si
+	jmp	short $L83
+	nop
+$L84:	mov	ax,0002h
+	jmp	$L87
+$L85:	les	bx,dword ptr [bp+006h]
+	cmp	es:[bx+030h],di
+	jnz	$L88
+	mov	di,es:[bx+030h]
+	push	[bp+00Eh]
+	push	[bp+00Ch]
+	push	si
+	push	di
+	push	es
+	push	bx
+	push	cs
+	call	_Merge
+	add	sp,+00Ch
+	jmp	$L89
+	nop
+$L88:	sub	di,+002h
+	mov	ax,si
+	shl	ax,1
+	push	ax
+	push	[bp+008h]
+	push	[bp+006h]
+	call	AuxStreamStart
+	add	sp,+006h
+	mov	ax,offset AuxStreamOut
+	mov	dx,seg AuxStreamOut
+	push	dx
+	push	ax
+	push	si
+	push	di
+	push	[bp+008h]
+	push	[bp+006h]
+	push	cs
+	call	_Merge
+	add	sp,+00Ch
+	push	[bp+008h]
+	push	[bp+006h]
+	call	AuxStreamEnd
+	add	sp,+004h
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+030h]
+	sub	ax,di
+	mov	cx,001Ch
+	mul	cx
+	push	ax
+	mov	ax,es:[bx+02Ah]
+	mov	dx,es:[bx+02Ch]
+	mov	cx,ax
+	mov	ax,001Ch
+	mov	bx,dx
+	mul	di
+	add	cx,ax
+	push	bx
+	push	cx
+	mov	bx,[bp+006h]
+	push	es:[bx+02Ch]
+	push	es:[bx+02Ah]
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+02Ah]
+	mov	dx,es:[bx+02Ch]
+	mov	cx,ax
+	mov	ax,es:[bx+030h]
+	sub	ax,di
+	mov	bx,001Ch
+	mov	[bp-00Eh],cx
+	mov	[bp-00Ch],dx
+	mul	bx
+	mov	bx,ax
+	add	bx,cx
+	mov	es,word ptr [bp-00Ch]
+	push	si
+	push	di
+	mov	di,bx
+	mov	si,offset DGROUP:$S21
+	mov	cx,000Eh
+	repnz	movsw
+	pop	di
+	pop	si
+	les	bx,dword ptr [bp+006h]
+	inc	word ptr es:[bx+030h]
+$L89:	les	bx,dword ptr [bp+006h]
+	sub	es:[bx+030h],di
+	jz	$L90
+	jmp	$L91
+$L90:	mov	[bp-004h],di
+	mov	[bp-002h],si
+$L78:	sub	ax,ax
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+$L87:	mov	[bp-004h],di
+	mov	[bp-002h],si
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	retf
+QOrder:	push	bp
+	mov	bp,sp
+	sub	sp,+01Ah
+	push	di
+	push	si
+	cmp	word ptr [bp+008h],+002h
+	jnc	$L92
+	jmp	$L93
+$L92:	mov	word ptr [bp-008h],0000h
+	jmp	short $L94
+$L95:	mov	ax,ds
+	mov	di,si
+	mov	es,ax
+	mov	ax,[bp-006h]
+	shl	ax,1
+	add	di,ax
+	mov	ax,es:[di]
+	mov	[bp-004h],ax
+	mov	ax,cx
+	or	ah,80h
+	mov	es:[di],ax
+	mov	cx,[bp-006h]
+	mov	ax,[bp-004h]
+	mov	[bp-006h],ax
+$L97:	test	word ptr [bp-006h],8000h
+	jz	$L95
+	mov	ds,word ptr [bp-00Eh]
+	mov	[bp-002h],cx
+	inc	word ptr [bp-008h]
+$L94:	mov	ax,[bp+008h]
+	cmp	[bp-008h],ax
+	jnc	$L96
+	mov	cx,[bp-008h]
+	mov	si,cx
+	shl	si,1
+	les	bx,dword ptr [bp+00Ch]
+	mov	ax,es:[bx+si]
+	mov	[bp-006h],ax
+
+    ; nop ;                                 les di,dword ptr [bp-00Ch]
+    ; nop         // puede estar arreglado ya
+    ; nop
+
+    les di,dword ptr [bp-00Ch]
+
+	mov	word ptr [bp-00Eh],ds
+	lds	si,dword ptr [bp+00Ch]
+	jmp	short $L97
+	nop
+$L96:	mov	word ptr [bp-008h],0000h
+	cmp	word ptr [bp+008h],+000h
+	jz	$L98
+	mov	ax,[bp+00Ch]
+	mov	dx,[bp+00Eh]
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	cx,[bp+008h]
+	add	[bp-008h],cx
+	les	di,dword ptr [bp-00Ch]
+$L99:	and	byte ptr es:[di+001h],7Fh
+	add	di,+002h
+	loop	$L99
+$L98:	mov	word ptr [bp-008h],0000h
+	cmp	word ptr [bp+008h],+000h
+	jnz	$L100
+	jmp	$L93
+$L100:	mov	ax,[bp+00Ch]
+	mov	dx,[bp+00Eh]
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	mov	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	[bp-012h],ax
+	mov	[bp-010h],dx
+	mov	si,[bp+00Ah]
+$L104:	les	bx,dword ptr [bp-00Ch]
+	mov	di,es:[bx]
+	cmp	di,[bp-008h]
+	jz	$L101
+
+	mov	ax,di
+	mul	si
+	add	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	[bp-016h],ax
+	mov	[bp-014h],dx
+	push	si
+	push	dx
+	push	ax
+	push	[bp+012h]
+	push	[bp+010h]
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	mov	ax,di
+	shl	ax,1
+	add	ax,[bp+00Ch]
+	mov	dx,[bp+00Eh]
+	mov	[bp-01Ah],ax
+	mov	[bp-018h],dx
+	les	bx,dword ptr [bp-01Ah]
+	mov	ax,es:[bx]
+	mov	[bp-004h],ax
+	push	si
+	push	[bp-010h]
+	push	[bp-012h]
+	push	[bp-014h]
+	push	[bp-016h]
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	les	bx,dword ptr [bp-01Ah]
+	mov	es:[bx],di
+	push	si
+	push	[bp+012h]
+	push	[bp+010h]
+	push	[bp-010h]
+	push	[bp-012h]
+	call	far ptr __bcopy
+	add	sp,+00Ah
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,[bp-004h]
+	mov	es:[bx],ax
+	jmp	short $L102
+	nop
+$L101:	add	word ptr [bp-00Ch],+002h
+	add	[bp-012h],si
+	inc	word ptr [bp-008h]
+$L102:	mov	ax,[bp+008h]
+	cmp	[bp-008h],ax
+	jnc	$L103
+	jmp	$L104
+$L103:	mov	[bp-006h],di
+$L93:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+median:	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	push	di
+	push	si
+	mov	ax,[bp+004h]
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	mov	ax,[bp+006h]
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	les	bx,dword ptr [bp-006h]
+	mov	si,es:[bx]
+	les	bx,dword ptr [bp-00Ah]
+	mov	di,es:[bx]
+	push	di
+	push	si
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L105
+	mov	[bp-002h],si
+	les	bx,dword ptr [bp-006h]
+	mov	es:[bx],di
+	les	bx,dword ptr [bp-00Ah]
+	mov	ax,si
+	mov	es:[bx],ax
+$L105:	mov	ax,[bp+006h]
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	ax,[bp+008h]
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	les	bx,dword ptr [bp-00Ah]
+	mov	si,es:[bx]
+	les	bx,dword ptr [bp-006h]
+	mov	di,es:[bx]
+	push	di
+	push	si
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L106
+	mov	[bp-002h],si
+	les	bx,dword ptr [bp-00Ah]
+	mov	es:[bx],di
+	les	bx,dword ptr [bp-006h]
+	mov	ax,si
+	mov	es:[bx],ax
+$L106:	mov	ax,[bp+004h]
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	ax,[bp+006h]
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	les	bx,dword ptr [bp-00Ah]
+	mov	si,es:[bx]
+	les	bx,dword ptr [bp-006h]
+	mov	di,es:[bx]
+	push	di
+	push	si
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L107
+	mov	[bp-002h],si
+	les	bx,dword ptr [bp-00Ah]
+	mov	es:[bx],di
+	les	bx,dword ptr [bp-006h]
+	mov	ax,si
+	mov	es:[bx],ax
+$L107:	mov	ax,[bp+006h]
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+p_order:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	di
+	push	si
+	mov	ax,[bp+008h]
+	mov	[bp-002h],ax
+	mov	ax,[bp+00Ah]
+	cmp	[bp-002h],ax
+	jnc	$L108
+	mov	ax,[bp+008h]
+	shl	ax,1
+	add	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+	add	ax,0002h
+	mov	[bp-006h],ax
+	mov	[bp-004h],dx
+	mov	ax,[bp-00Eh]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	mov	di,[bp+00Ah]
+	mov	si,[bp-002h]
+$L110:	les	bx,dword ptr [bp-006h]
+	push	es:[bx]
+	les	bx,dword ptr [bp-00Ah]
+	push	es:[bx]
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L109
+	sub	ax,ax
+	mov	[bp-002h],si
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+$L109:	add	word ptr [bp-006h],+002h
+	add	word ptr [bp-00Ah],+002h
+	inc	si
+	cmp	si,di
+	jc	$L110
+	mov	[bp-002h],si
+$L108:	mov	ax,0001h
+	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+small_sort:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Eh
+	push	di
+	push	si
+	mov	ax,[bp+008h]
+	inc	ax
+	mov	[bp-004h],ax
+	mov	ax,[bp+00Ah]
+	cmp	[bp-004h],ax
+	jbe	$L111
+	jmp	$L112
+$L111:	mov	ax,[bp-004h]
+	shl	ax,1
+	add	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	[bp-00Eh],ax
+	mov	[bp-00Ch],dx
+$L116:	les	bx,dword ptr [bp-00Eh]
+	mov	ax,es:[bx]
+	mov	[bp-002h],ax
+	mov	si,[bp-004h]
+	dec	si
+	mov	di,[bp+008h]
+	jmp	short $L113
+	nop
+$L115:	dec	si
+$L113:	cmp	si,di
+	jc	$L114
+	push	[bp-002h]
+	mov	ax,si
+	shl	ax,1
+	les	bx,dword ptr [bp+004h]
+	add	bx,ax
+	push	es:[bx]
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jnz	$L114
+	mov	ax,[bp+004h]
+	mov	dx,[bp+006h]
+	mov	cx,si
+	shl	cx,1
+	add	ax,cx
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	les	bx,dword ptr [bp-00Ah]
+	mov	ax,es:[bx]
+	mov	es:[bx+002h],ax
+	or	si,si
+	jnz	$L115
+	dec	si
+$L114:	mov	[bp-006h],si
+	shl	si,1
+	les	bx,dword ptr [bp+004h]
+	mov	ax,[bp-002h]
+	mov	es:[bx+si+002h],ax
+	add	word ptr [bp-00Eh],+002h
+	inc	word ptr [bp-004h]
+	mov	ax,[bp+00Ah]
+	cmp	[bp-004h],ax
+	jbe	$L116
+$L112:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+	nop
+QSort:	push	bp
+	mov	bp,sp
+	sub	sp,+034h
+	push	di
+	push	si
+	cmp	word ptr [bp+004h],+002h
+	jnc	$L117
+	jmp	$L118
+$L117:	mov	word ptr [bp-00Ch],0000h
+	cmp	word ptr [bp+004h],+000h
+	jz	$L119
+	mov	ax,[bp+006h]
+	mov	dx,[bp+008h]
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	mov	si,[bp-00Ch]
+	mov	cx,[bp+004h]
+	les	di,dword ptr [bp-014h]
+$L120:	mov	es:[di],si
+	add	di,+002h
+	inc	si
+	cmp	si,cx
+	jc	$L120
+	mov	[bp-00Ch],si
+$L119:	mov	word ptr [bp-00Ah],0001h
+	les	bx,dword ptr [bp+00Ah]
+	mov	word ptr es:[bx+004h],0000h
+	mov	ax,[bp+004h]
+	dec	ax
+	mov	es:[bx+006h],ax
+$L138:	mov	ax,[bp-00Ah]
+	shl	ax,1
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	[bp-02Ch],ax
+	mov	[bp-02Ah],dx
+	les	bx,dword ptr [bp-02Ch]
+	mov	ax,es:[bx]
+	mov	[bp-010h],ax
+	mov	ax,es:[bx+002h]
+	mov	[bp-004h],ax
+	dec	word ptr [bp-00Ah]
+$L137:	mov	ax,[bp-004h]
+	sub	ax,[bp-010h]
+	cmp	ax,0007h
+	jnc	$L121
+	push	[bp-004h]
+	push	[bp-010h]
+	push	[bp+008h]
+	push	[bp+006h]
+	call	small_sort
+	add	sp,+008h
+	jmp	$L122
+	nop
+$L121:	push	[bp-004h]
+	push	[bp-010h]
+	push	[bp+008h]
+	push	[bp+006h]
+	call	p_order
+	add	sp,+008h
+	or	ax,ax
+	jz	$L123
+	jmp	$L122
+$L123:	mov	ax,[bp-010h]
+	mov	[bp-00Eh],ax
+	mov	ax,[bp-004h]
+	mov	[bp-002h],ax
+	push	[bp+008h]
+	push	[bp+006h]
+	push	ax
+	mov	ax,[bp-010h]
+	add	ax,[bp-004h]
+	shr	ax,1
+	push	ax
+	push	[bp-010h]
+	call	median
+	add	sp,+00Ah
+	mov	bx,ax
+	shl	bx,1
+	les	si,dword ptr [bp+006h]
+	mov	ax,es:[bx+si]
+	mov	[bp-008h],ax
+$L132:	mov	bx,[bp-00Eh]
+	shl	bx,1
+	les	si,dword ptr [bp+006h]
+	mov	ax,[bp-008h]
+	cmp	es:[bx+si],ax
+	jz	$L124
+	mov	ax,[bp-00Eh]
+	shl	ax,1
+	add	ax,si
+	mov	dx,es
+	mov	[bp-014h],ax
+	mov	[bp-012h],dx
+	mov	[bp-018h],ax
+	mov	[bp-016h],dx
+
+	mov	di,[bp-00Eh]
+	mov	si,[bp-008h]
+$L126:	push	si
+	les	bx,dword ptr [bp-014h]
+	push	es:[bx]
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jz	$L125
+	add	word ptr [bp-014h],+002h
+	add	word ptr [bp-018h],+002h
+	inc	di
+	les	bx,dword ptr [bp-018h]
+	cmp	es:[bx],si
+	jnz	$L126
+$L125:	mov	[bp-00Eh],di
+$L124:	mov	bx,[bp-002h]
+	shl	bx,1
+	les	si,dword ptr [bp+006h]
+	mov	ax,[bp-008h]
+	cmp	es:[bx+si],ax
+	jz	$L127
+	mov	ax,[bp-002h]
+	shl	ax,1
+	add	ax,si
+	mov	dx,es
+	mov	[bp-01Ch],ax
+	mov	[bp-01Ah],dx
+	mov	[bp-020h],ax
+	mov	[bp-01Eh],dx
+	mov	di,[bp-002h]
+	mov	si,[bp-008h]
+$L129:	les	bx,dword ptr [bp-01Ch]
+	push	es:[bx]
+	push	si
+	call	far ptr __s_order
+	add	sp,+004h
+	or	ax,ax
+	jz	$L128
+	sub	word ptr [bp-01Ch],+002h
+	sub	word ptr [bp-020h],+002h
+	dec	di
+	les	bx,dword ptr [bp-020h]
+	cmp	es:[bx],si
+	jnz	$L129
+$L128:	mov	[bp-002h],di
+$L127:	mov	ax,[bp-002h]
+	cmp	[bp-00Eh],ax
+	jnbe	$L130
+	mov	ax,[bp-00Eh]
+	shl	ax,1
+	add	ax,[bp+006h]
+	mov	dx,[bp+008h]
+	mov	[bp-024h],ax
+	mov	[bp-022h],dx
+	les	bx,dword ptr [bp-024h]
+	mov	ax,es:[bx]
+	mov	[bp-006h],ax
+	mov	ax,[bp-002h]
+	shl	ax,1
+	add	ax,[bp+006h]
+	mov	[bp-028h],ax
+	mov	[bp-026h],dx
+	les	bx,dword ptr [bp-028h]
+	mov	ax,es:[bx]
+	les	bx,dword ptr [bp-024h]
+	mov	es:[bx],ax
+	les	bx,dword ptr [bp-028h]
+	mov	ax,[bp-006h]
+	mov	es:[bx],ax
+	inc	word ptr [bp-00Eh]
+	dec	word ptr [bp-002h]
+$L130:	mov	ax,[bp-002h]
+	cmp	[bp-00Eh],ax
+	jnbe	$L131
+	jmp	$L132
+$L131:	sub	ax,[bp-010h]
+	mov	cx,[bp-004h]
+	sub	cx,[bp-00Eh]
+	cmp	ax,cx
+	jnc	$L133
+	mov	ax,[bp-004h]
+	cmp	[bp-00Eh],ax
+	jnc	$L134
+	inc	word ptr [bp-00Ah]
+	mov	ax,[bp-00Ah]
+	shl	ax,1
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	[bp-030h],ax
+	mov	[bp-02Eh],dx
+	les	bx,dword ptr [bp-030h]
+	mov	ax,[bp-00Eh]
+	mov	es:[bx],ax
+	mov	ax,[bp-004h]
+	mov	es:[bx+002h],ax
+$L134:	mov	ax,[bp-002h]
+	mov	[bp-004h],ax
+	jmp	short $L135
+$L133:	mov	ax,[bp-002h]
+	cmp	[bp-010h],ax
+	jnc	$L136
+	inc	word ptr [bp-00Ah]
+	mov	ax,[bp-00Ah]
+	shl	ax,1
+	shl	ax,1
+	add	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	[bp-034h],ax
+	mov	[bp-032h],dx
+	les	bx,dword ptr [bp-034h]
+	mov	ax,[bp-010h]
+	mov	es:[bx],ax
+	mov	ax,[bp-002h]
+	mov	es:[bx+002h],ax
+$L136:	mov	ax,[bp-00Eh]
+	mov	[bp-010h],ax
+$L135:	mov	ax,[bp-004h]
+	cmp	[bp-010h],ax
+	jnc	$L122
+	jmp	$L137
+$L122:	cmp	word ptr [bp-00Ah],+000h
+	jz	$L118
+	jmp	$L138
+$L118:	pop	si
+	pop	di
+	mov	sp,bp
+	pop	bp
+	ret
+__sortSort:
+	push	bp
+	mov	bp,sp
+	sub	sp,+010h
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+032h]
+	mov	dx,es:[bx+034h]
+	mov	[bp-00Ch],ax
+	mov	[bp-00Ah],dx
+	les	bx,dword ptr [bp-00Ch]
+	mov	ax,es:[bx+004h]
+	shl	ax,1
+	dec	ax
+	mov	cl,0Ah
+	shr	ax,cl
+	inc	ax
+	mov	[bp-004h],ax
+	push	ax
+	call	far ptr __vmAlloc
+	add	sp,+002h
+	mov	[bp-008h],ax
+	mov	[bp-006h],dx
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx]
+	mov	__srsize,ax
+	mov	ax,es:[bx+008h]
+	mov	__sfcount,ax
+	mov	ax,es:[bx+00Ah]
+	mov	dx,es:[bx+00Ch]
+	mov	__sfields,ax
+	mov	__sfields + 00002h,dx
+	push	[bp-006h]
+	push	[bp-008h]
+	les	bx,dword ptr [bp-00Ch]
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	call	far ptr __vmTwo
+	add	sp,+008h
+	les	bx,dword ptr [bp-00Ch]
+	push	es:[bx+00Ah]
+	push	es:[bx+008h]
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	__srbase,ax
+	mov	__srbase + 00002h,dx
+	mov	__slbase,ax
+	mov	__slbase + 00002h,dx
+	push	[bp-006h]
+	push	[bp-008h]
+	call	far ptr __vmDirtyPtr
+	add	sp,+004h
+	mov	[bp-010h],ax
+	mov	[bp-00Eh],dx
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+018h]
+	push	es:[bx+016h]
+	push	dx
+	push	ax
+	les	bx,dword ptr [bp-00Ch]
+	push	es:[bx+004h]
+	call	QSort
+	add	sp,+00Ah
+	les	bx,dword ptr [bp+006h]
+	push	es:[bx+01Ch]
+	push	es:[bx+01Ah]
+	push	[bp-00Eh]
+	push	[bp-010h]
+	push	__srsize
+	les	bx,dword ptr [bp-00Ch]
+	push	es:[bx+004h]
+	push	__slbase + 00002h
+	push	__slbase
+	call	QOrder
+	add	sp,+010h
+	push	[bp-006h]
+	push	[bp-008h]
+	call	far ptr __vmFree
+	add	sp,+004h
+	mov	ax,0008h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	les	bx,dword ptr [bp+006h]
+	cmp	es:[bx+006h],ax
+	jnc	$L139
+	mov	ax,es:[bx+006h]
+	jmp	short $L140
+$L139:	mov	ax,0008h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+$L140:	mov	[bp-002h],ax
+	push	ax
+	push	[bp+008h]
+	push	[bp+006h]
+	call	StreamEnd
+	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+__sortAdvance:
+	push	bp
+	mov	bp,sp
+	sub	sp,+00Ah
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+02Eh]
+	cmp	es:[bx+030h],ax
+	jnz	$L141
+	mov	ax,113Ch
+	push	ax
+	call	far ptr __ierror
+	add	sp,+002h
+$L141:	mov	ax,0008h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+	les	bx,dword ptr [bp+006h]
+	cmp	es:[bx+006h],ax
+	jnc	$L142
+	mov	ax,es:[bx+006h]
+	jmp	short $L143
+$L142:	mov	ax,0008h
+	push	ax
+	call	far ptr __vmStat
+	add	sp,+002h
+$L143:	mov	[bp-006h],ax
+	les	bx,dword ptr [bp+006h]
+	sub	ax,ax
+	push	ax
+	push	es:[bx]
+	mov	ax,es:[bx+002h]
+	mov	dx,es:[bx+004h]
+	sub	ax,es:[bx+010h]
+	sbb	dx,es:[bx+012h]
+	push	dx
+	push	ax
+	call	far ptr __aFulmul
+	add	ax,03FFh
+	adc	dx,+000h
+	mov	cl,0Ah
+$L144:	shr	dx,1
+	rcr	ax,1
+	dec	cl
+	jnz	$L144
+	mov	[bp-002h],ax
+	push	[bp-006h]
+	push	[bp+008h]
+	push	[bp+006h]
+	call	StreamK
+	add	sp,+006h
+	cmp	ax,[bp-002h]
+	jnc	$L145
+	push	[bp-006h]
+	push	[bp+008h]
+	push	[bp+006h]
+	call	StreamK
+	add	sp,+006h
+	jmp	short $L146
+	nop
+$L145:	mov	ax,[bp-002h]
+$L146:	mov	[bp-004h],ax
+	les	bx,dword ptr [bp+006h]
+	mov	ax,es:[bx+030h]
+	inc	word ptr es:[bx+030h]
+	mov	cx,001Ch
+	mul	cx
+	add	ax,es:[bx+02Ah]
+	mov	dx,es:[bx+02Ch]
+	mov	[bp-00Ah],ax
+	mov	[bp-008h],dx
+	sub	ax,ax
+	push	ax
+	push	es:[bx]
+	mov	ax,[bp-004h]
+	sub	dx,dx
+	mov	cl,0Ah
+$L147:	shl	ax,1
+	rcl	dx,1
+	dec	cl
+	jnz	$L147
+	push	dx
+	push	ax
+	call	far ptr __aFuldiv
+	les	bx,dword ptr [bp-00Ah]
+	mov	es:[bx],ax
+	mov	word ptr es:[bx+002h],0000h
+	mov	ax,[bp-004h]
+	mov	es:[bx+00Ch],ax
+	sub	ax,0001h
+	sbb	cx,cx
+	not	cx
+	and	ax,cx
+	add	ax,0001h
+	push	ax
+	call	far ptr __vmAlloc
+	les	bx,dword ptr [bp-00Ah]
+	mov	es:[bx+008h],ax
+	mov	es:[bx+00Ah],dx
+	les	bx,dword ptr [bp+006h]
+	mov	ax,[bp-004h]
+
+	add	es:[bx+014h],ax
+	mov	ax,[bp-00Ah]
+	mov	dx,[bp-008h]
+	mov	es:[bx+032h],ax
+	mov	es:[bx+034h],dx
+	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	retf
+__sortSetField:
+	push	bp
+	mov	bp,sp
+	push	si
+	mov	ax,[bp+00Ah]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	mov	si,ax
+	les	bx,dword ptr [bp+006h]
+	les	bx,dword ptr es:[bx+00Ah]
+	mov	ax,[bp+00Ch]
+	mov	es:[bx+si],ax
+	les	bx,dword ptr [bp+006h]
+	les	bx,dword ptr es:[bx+00Ah]
+	mov	ax,[bp+00Eh]
+	mov	es:[bx+si+002h],ax
+	les	bx,dword ptr [bp+006h]
+	les	bx,dword ptr es:[bx+00Ah]
+	mov	ax,[bp+010h]
+	mov	es:[bx+si+004h],ax
+	sub	ax,ax
+	pop	si
+	pop	bp
+	retf
+	nop
+__sortInit:
+	push	bp
+	mov	bp,sp
+	sub	sp,+008h
+	mov	ax,0036h
+	push	ax
+	sub	ax,ax
+	push	ax
+	push	[bp+008h]
+	push	[bp+006h]
+	call	far ptr __bset
+	add	sp,+008h
+	les	bx,dword ptr [bp+006h]
+	mov	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	mov	es:[bx+002h],ax
+	mov	es:[bx+004h],dx
+	mov	ax,[bp+00Eh]
+	mov	es:[bx],ax
+	mov	ax,[bp+010h]
+	mov	es:[bx+008h],ax
+	mov	ax,[bp+012h]
+	mov	es:[bx+006h],ax
+	push	dx
+	push	[bp+00Ah]
+	sub	ax,ax
+	push	ax
+	push	[bp+00Eh]
+	call	far ptr __aFulmul
+	sub	ax,0001h
+	sbb	dx,+000h
+	mov	cl,0Ah
+$L148:	shr	dx,1
+	rcr	ax,1
+	dec	cl
+	jnz	$L148
+	inc	ax
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+00Eh],ax
+	mov	ax,[bp+010h]
+	mov	cx,ax
+	shl	ax,1
+	add	ax,cx
+	shl	ax,1
+	push	ax
+	call	far ptr __AllocF
+	add	sp,+002h
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+00Ah],ax
+	mov	es:[bx+00Ch],dx
+	mov	ax,0040h
+	push	ax
+	call	far ptr __AllocF
+	add	sp,+002h
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+016h],ax
+	mov	es:[bx+018h],dx
+	push	[bp+00Eh]
+	call	far ptr __AllocF
+	add	sp,+002h
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+01Ah],ax
+	mov	es:[bx+01Ch],dx
+	mov	ax,0041h
+	push	ax
+	call	far ptr __AllocF
+	add	sp,+002h
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+020h],ax
+	mov	es:[bx+022h],dx
+	push	[bp+012h]
+	push	es
+	push	bx
+	call	StreamK
+	add	sp,+006h
+	mov	[bp-008h],ax
+	mov	word ptr [bp-006h],0000h
+	sub	ax,ax
+	push	ax
+	push	[bp+00Eh]
+	mov	ax,[bp-008h]
+	mov	dx,[bp-006h]
+	mov	cl,0Ah
+$L149:	shl	ax,1
+	rcl	dx,1
+	dec	cl
+	jnz	$L149
+	push	dx
+	push	ax
+	call	far ptr __aFuldiv
+	mov	[bp-004h],ax
+	mov	[bp-002h],dx
+	push	dx
+	push	ax
+	mov	ax,[bp+00Ah]
+	mov	dx,[bp+00Ch]
+	sub	ax,0001h
+	sbb	dx,+000h
+	push	dx
+	push	ax
+	call	far ptr __aFuldiv
+	add	ax,0004h
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+02Eh],ax
+	mov	ax,001Ch
+	mul	word ptr es:[bx+02Eh]
+	push	ax
+	call	far ptr __AllocF
+	les	bx,dword ptr [bp+006h]
+	mov	es:[bx+02Ah],ax
+	mov	es:[bx+02Ch],dx
+	sub	ax,ax
+	mov	sp,bp
+	pop	bp
+	retf
+	nop
+
+SORTOF_TEXT	ENDS
+
+_DATA	SEGMENT
+
+
+$S1	db	'TEMPPATH',000h
+
+	db	1 dup(?)
+$S49	dw	00000h
+$S50	dw	00000h
+$S54	dd	000000000h
+$S21	dw	00000h
+$S22	dw	00000h
+
+$S10    dw 12 dup(0)
+
+$S20	=	$ - 00010h
+$S13	=	$ - 00004h
+$S14	=	$ - 00002h
+$S19	dw	00000h
+$S18	dw	00000h
+$S17	dw	00000h
+$S11	dw	00000h
+$S12	dw	00000h
+$S15	dw	00000h
+
+$S44	db	055h
+	db	000h
+
+_DATA	ENDS
+
+	END
+

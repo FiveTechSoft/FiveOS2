@@ -1,0 +1,55 @@
+;WEEDBED PUBLICS
+    public  ___sympb
+    public  ___sympe
+    public  __weedbed
+    public  __weedend
+
+
+_SYMSTART   segment para  public 'SYMSTART'
+_SYMSTART   ends
+_SYMEND     segment para  public 'SYMEND'
+_SYMEND     ends
+_SYMPB      segment word  public 'DATA'
+_SYMPB      ends
+_SYMP       segment word  public 'DATA'
+_SYMP       ends
+_SYMPE      segment word  public 'DATA'
+_SYMPE      ends
+DMTB        segment word  public 'DLL'
+DMTB        ends
+DMT         segment word  public 'DLL'
+DMT         ends
+DMTE        segment word  public 'DLL'
+DMTE        ends
+
+DMTGROUP group   DMTB,DMT,DMTE
+DGROUP   group   _SYMPB,_SYMP,_SYMPE
+
+_SYMSTART   segment
+__weedbed label word
+_SYMSTART	ends
+
+_SYMEND	segment
+__weedend label word
+_SYMEND	ends
+
+_SYMPB	segment
+___sympb label word
+_SYMPB	ends
+
+_SYMP	segment
+_SYMP	ends
+
+_SYMPE  segment
+___sympe label word
+_SYMPE  ends
+
+DMTB    segment
+DMTB    ends
+DMT     segment
+DMT     ends
+DMTE    segment
+DMTE    ends
+
+
+   END

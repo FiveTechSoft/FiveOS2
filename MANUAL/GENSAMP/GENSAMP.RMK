@@ -1,0 +1,6 @@
+GenSamp.obj : GenSamp.prg
+   clipper GenSamp /n
+
+GenSamp.exe : GenSamp.obj
+   SET LIB=c:\clipper5\lib
+   blinker fi GenSamp
